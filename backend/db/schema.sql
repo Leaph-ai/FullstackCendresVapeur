@@ -1,6 +1,9 @@
 -- Schéma "Cendres et Vapeur" — source de vérité de la base.
 -- PK auto-incrémentées (IDENTITY), timestamps de création par défaut,
 -- politiques ON DELETE explicites.
+-- Application atomique : tout réussit ou rien (évite une base à moitié initialisée).
+
+BEGIN;
 
 CREATE TABLE "roles" (
   "id" integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -159,3 +162,5 @@ ALTER TABLE "order_items" ADD FOREIGN KEY ("product_id") REFERENCES "products" (
 ALTER TABLE "shift_notes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "chat_messages" ADD FOREIGN KEY ("sender_id") REFERENCES "users" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "colony_logs" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE SET NULL DEFERRABLE INITIALLY IMMEDIATE;
+
+COMMIT;
