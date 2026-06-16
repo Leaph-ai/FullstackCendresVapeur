@@ -1,6 +1,10 @@
 docs/
-.obsidian/workspace.json
-.obsidian/app.json
+.obsidian/*.json
+.vscode/
 
+*/.obsidian/*.json
+.c*
+
+*pycache*
 CLAUDE.md
 .claude/
