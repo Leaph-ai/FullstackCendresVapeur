@@ -1,40 +1,58 @@
-from typing import Union
-from pydantic import BaseModel
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-app = FastAPI()
+from app.routes import products, carts, orders, discounts
 
-# Not safe! Add your own allowed domains
-origins = [
-    "*",
-] 
+# Création de l'application
+app = FastAPI(
+    title="Cendres et Vapeur API"
+)
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Define what you will receiving in request
+# ==========================
+# Schema de test
+# ==========================
+
 class TypePayload(BaseModel):
     content: str
 
-# Example GET route for app
+# ==========================
+# Routes de test
+# ==========================
+
 @app.get("/")
 def read_root():
-    return {"Message": "Hello World! FastAPI is working."}
+    return {
+        "message": "API Cendres et Vapeur opérationnelle"
+    }
 
-# Example POST route for app
 @app.post("/getdata")
 async def create_secret(payload: TypePayload):
-    with open('output_file.txt', 'a') as f:
+
+    with open("output_file.txt", "a") as f:
         now = datetime.now()
-        formatted_date = now.strftime("%B %d, %Y at %I:%M %p")
-        f.write(formatted_date + ": " + payload.content)
-        f.write('\n')
-    return payload.content
+        f.write(
+            f"{now.strftime('%d/%m/%Y %H:%M')} : {payload.content}\n"
+        )
+
+    return payload
+
+# ==========================
+# Routers Ecommerce
+# ==========================
+
+app.include_router(products.router)
+app.include_router(carts.router)
+app.include_router(orders.router)
+app.include_router(discounts.router)
