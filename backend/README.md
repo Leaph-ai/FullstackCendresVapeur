@@ -10,27 +10,24 @@ API REST construite avec **FastAPI** et **Python 3.14**.
 
 ## Base de données (Docker)
 
-PostgreSQL est fourni via Docker Compose.
+PostgreSQL tourne dans Docker. Le script `db/db.sh` gère tout le cycle de vie.
+Seul prérequis : **Docker** (pas besoin d’un client PostgreSQL local).
 
 ```bash
 # Depuis le dossier backend/
-cp .env.example .env
-
-# Démarrer PostgreSQL
-docker compose up -d
-
-# Vérifier que le conteneur est prêt
-docker compose ps
+# Démarre la base, applique le schéma et les données de dev
+./db/db.sh setup
 ```
 
-La base écoute sur `localhost:5432` par défaut. Les identifiants et l’URL de connexion sont dans `.env` (`DATABASE_URL` pour SQLAlchemy).
+Le script crée automatiquement `.env` depuis `.env.example` s’il est absent.
+La base écoute sur `localhost:5432` ; `DATABASE_URL` (pour SQLAlchemy) est dans `.env`.
+
+Autres commandes :
 
 ```bash
-# Arrêter la base
-docker compose down
-
-# Arrêter et supprimer les données persistées
-docker compose down -v
+./db/db.sh reset   # remet la base à zéro (supprime le volume) — confirmation requise
+./db/db.sh seed    # réinjecte uniquement les données de dev
+./db/db.sh psql    # ouvre un shell psql interactif dans le conteneur
 ```
 
 ## Installation et démarrage
