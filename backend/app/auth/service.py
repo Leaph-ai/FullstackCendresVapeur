@@ -6,6 +6,7 @@ from app.auth.schemas import MessageResponse, TokenResponse
 from app.config import Settings
 from app.security.jwt import create_access_token
 from app.security.password import hash_password, verify_password
+from app.security.roles import RoleLevel
 
 
 @dataclass
@@ -32,7 +33,7 @@ _store = AuthStore(
             email="admin@example.com",
             password_hash=hash_password("Admin123!"),
             role="admin",
-            role_level=3,
+            role_level=RoleLevel.ADMIN,
         )
     }
 )
@@ -55,7 +56,7 @@ class AuthService:
             email=normalized_email,
             password_hash=hash_password(password),
             role="user",
-            role_level=0,
+            role_level=RoleLevel.USER,
         )
         _store.users[normalized_email] = user
         _store.next_user_id += 1
