@@ -6,6 +6,32 @@ API REST construite avec **FastAPI** et **Python 3.14**.
 
 - Python 3.14+
 - [uv](https://docs.astral.sh/uv/) (recommandé) ou pip
+- [Docker](https://docs.docker.com/get-docker/) et Docker Compose (pour la base PostgreSQL)
+
+## Base de données (Docker)
+
+PostgreSQL est fourni via Docker Compose.
+
+```bash
+# Depuis le dossier backend/
+cp .env.example .env
+
+# Démarrer PostgreSQL
+docker compose up -d
+
+# Vérifier que le conteneur est prêt
+docker compose ps
+```
+
+La base écoute sur `localhost:5432` par défaut. Les identifiants et l’URL de connexion sont dans `.env` (`DATABASE_URL` pour SQLAlchemy).
+
+```bash
+# Arrêter la base
+docker compose down
+
+# Arrêter et supprimer les données persistées
+docker compose down -v
+```
 
 ## Installation et démarrage
 
