@@ -5,6 +5,8 @@ from .discount_code import DiscountCode
 from .order import Order
 from .order_item import OrderItem
 from .product import Product
+from .role import Role
+from .user import User
 
 __all__ = [
     "Cart",
@@ -14,4 +16,6 @@ __all__ = [
     "Order",
     "OrderItem",
     "Product",
+    "Role",
+    "User",
 ]
