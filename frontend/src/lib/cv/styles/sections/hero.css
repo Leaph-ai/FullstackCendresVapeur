@@ -1,0 +1,24 @@
+/* ============================================================
+   HÉRO
+   ============================================================ */
+.hero{ background:none; border:none; box-shadow:none; opacity:1; transform:none; margin-bottom:var(--panel-gap); overflow:visible; }
+.hero .crt{ position:relative; border-radius:18px; overflow:hidden; padding:0;
+  background:radial-gradient(125% 135% at 30% 0%, #2a1d0e, #0b0703 78%);
+  border:3px solid #2a2117; box-shadow:inset 0 0 90px rgba(0,0,0,.85), inset 0 0 0 2px rgba(244,169,60,.06), 0 18px 50px rgba(0,0,0,.6); }
+.hero .crt::after{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px); opacity:.5; }
+.hero-grid{ position:relative; z-index:1; display:grid; grid-template-columns:1.4fr .9fr; gap:24px; padding:40px 44px; align-items:center; }
+.hero-line{ font-family:"Share Tech Mono",monospace; font-size:13px; color:var(--phos-amber); margin:0 0 8px; text-shadow:0 0 6px rgba(244,169,60,.5); }
+.hero-line .ok{ color:var(--phos-green); }
+.hero h1{ font-family:"Special Elite",monospace; font-size:54px; line-height:1.02; margin:6px 0 14px; color:#ffd591; letter-spacing:1px;
+  text-shadow:0 0 16px rgba(244,169,60,.5), 0 0 40px rgba(255,120,30,.28); }
+.hero h1 b{ color:#ff9d4a; }
+.hero p.lead{ font-family:"Share Tech Mono",monospace; font-size:15px; color:#cbb288; line-height:1.6; margin:0 0 22px; max-width:520px; }
+.hero-cta{ display:flex; gap:12px; flex-wrap:wrap; }
+.hero-instr{ display:flex; flex-direction:column; gap:14px; align-items:center; }
+.hero-instr .tubes{ display:flex; gap:9px; }
+.hero-instr .bigvalve{ width:96px; height:96px; }
+.hero-marquee{ position:relative; z-index:1; overflow:hidden; white-space:nowrap; border-top:1px solid #3a3024; background:#0b0703; }
+.hero-marquee span{ display:inline-block; font-family:"Share Tech Mono",monospace; font-size:12px; letter-spacing:1px; color:#f4a93c; padding:8px 0; animation:marq 32s linear infinite; }
+@keyframes marq{ from{transform:translateX(0)} to{transform:translateX(-100%)} }
+@media (prefers-reduced-motion: reduce){ .hero-marquee span{ animation:none; } }

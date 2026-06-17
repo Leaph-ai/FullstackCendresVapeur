@@ -2,6 +2,7 @@ import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { FooterBoiler } from '@cv/components/layout/FooterBoiler';
+import { HeroSection } from '@cv/components/sections/HeroSection';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { OverlayFx } from '@cv/components/primitives/OverlayFx';
 import { Route, Routes } from 'react-router-dom';
@@ -16,7 +17,7 @@ function Home() {
       <div className="home">
         <Topbar cartCount={3} />
         <main className="home-main">
-          <p className="cv-note">Sections contenu à brancher…</p>
+          <HeroSection />
         </main>
       </div>
       <FooterBoiler />
