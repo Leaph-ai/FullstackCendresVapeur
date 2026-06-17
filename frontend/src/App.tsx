@@ -6,22 +6,18 @@ import { FooterBoiler } from '@cv/components/layout/FooterBoiler';
 import { HeroSection } from '@cv/components/sections/HeroSection';
 import { VitrineSection } from '@cv/components/sections/VitrineSection';
 import { ToxicitySection } from '@cv/components/sections/ToxicitySection';
+import { JournalSection } from '@cv/components/sections/JournalSection';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
+import { useLiveData } from '@cv/hooks/useLiveData';
 import { OverlayFx } from '@cv/components/primitives/OverlayFx';
-import { TOX_GAUGES } from '@cv/types';
-
-const mockGauges = TOX_GAUGES.map((g) => ({
-  id: g.id,
-  value: g.center,
-  warn: g.initialWarn ?? false,
-  danger: false,
-}));
 import { Route, Routes } from 'react-router-dom';
 import Login from './login';
 
 function Home() {
   const railRef = useScrollRail();
+  const live = useLiveData();
   const [cart, setCart] = useState(3);
+  const onAdd = useCallback(() => setCart((c) => c + 1), []);
   return (
     <>
       <MachineRail railRef={railRef} />
@@ -30,8 +26,9 @@ function Home() {
         <Topbar cartCount={cart} />
         <main className="home-main">
           <HeroSection />
-          <VitrineSection locked clanking={false} bourseIdx={248} bourseTrend={{ up: true, delta: 2 }} bourseSpark={[40, 55, 50, 60]} onAddToCart={() => setCart((c) => c + 1)} />
-          <ToxicitySection locked clanking={false} gauges={mockGauges} toxSpark={[35, 42, 38, 45, 40]} />
+          <VitrineSection locked clanking={false} bourseIdx={live.bourseIdx} bourseTrend={live.bourseTrend} bourseSpark={live.bourseSpark} onAddToCart={onAdd} />
+          <ToxicitySection locked clanking={false} gauges={live.gauges} toxSpark={live.toxSpark} />
+          <JournalSection locked clanking={false} entries={live.journal} />
         </main>
       </div>
       <FooterBoiler />
