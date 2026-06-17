@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@300;400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.login-page {
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      rgba(0,0,0,.85),
+      rgba(0,0,0,.9)
+    ),
+    url("https://images.unsplash.com/photo-1511818966892-d7d671e672a2");
+
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 450px;
+
+  background: rgba(20,20,20,.95);
+
+  border: 2px solid #b87333;
+  border-radius: 12px;
+
+  padding: 40px;
+
+  box-shadow:
+    0 0 25px rgba(184,115,51,.3);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.login-header h1 {
+  font-family: 'Special Elite', cursive;
+  color: #d8975b;
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+}
+
+.login-header p {
+  color: #bdbdbd;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: #d8975b;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  padding: 14px;
+
+  background: #1b1b1b;
+  border: 1px solid #444;
+
+  color: white;
+  font-size: 1rem;
+
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #b87333;
+  box-shadow:
+    0 0 10px rgba(184,115,51,.4);
+}
+
+button {
+  padding: 15px;
+  background: #b87333;
+  border: none;
+
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+
+  cursor: pointer;
+  transition: .3s;
+}
+
+button:hover {
+  background: #d8975b;
+}
+
+.login-form a {
+  text-align: center;
+  color: #aaa;
+  text-decoration: none;
+}
+
+.login-form a:hover {
+  color: #d8975b;
+}
+
+.security-box {
+  margin-top: 30px;
+  padding: 15px;
+
+  border-left: 4px solid #b87333;
+  background: rgba(184,115,51,.1);
+}
+
+.security-box h3 {
+  color: #d8975b;
+  margin-bottom: 8px;
+}
+
+.security-box p {
+  color: #ccc;
+  font-size: 0.9rem;
+}
