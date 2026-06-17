@@ -4,10 +4,11 @@ from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 
-class Category(Base):
-    __tablename__ = "categories"
+class Role(Base):
+    __tablename__ = "roles"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
 
-    products = relationship("Product", back_populates="category")
+    users = relationship("User", back_populates="role")
+
