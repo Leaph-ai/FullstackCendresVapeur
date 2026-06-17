@@ -4,12 +4,13 @@ import Login from './login';
 
 function Home() {
   return (
-    <div className="cv" style={{ padding: 32 }}>
-      <button type="button" className="cv-btn">Bouton cv-btn</button>
-      <span className="cv-badge" style={{ marginLeft: 12 }}>
-        <span className="led" /> design system
-      </span>
-    </div>
+
+    <>
+      <div className="cv" style={{ padding: 32 }}>
+        <span className="lamp amber" /> <span className="lamp" />
+        <span className="valve spin" style={{ marginLeft: 16 }} />
+      </div>
+    </>
   );
 }
 
