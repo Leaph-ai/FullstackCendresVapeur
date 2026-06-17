@@ -1,6 +1,8 @@
 import '@cv/styles/index.css';
 import { Route, Routes } from 'react-router-dom';
 import Login from './login';
+import Register from './register';
+import ForgotPassword from './forgotPassword';
 
 function Home() {
   return (
@@ -19,6 +21,9 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      
     </Routes>
   );
 }
