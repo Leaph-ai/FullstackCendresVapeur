@@ -6,6 +6,7 @@ from app.core.database import Base
 
 class TwoFactorCode(Base):
     __tablename__ = "two_factor_codes"
+    __table_args__ = (Index("ix_two_factor_codes_user_expires", "user_id", "expires_at"),)
 
     id = Column(Integer, Identity(always=True), primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
