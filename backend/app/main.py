@@ -1,10 +1,14 @@
 from datetime import datetime
+from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from app.routes import products, carts, orders, discounts
+from app.routes import products, carts, orders, discounts, dev_mail
 
 # Création de l'application
 app = FastAPI(
@@ -56,3 +60,4 @@ app.include_router(products.router)
 app.include_router(carts.router)
 app.include_router(orders.router)
 app.include_router(discounts.router)
+app.include_router(dev_mail.router)
