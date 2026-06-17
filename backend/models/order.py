@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, ForeignKey, Numeric, String, DateTime, func
+from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
@@ -12,3 +13,7 @@ class Order(Base):
     total_amount = Column(Numeric(10, 2), nullable=False)
     status = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+    user = relationship("User", back_populates="orders")
+    discount_code = relationship("DiscountCode", back_populates="orders")
+    items = relationship("OrderItem", back_populates="order")

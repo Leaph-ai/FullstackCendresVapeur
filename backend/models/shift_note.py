@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
@@ -12,3 +13,6 @@ class ShiftNote(Base):
     note_date = Column(Date, nullable=False)
     shift = Column(String, nullable=False)
     content = Column(Text)
+
+    user = relationship("User", back_populates="shift_notes")
+
