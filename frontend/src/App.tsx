@@ -1,16 +1,18 @@
 import '@cv/styles/index.css';
-import { SparkChart } from '@cv/components/primitives/SparkChart';
+import { ScrollPanel, PanelHead, PanelBody } from '@cv/components/primitives/ScrollPanel';
 import { OverlayFx } from '@cv/components/primitives/OverlayFx';
 import { Route, Routes } from 'react-router-dom';
 import Login from './login';
 
 function Home() {
-  const spark = [40, 55, 48, 62, 58, 70, 65, 72];
   return (
     <>
-      <div className="cv" style={{ padding: 32 }}>
-        <SparkChart values={spark} />
-      </div>
+      <main style={{ maxWidth: 900, margin: '40px auto' }}>
+        <ScrollPanel id="demo" locked>
+          <PanelHead sector="TEST" title="Panneau scroll verrouillé" />
+          <PanelBody><p className="cv-note">Chaînes + crochets visibles au-dessus.</p></PanelBody>
+        </ScrollPanel>
+      </main>
       <OverlayFx />
     </>
   );
