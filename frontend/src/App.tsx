@@ -1,14 +1,12 @@
-
-import './App.css'
-import { Route, Routes } from 'react-router-dom'
-import Login from './login'
+import '@cv/styles/index.css';
+import { Route, Routes } from 'react-router-dom';
+import Login from './login';
 
 function Home() {
-
   return (
-    <div className="cv" style={{ padding: 48, textAlign: 'center' }}>
-      <h1>Cendres &amp; Vapeur</h1>
-      <p>Comptoir de la zone franche — frontend en cours d&apos;assemblage.</p>
+    <div className="cv" style={{ padding: 48 }}>
+      <h1>Fond usine + tokens OK</h1>
+      <p>Vérification du body steampunk et des variables layout.</p>
     </div>
   );
 }
@@ -19,7 +17,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;
