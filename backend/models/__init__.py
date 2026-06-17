@@ -11,8 +11,8 @@ from .order import Order
 from .order_item import OrderItem
 from .price_history import PriceHistory
 from .product import Product
-from .product_vote import ProductVote
 from .role import Role
+from .product_vote import ProductVote
 from .shift_note import ShiftNote
 from .two_factor_code import TwoFactorCode
 from .user import User
@@ -31,8 +31,8 @@ __all__ = [
     "OrderItem",
     "PriceHistory",
     "Product",
-    "ProductVote",
     "Role",
+    "ProductVote",
     "ShiftNote",
     "TwoFactorCode",
     "User",

@@ -1,14 +1,21 @@
-import os
+from collections.abc import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg://cendres:cendres@localhost:5432/cendres_vapeur",
-)
+from app.config import get_settings
 
-engine = create_engine(DATABASE_URL)
+settings = get_settings()
+
+engine = create_engine(settings.database_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+
+def get_db() -> Generator[Session]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
