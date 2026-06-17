@@ -1,4 +1,5 @@
 import { MachineRail } from '@cv/components/layout/MachineRail';
+import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { OverlayFx } from '@cv/components/primitives/OverlayFx';
 import { Route, Routes } from 'react-router-dom';
@@ -9,8 +10,9 @@ function Home() {
   return (
     <>
       <MachineRail railRef={railRef} />
+      <SteamChimney />
       <div className="home" style={{ minHeight: '200vh', padding: 40 }}>
-        <p>Scroll pour piloter le rail mécanique (gauche).</p>
+        <p>Rail + cheminée — test layout fixe.</p>
       </div>
       <OverlayFx />
     </>
