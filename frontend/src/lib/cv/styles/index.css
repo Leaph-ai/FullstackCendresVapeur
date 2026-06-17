@@ -1,4 +1,4 @@
-/* CV styles — commit 10 */
+/* CV styles — commit 11 */
 @import './tokens.css';
 @import './base.css';
 @import './components.css';
@@ -8,3 +8,4 @@
 @import './layout/shell.css';
 @import './layout/boiler.css';
 @import './sections/hero.css';
+@import './sections/vitrine.css';
