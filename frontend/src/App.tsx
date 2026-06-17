@@ -1,18 +1,17 @@
-import '@cv/styles/index.css';
-import { ScrollPanel, PanelHead, PanelBody } from '@cv/components/primitives/ScrollPanel';
+import { MachineRail } from '@cv/components/layout/MachineRail';
+import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { OverlayFx } from '@cv/components/primitives/OverlayFx';
 import { Route, Routes } from 'react-router-dom';
 import Login from './login';
 
 function Home() {
+  const railRef = useScrollRail();
   return (
     <>
-      <main style={{ maxWidth: 900, margin: '40px auto' }}>
-        <ScrollPanel id="demo" locked>
-          <PanelHead sector="TEST" title="Panneau scroll verrouillé" />
-          <PanelBody><p className="cv-note">Chaînes + crochets visibles au-dessus.</p></PanelBody>
-        </ScrollPanel>
-      </main>
+      <MachineRail railRef={railRef} />
+      <div className="home" style={{ minHeight: '200vh', padding: 40 }}>
+        <p>Scroll pour piloter le rail mécanique (gauche).</p>
+      </div>
       <OverlayFx />
     </>
   );

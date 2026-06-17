@@ -1,0 +1,63 @@
+/* ============================================================
+   RAIL MÉCANIQUE (fixe, à gauche)
+   ============================================================ */
+.machine-rail{
+  position:fixed; top:0; left:0; bottom:0; width:var(--rail-w); z-index:40;
+  background:
+    var(--rivet-fx) 11px 16px / 22px 22px no-repeat,
+    var(--rivet-fx) calc(100% - 11px) 16px / 22px 22px no-repeat,
+    linear-gradient(180deg, rgba(36,28,18,.94), rgba(16,11,7,.90));
+  border-right:3px solid #7d4a28;
+  box-shadow:inset -2px 0 0 rgba(214,160,109,.22), 6px 0 26px rgba(0,0,0,.55);
+  overflow:hidden;
+}
+/* chaîne verticale — hauteur = document entier, défile au scroll */
+.rail-chain{
+  position:absolute; top:0; left:50%;
+  width:16px; height:var(--chain-height, 100vh);
+  transform:translateX(-50%) translateY(calc(var(--chain, 0) * 1px));
+  will-change:transform;
+  background:
+    linear-gradient(90deg, transparent 0 2px, rgba(255,255,255,.12) 3px 5px, transparent 6px),
+    repeating-linear-gradient(180deg,
+      #c9a24b 0 3px, #a4632f 3px 9px, #5e3a20 9px 15px, #a4632f 15px 21px, #c9a24b 21px 24px);
+  background-size:100% 100%, 100% 24px;
+  box-shadow:inset 0 0 0 1px #5e3a20, 0 0 8px rgba(0,0,0,.5);
+  opacity:.95;
+}
+.rail-chain::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:repeating-linear-gradient(180deg, transparent 0 9px, rgba(0,0,0,.35) 9px 11px, transparent 11px 24px);
+  background-size:100% 24px;
+}
+
+/* grande roue crantée (haut), pilotée au scroll */
+.rail-cog{ position:absolute; color:#c98a57; filter:drop-shadow(0 2px 6px rgba(0,0,0,.6)); will-change:transform; }
+.rail-cog svg{ display:block; width:100%; height:100%; }
+.cog-main{ width:150px; height:150px; top:-34px; left:-44px; color:#bd7e4b;
+  transform:rotate(calc(var(--rot, 0) * 1deg)); }
+.cog-aux{ width:74px; height:74px; top:88px; left:58px; color:#caa06a;
+  transform:rotate(calc(var(--rot, 0) * -1.9deg)); }
+.rail-pulley{ position:absolute; left:50%; transform:translateX(-50%);
+  width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 38% 32%, #f0cfa6, #a4632f 70%, #6f4222);
+  border:3px solid #5e3a20; box-shadow:inset 0 0 0 3px rgba(20,16,10,.5), 0 2px 5px rgba(0,0,0,.5); z-index:2; }
+.rail-pulley-top{ top:108px; }
+.rail-pulley-idler{ bottom:88px; width:28px; height:28px; opacity:.9; }
+
+.rail-arm{
+  position:absolute; top:124px; left:calc(100% - 4px); width:62px; height:8px; z-index:1;
+  background:linear-gradient(180deg,#e0c08a,#a4632f 55%,#7d4a28);
+  border:1.5px solid #5e3a20; border-radius:0 4px 4px 0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 2px 2px 6px rgba(0,0,0,.45);
+}
+.rail-arm::after{
+  content:"entraîne les panneaux"; position:absolute; left:66px; top:50%; transform:translateY(-50%);
+  font-family:"Share Tech Mono",monospace; font-size:9px; letter-spacing:.4px;
+  color:#b89a64; white-space:nowrap; opacity:.8;
+}
+
+.rail-plate{ position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+  font-family:"Share Tech Mono",monospace; font-size:9px; letter-spacing:2px; color:#8a7a5a;
+  writing-mode:vertical-rl; opacity:.7; }
+
+@media (prefers-reduced-motion: reduce){ .rail-arm::after{ content:""; } }
