@@ -1,5 +1,7 @@
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
+import { Topbar } from '@cv/components/layout/Topbar';
+import { FooterBoiler } from '@cv/components/layout/FooterBoiler';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { OverlayFx } from '@cv/components/primitives/OverlayFx';
 import { Route, Routes } from 'react-router-dom';
@@ -11,9 +13,13 @@ function Home() {
     <>
       <MachineRail railRef={railRef} />
       <SteamChimney />
-      <div className="home" style={{ minHeight: '200vh', padding: 40 }}>
-        <p>Rail + cheminée — test layout fixe.</p>
+      <div className="home">
+        <Topbar cartCount={3} />
+        <main className="home-main">
+          <p className="cv-note">Sections contenu à brancher…</p>
+        </main>
       </div>
+      <FooterBoiler />
       <OverlayFx />
     </>
   );
