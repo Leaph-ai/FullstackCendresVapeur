@@ -1,0 +1,16 @@
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Identity, Integer, String
+from sqlalchemy.orm import relationship
+
+from app.core.database import Base
+
+
+class TwoFactorCode(Base):
+    __tablename__ = "two_factor_codes"
+
+    id = Column(Integer, Identity(always=True), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    code_hash = Column(String, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, default=False, nullable=False)
+
+    user = relationship("User", back_populates="two_factor_codes")

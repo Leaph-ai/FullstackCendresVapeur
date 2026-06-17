@@ -17,3 +17,4 @@ class User(Base):
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
     role = relationship("Role", back_populates="users")
+    two_factor_codes = relationship("TwoFactorCode", back_populates="user")
