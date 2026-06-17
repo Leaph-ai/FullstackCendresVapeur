@@ -4,9 +4,11 @@ import Login from './login';
 
 function Home() {
   return (
-    <div className="cv" style={{ padding: 48 }}>
-      <h1>Fond usine + tokens OK</h1>
-      <p>Vérification du body steampunk et des variables layout.</p>
+    <div className="cv" style={{ padding: 32 }}>
+      <button type="button" className="cv-btn">Bouton cv-btn</button>
+      <span className="cv-badge" style={{ marginLeft: 12 }}>
+        <span className="led" /> design system
+      </span>
     </div>
   );
 }
