@@ -1,5 +1,13 @@
-
+/* CV styles — commit 13 */
 @import './tokens.css';
 @import './base.css';
 @import './components.css';
 @import './fx.css';
+@import './layout/rail.css';
+@import './layout/chimney.css';
+@import './layout/shell.css';
+@import './layout/boiler.css';
+@import './sections/hero.css';
+@import './sections/vitrine.css';
+@import './sections/toxicity.css';
+@import './sections/journal.css';

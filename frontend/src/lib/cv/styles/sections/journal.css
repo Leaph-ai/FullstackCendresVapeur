@@ -1,0 +1,9 @@
+/* ============================================================
+   JOURNAL
+   ============================================================ */
+.journal{ max-height:360px; overflow:hidden; position:relative; }
+.journal .cv-feed{ list-style:none; margin:0; padding:0; border-left:2px solid #5e3a20; }
+.journal .cv-fitem{ animation:slidein .5s ease; }
+.journal .cv-fitem .ts{ color:#b89a64; }
+.journal .cv-fitem .act{ color:#e8dcc4; }
+@keyframes slidein{ from{ opacity:0; transform:translateY(-8px); } to{ opacity:1; transform:none; } }
