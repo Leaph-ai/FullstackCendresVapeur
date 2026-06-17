@@ -35,7 +35,8 @@ _store = AuthStore(
             role="admin",
             role_level=RoleLevel.ADMIN,
         )
-    }
+    },
+    next_user_id=2,  # l'id=1 est déjà pris par le compte admin seedé ci-dessus
 )
 
 
