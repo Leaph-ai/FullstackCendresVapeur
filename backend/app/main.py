@@ -1,12 +1,16 @@
 from datetime import datetime
+from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app.auth.router import router as auth_router
 from app.config import get_settings
-from app.routes import carts, discounts, orders, products
+from app.routes import carts, discounts, dev_mail, orders, products
 
 settings = get_settings()
 
@@ -44,3 +48,4 @@ app.include_router(products.router)
 app.include_router(carts.router)
 app.include_router(orders.router)
 app.include_router(discounts.router)
+app.include_router(dev_mail.router)
