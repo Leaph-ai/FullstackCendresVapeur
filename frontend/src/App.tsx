@@ -1,11 +1,11 @@
 import { Routes, Route } from 'react-router-dom';
-import Login from './login';
-import Register from './register';
-import ForgotPassword from './forgotPassword';
-import Cart from './cart';
-import Checkout from './checkout';
+import Login from './pages/Login/login';
+import Register from './pages/Register/register';
+import ForgotPassword from './pages/ForgotPassword/forgotPassword';
+import Cart from './pages/Panier/cart';
+import Checkout from './pages/Checkout/checkout';
 import { CartProvider } from './context/CartContext';
-import { HomePage } from './pages/HomePage';
+import { HomePage } from './pages/HomePage/HomePage';
 
 function App() {
   return (
