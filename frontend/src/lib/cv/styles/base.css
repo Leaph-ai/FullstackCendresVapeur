@@ -1,0 +1,18 @@
+/* CV — page base / body */
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0; color:#e8dcc4; font-family:"Special Elite","Courier New",monospace;
+  -webkit-font-smoothing:antialiased;
+  background-color:#0e0b07;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, rgba(10,8,5,.78) 0%, rgba(14,11,7,.52) 42%, rgba(10,8,5,.82) 100%),
+    radial-gradient(900px 560px at 88% 18%, rgba(244,169,60,.10), transparent 58%),
+    radial-gradient(700px 480px at 12% 72%, rgba(127,224,160,.05), transparent 55%),
+    url('/factory-bg.png');
+  background-size:auto, auto, auto, auto, cover;
+  background-position:center center;
+  background-repeat:repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-attachment:fixed;
+}

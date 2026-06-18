@@ -1,0 +1,24 @@
+/* Overrides contextuels page sombre (consommer après index.css) */
+
+.home .cv-pcard {
+  background: var(--plate);
+}
+
+.home .cv-note::before {
+  color: var(--phos-amber);
+}
+
+.home .cv-note {
+  color: #9a8c72;
+}
+
+.tox-spark-chart {
+  height: 150px;
+  margin-top: 10px;
+}
+
+.bourse-spark {
+  flex: 1;
+  min-width: 160px;
+  height: 46px;
+}

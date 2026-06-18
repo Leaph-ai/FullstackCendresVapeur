@@ -1,0 +1,9 @@
+/* CV — layout tokens */
+:root{
+  --rail-w:132px; --chimney-w:92px; --panel-gap:96px; --rig-inset:70px;
+  --ch-stack-bottom:118px;
+  --ch-stack-h:clamp(200px, 52vh, 400px);
+  --pipe-elbow-y:calc(var(--ch-stack-bottom) - 22px);
+  --pipe-h-len:104px;
+  --gauge-size:56px;
+}

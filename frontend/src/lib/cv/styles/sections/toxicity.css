@@ -1,0 +1,12 @@
+/* ============================================================
+   TOXICITÉ
+   ============================================================ */
+.tox-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:22px; align-items:stretch; }
+.tox-screen{ position:relative; border-radius:12px; overflow:hidden; padding:18px;
+  background:radial-gradient(120% 130% at 50% 0%, #18241c, #0a1009); border:1.5px solid #2c4636;
+  box-shadow:inset 0 0 40px rgba(0,0,0,.6); }
+.tox-screen .lab{ font-family:"Share Tech Mono",monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--phos-green); }
+.tox-screen .cv-spark{ height:150px; margin-top:10px; }
+.tox-screen .cv-spark i{ background:linear-gradient(180deg,#aef0c0,#2f9a55); }
+.tox-gauges{ display:flex; flex-direction:column; gap:14px; justify-content:center; }
+.tox-gauges .cv-gauge .track{ background:linear-gradient(180deg,#0f0a05,#1a130c); }

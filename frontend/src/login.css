@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@300;400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-shell {
+  margin-left: var(--rail-w);
+  margin-right: var(--chimney-w);
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: transparent;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 450px;
+
+  background: rgba(20,20,20,.95);
+
+  border: 2px solid #b87333;
+  border-radius: 12px;
+
+  padding: 40px;
+
+  box-shadow:
+    0 0 25px rgba(184,115,51,.3);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.login-header h1 {
+  font-family: 'Special Elite', cursive;
+  color: #d8975b;
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+}
+
+.login-header p {
+  color: #bdbdbd;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: #d8975b;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  padding: 14px;
+
+  background: #1b1b1b;
+  border: 1px solid #444;
+
+  color: white;
+  font-size: 1rem;
+
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #b87333;
+  box-shadow:
+    0 0 10px rgba(184,115,51,.4);
+}
+
+button {
+  padding: 15px;
+  background: #b87333;
+  border: none;
+
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+
+  cursor: pointer;
+  transition: .3s;
+}
+
+button:hover {
+  background: #d8975b;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.auth-links a {
+  color: #aaa;
+  text-decoration: none;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.auth-links a:hover {
+  color: #d8975b;
+}
+
+.security-box {
+  margin-top: 30px;
+  padding: 15px;
+
+  border-left: 4px solid #b87333;
+  background: rgba(184,115,51,.1);
+}
+
+.security-box h3 {
+  color: #d8975b;
+  margin-bottom: 8px;
+}
+
+.security-box p {
+  color: #ccc;
+  font-size: 0.9rem;
+}
