@@ -1,6 +1,21 @@
 @import './lib/cv/styles/index.css';
+@import './lib/cv/styles/overrides.css';
 
-html { scroll-behavior: smooth; }
-#root { min-height: 100vh; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
 
-.home .cv-pcard { background: var(--plate); }
+html {
+  scroll-behavior: smooth;
+}
+
+#root {
+  min-height: 100vh;
+}

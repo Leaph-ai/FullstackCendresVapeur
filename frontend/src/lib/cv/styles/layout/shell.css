@@ -13,7 +13,7 @@
 .tb-nav{ display:flex; gap:4px; margin-left:14px; }
 .tb-nav a{ font-family:"Share Tech Mono",monospace; font-size:12px; letter-spacing:.5px; text-transform:uppercase;
   color:#bcae93; text-decoration:none; padding:7px 12px; border-radius:6px; border:1.5px solid transparent; }
-..tb-nav a:hover{ color:#f0e4cd; background:#2c2014; }
+.tb-nav a:hover{ color:#f0e4cd; background:#2c2014; }
 .tb-nav a.cur{ color:#ffb347; border-color:#5e3a20; background:rgba(12,9,5,.4); }
 .tb-acts{ margin-left:auto; display:flex; align-items:center; gap:12px; }
 .tb-role{ font-family:"Share Tech Mono",monospace; font-size:11px; color:#cbb288; border:1px dashed #5e3a20; border-radius:5px; padding:5px 9px; white-space:nowrap; }
