@@ -13,10 +13,13 @@ class Settings(BaseSettings):
     jwt_refresh_expire_days: int = 7
     allowed_origins: str = "http://localhost:5173"
     smtp_from: str = "noreply@zone-franche.local"
+<<<<<<< HEAD
     mailtrap_api_token: str = ""
     mailtrap_use_sandbox: bool = True
     mailtrap_inbox_id: str = ""
     two_factor_code_expire_minutes: int = 10
+=======
+>>>>>>> 5188e43 (feat(auth): implement user authentication service with registration, login, and token management)
 
     @property
     def cors_origins(self) -> list[str]:
