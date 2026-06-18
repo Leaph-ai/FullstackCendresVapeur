@@ -37,5 +37,6 @@ class ProductResponse(BaseModel):
     stock: int
     price: Decimal
     previous_price: Decimal | None
+    likes_count: int
     created_at: datetime
     category: CategoryBrief | None = None

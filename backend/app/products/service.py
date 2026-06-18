@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from fastapi import HTTPException, status
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
@@ -8,32 +9,76 @@ from app.products.schemas import ProductCreate, ProductUpdate
 from models.category import Category
 from models.price_history import PriceHistory
 from models.product import Product
+from models.product_vote import ProductVote
 
 
 class ProductService:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def list_products(self) -> list[Product]:
+    def _likes_count_column(self):
         return (
-            self.db.query(Product)
-            .options(joinedload(Product.category))
-            .order_by(Product.id)
-            .all()
+            select(func.count(ProductVote.id))
+            .where(ProductVote.product_id == Product.id)
+            .correlate(Product)
+            .scalar_subquery()
+            .label("likes_count")
         )
 
+    def list_products(
+        self, sort: str = "default", liked_by_user_id: int | None = None
+    ) -> list[Product]:
+        likes_count = self._likes_count_column()
+        query = (
+            self.db.query(Product, likes_count)
+            .options(joinedload(Product.category))
+        )
+
+        if liked_by_user_id is not None:
+            query = query.filter(
+                select(ProductVote.id)
+                .where(
+                    ProductVote.user_id == liked_by_user_id,
+                    ProductVote.product_id == Product.id,
+                )
+                .correlate(Product)
+                .exists()
+            )
+            latest_like = (
+                select(func.max(ProductVote.created_at))
+                .where(
+                    ProductVote.user_id == liked_by_user_id,
+                    ProductVote.product_id == Product.id,
+                )
+                .correlate(Product)
+                .scalar_subquery()
+            )
+            query = query.order_by(latest_like.desc(), Product.id.desc())
+        elif sort == "likes":
+            query = query.order_by(likes_count.desc(), Product.id)
+        else:
+            query = query.order_by(Product.id)
+
+        products = []
+        for product, count in query.all():
+            product.likes_count = count
+            products.append(product)
+        return products
+
     def get_product(self, product_id: int) -> Product:
-        product = (
-            self.db.query(Product)
+        row = (
+            self.db.query(Product, self._likes_count_column())
             .options(joinedload(Product.category))
             .filter(Product.id == product_id)
             .first()
         )
-        if product is None:
+        if row is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Produit introuvable.",
             )
+        product, count = row
+        product.likes_count = count
         return product
 
     def create_product(self, payload: ProductCreate) -> Product:

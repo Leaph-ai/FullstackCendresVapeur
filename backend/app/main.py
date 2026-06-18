@@ -1,6 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 
+<<<<<<< HEAD
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
@@ -10,11 +11,23 @@ from pydantic import BaseModel
 
 from app.auth.router import router as auth_router
 from app.config import get_settings
-from app.routes import carts, discounts, dev_mail, orders, products
+from app.routes import carts, discounts, dev_mail, orders, products, votes
 
 settings = get_settings()
 
 app = FastAPI(title="Cendres et Vapeur API")
+=======
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from app.auth.router import router as auth_router
+from app.config import get_settings
+
+settings = get_settings()
+
+app = FastAPI(title="Cendres Vapeur API")
+>>>>>>> 5188e43 (feat(auth): implement user authentication service with registration, login, and token management)
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,7 +39,11 @@ app.add_middleware(
 
 app.include_router(auth_router)
 
+<<<<<<< HEAD
 
+=======
+# Define what you will receiving in request
+>>>>>>> 5188e43 (feat(auth): implement user authentication service with registration, login, and token management)
 class TypePayload(BaseModel):
     content: str
 
@@ -49,3 +66,4 @@ app.include_router(carts.router)
 app.include_router(orders.router)
 app.include_router(discounts.router)
 app.include_router(dev_mail.router)
+app.include_router(votes.router)

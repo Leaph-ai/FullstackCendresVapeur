@@ -32,9 +32,13 @@ export function Topbar({ cartCount, activeSection = 'vitrine' }: TopbarProps) {
           <span className="tb-user-icon">⚙</span>
           <span>Se connecter</span>
         </Link>
-        <button className="cv-iconbtn" type="button" aria-label={`Panier, ${cartCount} articles`}>
-          ▤<span className="cnt">{cartCount}</span>
-        </button>
+       <Link
+  to="/cart"
+  className="cv-iconbtn"
+  aria-label={`Panier, ${cartCount} articles`}
+>
+  ▤<span className="cnt">{cartCount}</span>
+</Link>
       </span>
     </header>
   );
