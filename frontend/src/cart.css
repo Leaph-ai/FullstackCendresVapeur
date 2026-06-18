@@ -43,7 +43,7 @@
 
 /* === Tableau d'articles === */
 .cart-items {
-  background:rgba(236,226,204,.06);
+  background:#000000;
   border:1.5px solid #6b5a43;
   border-radius:var(--r-lg);
   overflow:hidden;
@@ -122,7 +122,7 @@
 }
 
 .summary-box {
-  background:rgba(236,226,204,.06);
+  background:rgb(0, 0, 0);
   border:1.5px solid #6b5a43;
   border-radius:var(--r-lg);
   padding:24px;
