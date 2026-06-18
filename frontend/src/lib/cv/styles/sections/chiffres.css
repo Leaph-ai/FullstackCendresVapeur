@@ -1,0 +1,7 @@
+/* ============================================================
+   CHIFFRES (nixie bank)
+   ============================================================ */
+.chiffres-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+.chiffre{ display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;
+  padding:18px; border:1.5px solid #45381f; border-radius:12px; background:linear-gradient(180deg,#1a130c,#0e0a06); }
+.chiffre .lab{ font-family:"Share Tech Mono",monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#b89a64; }

@@ -1,3 +1,4 @@
+export { ChiffresSection } from './ChiffresSection';
 export { HeroSection } from './HeroSection';
 export { JournalSection } from './JournalSection';
 export { ProductCard } from './ProductCard';

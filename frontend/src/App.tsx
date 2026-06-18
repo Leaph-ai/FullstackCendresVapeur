@@ -1,23 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
-import { MachineRail } from '@cv/components/layout/MachineRail';
-import { SteamChimney } from '@cv/components/layout/SteamChimney';
-import { Topbar } from '@cv/components/layout/Topbar';
-import { FooterBoiler } from '@cv/components/layout/FooterBoiler';
-import { HeroSection } from '@cv/components/sections/HeroSection';
-import { VitrineSection } from '@cv/components/sections/VitrineSection';
-import { ToxicitySection } from '@cv/components/sections/ToxicitySection';
-import { JournalSection } from '@cv/components/sections/JournalSection';
-import { useScrollRail } from '@cv/hooks/useScrollRail';
-import { useLiveData } from '@cv/hooks/useLiveData';
-import { OverlayFx } from '@cv/components/primitives/OverlayFx';
+import {
+  ChiffresSection,
+  HeroSection,
+  JournalSection,
+  SteampunkPageShell,
+  ToxicitySection,
+  VitrineSection,
+  useLiveData,
+  usePanelReveal,
+} from '@cv';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Login from './login';
 import Register from './register';
 import ForgotPassword from './forgotPassword';
 
+const PANEL_IDS = ['vitrine', 'toxicite', 'journal', 'chiffres'];
+
 function Home() {
   const location = useLocation();
-  const railRef = useScrollRail();
+  const { isLocked, isClanking } = usePanelReveal(PANEL_IDS);
   const live = useLiveData();
   const [cart, setCart] = useState(3);
   const onAdd = useCallback(() => setCart((c) => c + 1), []);
@@ -35,21 +36,33 @@ function Home() {
   }, [location.hash, location.pathname]);
 
   return (
-    <>
-      <MachineRail railRef={railRef} />
-      <SteamChimney />
-      <div className="home">
-        <Topbar cartCount={cart} />
-        <main className="home-main">
-          <HeroSection />
-          <VitrineSection locked clanking={false} bourseIdx={live.bourseIdx} bourseTrend={live.bourseTrend} bourseSpark={live.bourseSpark} onAddToCart={onAdd} />
-          <ToxicitySection locked clanking={false} gauges={live.gauges} toxSpark={live.toxSpark} />
-          <JournalSection locked clanking={false} entries={live.journal} />
-        </main>
-      </div>
-      <FooterBoiler />
-      <OverlayFx />
-    </>
+    <SteampunkPageShell cartCount={cart}>
+      <HeroSection />
+      <VitrineSection
+        locked={isLocked('vitrine')}
+        clanking={isClanking('vitrine')}
+        bourseIdx={live.bourseIdx}
+        bourseTrend={live.bourseTrend}
+        bourseSpark={live.bourseSpark}
+        onAddToCart={onAdd}
+      />
+      <ToxicitySection
+        locked={isLocked('toxicite')}
+        clanking={isClanking('toxicite')}
+        gauges={live.gauges}
+        toxSpark={live.toxSpark}
+      />
+      <JournalSection
+        locked={isLocked('journal')}
+        clanking={isClanking('journal')}
+        entries={live.journal}
+      />
+      <ChiffresSection
+        locked={isLocked('chiffres')}
+        clanking={isClanking('chiffres')}
+        nixieValues={live.nixieValues}
+      />
+    </SteampunkPageShell>
   );
 }
 
@@ -60,7 +73,6 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      
     </Routes>
   );
 }
