@@ -1,0 +1,185 @@
+/* ============================================================
+   CART PAGE · Panier Marchand
+   ============================================================ */
+
+.cart-page {
+  flex:1; padding-top:80px; padding-bottom:60px;
+}
+
+.cart-container {
+  max-width:1200px; margin:0 auto; padding:40px 20px;
+}
+
+.cart-header {
+  margin-bottom:40px; text-align:center;
+}
+
+.cart-header h1 {
+  color:#f3ecdc; font-size:32px; margin:0 0 8px 0;
+  font-weight:bold; letter-spacing:1px;
+}
+
+.cart-header p {
+  color:#897c64; font-size:14px; margin:0;
+  font-family:"Architects Daughter",cursive;
+}
+
+/* === Panier vide === */
+.cart-empty {
+  text-align:center; padding:60px 20px; max-width:500px; margin:40px auto;
+}
+
+.empty-icon {
+  font-size:72px; margin-bottom:20px; opacity:.5;
+}
+
+.cart-empty h2 {
+  color:#e8dcc4; font-size:24px; margin:0 0 12px 0;
+}
+
+.cart-empty p {
+  color:#897c64; font-size:14px; margin:0 0 24px 0;
+}
+
+/* === Tableau d'articles === */
+.cart-items {
+  background:rgba(236,226,204,.06);
+  border:1.5px solid #6b5a43;
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  margin-bottom:40px;
+}
+
+.cart-items-header {
+  display:grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr;
+  gap:20px;
+  align-items:center;
+  padding:16px 20px;
+  background:rgba(52,47,40,.25);
+  border-bottom:1px solid #6b5a43;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  color:#897c64;
+  font-weight:600;
+}
+
+.cart-item {
+  display:grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr;
+  gap:20px;
+  align-items:center;
+  padding:18px 20px;
+  border-bottom:1px solid rgba(107,90,67,.3);
+}
+
+.cart-item:last-child {
+  border-bottom:none;
+}
+
+.col-product {
+  display:flex; flex-direction:column;
+}
+
+.item-name {
+  color:#e8dcc4; font-weight:600; margin-bottom:4px;
+}
+
+.item-cat {
+  color:#897c64; font-size:12px;
+}
+
+.col-price, .col-subtotal {
+  text-align:right;
+}
+
+.amt {
+  color:#e8dcc4; font-weight:600;
+}
+
+.cur {
+  color:#d6a06d; margin-right:4px;
+}
+
+.qty-input {
+  width:70px; padding:8px !important; text-align:center;
+  font-size:14px;
+}
+
+.col-qty {
+  display:flex; justify-content:center;
+}
+
+.col-action {
+  display:flex; justify-content:center;
+}
+
+/* === Résumé du panier === */
+.cart-summary {
+  display:grid; grid-template-columns:1fr 1fr; gap:40px;
+  max-width:600px; margin-left:auto;
+}
+
+.summary-box {
+  background:rgba(236,226,204,.06);
+  border:1.5px solid #6b5a43;
+  border-radius:var(--r-lg);
+  padding:24px;
+}
+
+.summary-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 0; border-bottom:1px solid rgba(107,90,67,.3);
+  font-size:14px;
+}
+
+.summary-row:last-child {
+  border-bottom:none;
+}
+
+.summary-row.is-total {
+  padding-top:14px; font-size:16px; font-weight:bold;
+  color:#f3ecdc;
+}
+
+.summary-row .label {
+  color:#897c64;
+}
+
+.summary-row .value {
+  color:#e8dcc4; text-align:right; min-width:100px;
+}
+
+.cart-actions {
+  display:flex; flex-direction:column; gap:12px;
+}
+
+/* === Responsive === */
+@media (max-width:768px) {
+  .cart-items-header, .cart-item {
+    grid-template-columns: 1fr;
+    gap:12px;
+  }
+
+  .col-product,
+  .col-price,
+  .col-qty,
+  .col-subtotal,
+  .col-action {
+    display:flex;
+    justify-content:space-between;
+  }
+
+  .cart-items-header > div::before,
+  .cart-item > div::before {
+    content: attr(data-label);
+    font-weight:bold;
+    color:#897c64;
+  }
+
+  .cart-summary {
+    grid-template-columns:1fr;
+    margin-left:0;
+  }
+}

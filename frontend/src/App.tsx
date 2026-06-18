@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
@@ -14,13 +14,24 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import Login from './login';
 import Register from './register';
 import ForgotPassword from './forgotPassword';
+import Cart from './cart';
+import Checkout from './checkout';
+import { CartProvider, useCart } from './context/CartContext';
 
 function Home() {
   const location = useLocation();
   const railRef = useScrollRail();
   const live = useLiveData();
-  const [cart, setCart] = useState(3);
-  const onAdd = useCallback(() => setCart((c) => c + 1), []);
+  const { getItemCount, addItem } = useCart();
+  const onAdd = useCallback(() => {
+    addItem({
+      id: Math.random(),
+      productId: Math.random(),
+      name: 'Produit',
+      category: 'Catégorie',
+      price: 19.99,
+    });
+  }, [addItem]);
 
   useEffect(() => {
     const hash = location.hash;
@@ -39,7 +50,7 @@ function Home() {
       <MachineRail railRef={railRef} />
       <SteamChimney />
       <div className="home">
-        <Topbar cartCount={cart} />
+        <Topbar cartCount={getItemCount()} />
         <main className="home-main">
           <HeroSection />
           <VitrineSection locked clanking={false} bourseIdx={live.bourseIdx} bourseTrend={live.bourseTrend} bourseSpark={live.bourseSpark} onAddToCart={onAdd} />
@@ -55,13 +66,16 @@ function Home() {
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      
-    </Routes>
+    <CartProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+      </Routes>
+    </CartProvider>
   );
 }
 
