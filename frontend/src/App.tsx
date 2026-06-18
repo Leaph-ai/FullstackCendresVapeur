@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
@@ -10,16 +10,30 @@ import { JournalSection } from '@cv/components/sections/JournalSection';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { useLiveData } from '@cv/hooks/useLiveData';
 import { OverlayFx } from '@cv/components/primitives/OverlayFx';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Login from './login';
 import Register from './register';
 import ForgotPassword from './forgotPassword';
 
 function Home() {
+  const location = useLocation();
   const railRef = useScrollRail();
   const live = useLiveData();
   const [cart, setCart] = useState(3);
   const onAdd = useCallback(() => setCart((c) => c + 1), []);
+
+  useEffect(() => {
+    const hash = location.hash;
+    if (!hash || location.pathname !== '/') return;
+
+    const target = document.querySelector(hash) as HTMLElement | null;
+    if (!target) return;
+
+    window.requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [location.hash, location.pathname]);
+
   return (
     <>
       <MachineRail railRef={railRef} />

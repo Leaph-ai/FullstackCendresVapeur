@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { NAV_LINKS } from '../../types';
 
 interface TopbarProps {
@@ -14,13 +15,13 @@ export function Topbar({ cartCount, activeSection = 'vitrine' }: TopbarProps) {
       </span>
       <nav className="tb-nav" aria-label="Navigation principale">
         {NAV_LINKS.map((link) => (
-          <a
+          <Link
             key={link.id}
-            href={link.href}
+            to={`/#${link.id}`}
             className={activeSection === link.id ? 'cur' : undefined}
           >
             {link.label}
-          </a>
+          </Link>
         ))}
       </nav>
       <span className="tb-acts">
