@@ -73,4 +73,4 @@ def delete_product(
     service: Annotated[ProductService, Depends(get_product_service)],
     _: Annotated[dict, Depends(require_editor)],
 ) -> None:
-    service.delete_product(product_id, payload)
+    service.delete_product(product_id)
