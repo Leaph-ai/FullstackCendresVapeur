@@ -28,7 +28,10 @@ export function Topbar({ cartCount, activeSection = 'vitrine' }: TopbarProps) {
         <span className="cv-toxpill" role="status">
           <span className="dot" /> Air · nominal
         </span>
-        <span className="tb-role">Cobalt-114 · Utilisateur</span>
+        <Link to="/login" className="tb-user" aria-label="Se connecter">
+          <span className="tb-user-icon">⚙</span>
+          <span>Se connecter</span>
+        </Link>
         <button className="cv-iconbtn" type="button" aria-label={`Panier, ${cartCount} articles`}>
           ▤<span className="cnt">{cartCount}</span>
         </button>

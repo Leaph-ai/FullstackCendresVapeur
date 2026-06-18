@@ -13,10 +13,39 @@
 .tb-nav{ display:flex; gap:4px; margin-left:14px; }
 .tb-nav a{ font-family:"Share Tech Mono",monospace; font-size:12px; letter-spacing:.5px; text-transform:uppercase;
   color:#bcae93; text-decoration:none; padding:7px 12px; border-radius:6px; border:1.5px solid transparent; }
-.tb-nav a:hover{ color:#f0e4cd; background:#2c2014; }
+..tb-nav a:hover{ color:#f0e4cd; background:#2c2014; }
 .tb-nav a.cur{ color:#ffb347; border-color:#5e3a20; background:rgba(12,9,5,.4); }
 .tb-acts{ margin-left:auto; display:flex; align-items:center; gap:12px; }
 .tb-role{ font-family:"Share Tech Mono",monospace; font-size:11px; color:#cbb288; border:1px dashed #5e3a20; border-radius:5px; padding:5px 9px; white-space:nowrap; }
+.tb-user{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-family:"Share Tech Mono",monospace;
+  font-size:12px;
+  color:#f0e4cd;
+  text-decoration:none;
+  padding:8px 12px;
+  border:1.5px solid rgba(255,234,216,.14);
+  border-radius:10px;
+  background:rgba(255,234,216,.04);
+  transition:background .2s ease, transform .2s ease;
+}
+.tb-user:hover{
+  background:rgba(255,234,216,.12);
+  transform:translateY(-1px);
+}
+.tb-user-icon{
+  display:inline-flex;
+  width:24px;
+  height:24px;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:rgba(255,234,216,.12);
+  color:#f0e4cd;
+  font-size:0.9rem;
+}
 
 /* ---- panneau générique (monte + se verrouille) ---- */
 .home-main{ padding:60px 40px 40px; max-width:1180px; margin:0 auto; overflow:visible; }
