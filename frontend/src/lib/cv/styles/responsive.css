@@ -1,0 +1,14 @@
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1024px){ .home-pgrid{ grid-template-columns:repeat(2,1fr); } .chiffres-grid{ grid-template-columns:repeat(2,1fr); } .tox-grid{ grid-template-columns:1fr; } .hero-grid{ grid-template-columns:1fr; } .hero-instr{ flex-direction:row; justify-content:center; } }
+@media (max-width:860px){
+  :root{ --rail-w:0px; --chimney-w:0px; --panel-gap:72px; }
+  .machine-rail, .steam-chimney{ display:none; }
+  .boiler{ margin-left:0; margin-right:0; }
+  .hero h1{ font-size:38px; }
+  .home-pgrid{ grid-template-columns:1fr; }
+  .chiffres-grid{ grid-template-columns:1fr 1fr; }
+  .boiler-inner{ grid-template-columns:1fr 1fr; }
+  .tb-nav{ display:none; }
+}

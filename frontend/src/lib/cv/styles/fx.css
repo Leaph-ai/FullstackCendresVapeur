@@ -1,0 +1,88 @@
+/* ============================================================
+   CENDRES & VAPEUR — FX steampunk partagés
+   Instruments (lampes, valves, tubes, nixie, jauges), vapeur,
+   overlays CRT. Réutilisable par toutes les pages du site.
+   ============================================================ */
+
+:root{
+  --rivet-fx: radial-gradient(circle, #f0cfa6 0 1.5px, #c98a57 1.5px 3px, #7d4a28 3px 5px, rgba(125,74,40,.35) 5px 6.5px, transparent 6.5px);
+  --brass-plate: linear-gradient(150deg,#e9dcc0 0%,#d9c69f 38%,#e4d3ac 60%,#cdb588 100%);
+  --bakelite: linear-gradient(180deg,#2a2117,#19120b);
+  --phos-amber:#f4b860; --phos-green:#7fe0a0; --phos-red:#ff6a48;
+}
+
+@keyframes fx-spin{ to{ transform:rotate(360deg); } }
+@keyframes fx-spin-rev{ to{ transform:rotate(-360deg); } }
+@keyframes fx-flicker{ 0%,100%{opacity:.5} 47%{opacity:.44} 48%{opacity:.62} 49%{opacity:.46} 72%{opacity:.55} }
+@keyframes fx-lampblink{ 0%,68%{opacity:1} 69%,100%{opacity:.32} }
+@keyframes fx-tubeglow{ 50%{ opacity:.5; } }
+@keyframes fx-rise{ 0%{ transform:translateY(20px) scale(.5); opacity:0; } 18%{ opacity:.5; } 100%{ transform:translateY(-180px) scale(1.8); opacity:0; } }
+@keyframes fx-pulse{ 50%{ filter:brightness(1.25); } }
+
+/* ===== overlays CRT plein écran ===== */
+.fx-scan{ position:fixed; inset:0; pointer-events:none; z-index:200;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px);
+  mix-blend-mode:multiply; opacity:.5; animation:fx-flicker 6s steps(40) infinite; }
+.fx-vignette{ position:fixed; inset:0; pointer-events:none; z-index:199;
+  background:radial-gradient(135% 125% at 50% 42%, transparent 50%, rgba(0,0,0,.62) 100%); }
+
+/* ===== lampes témoins ===== */
+.lamp{ width:11px; height:11px; border-radius:50%; flex:none; display:inline-block;
+  background:radial-gradient(circle at 35% 30%, #aef0c0, #2f9a55 62%, #133219);
+  box-shadow:0 0 8px 1px rgba(80,224,128,.55), inset 0 0 2px rgba(0,0,0,.5); }
+.lamp.amber{ background:radial-gradient(circle at 35% 30%,#ffe1a8,#f4a93c 62%,#6e3f12); box-shadow:0 0 8px 1px rgba(244,169,60,.6), inset 0 0 2px rgba(0,0,0,.5); }
+.lamp.red{ background:radial-gradient(circle at 35% 30%,#ffb3a3,#e2452a 62%,#5e1a10); box-shadow:0 0 9px 1px rgba(255,90,60,.7), inset 0 0 2px rgba(0,0,0,.5); animation:fx-lampblink 1.9s steps(1) infinite; }
+.lamp.off{ background:radial-gradient(circle at 35% 30%,#5a5446,#322d24 62%,#16120c); box-shadow:inset 0 0 2px rgba(0,0,0,.6); }
+
+/* ===== interrupteurs ===== */
+.switch{ width:24px; height:13px; border-radius:7px; position:relative; flex:none;
+  background:#15110c; border:1px solid #4a3d2c; box-shadow:inset 0 1px 2px rgba(0,0,0,.65); }
+.switch::after{ content:""; position:absolute; top:1px; left:1px; width:10px; height:9px; border-radius:5px;
+  background:linear-gradient(180deg,#caa06a,#8a5430); transition:.2s; box-shadow:0 1px 2px rgba(0,0,0,.5); }
+.switch.on::after{ left:12px; background:linear-gradient(180deg,#aef0c0,#2f9a55); box-shadow:0 0 6px rgba(80,224,128,.6); }
+
+/* ===== mini-jauge analogique ===== */
+.minigauge{ width:50px; height:50px; border-radius:50%; flex:none; position:relative;
+  background:
+    radial-gradient(circle at 50% 50%, #100b06 0 48%, transparent 49%),
+    conic-gradient(from 215deg, #f4a93c 0 var(--p,60%), rgba(244,169,60,.14) var(--p,60%) 270deg, rgba(0,0,0,.4) 270deg);
+  border:2px solid #5e3a20; box-shadow:inset 0 0 0 2px rgba(20,16,10,.85), 0 0 0 1px rgba(214,160,109,.18); }
+.minigauge::after{ content:""; position:absolute; top:4px; left:50%; width:2px; height:8px; background:#caa06a; transform:translateX(-50%); border-radius:1px; }
+
+/* ===== volant de valve (4 rayons) ===== */
+.valve{ width:30px; height:30px; border-radius:50%; position:relative; flex:none;
+  border:4px solid #a4632f;
+  background:radial-gradient(circle at 50% 50%, #d6a96d 0 22%, #8a5430 23% 31%, transparent 32%);
+  box-shadow:inset 0 0 0 1px #5e3a20, 0 0 0 1px rgba(214,160,109,.25), 0 1px 3px rgba(0,0,0,.5); }
+.valve::before, .valve::after{ content:""; position:absolute; background:linear-gradient(180deg,#caa06a,#8a5430); border-radius:2px; }
+.valve::before{ left:50%; top:-3px; bottom:-3px; width:4px; transform:translateX(-50%); }
+.valve::after{ top:50%; left:-3px; right:-3px; height:4px; transform:translateY(-50%); }
+.valve.spin{ animation:fx-spin 9s linear infinite; }
+
+/* ===== tube à vide incandescent ===== */
+.tube{ width:22px; height:38px; border-radius:11px 11px 6px 6px; position:relative; flex:none; overflow:hidden;
+  background:linear-gradient(180deg, rgba(255,200,120,.22), rgba(30,20,10,.65));
+  border:1.5px solid #5e3a20; box-shadow:inset 0 0 9px rgba(255,170,70,.35), 0 0 7px rgba(255,150,50,.18); }
+.tube::before{ content:""; position:absolute; left:50%; bottom:6px; width:3px; height:22px; transform:translateX(-50%);
+  background:linear-gradient(180deg,#ffd591,#ff8a3c); box-shadow:0 0 8px rgba(255,160,60,.9); border-radius:2px;
+  animation:fx-tubeglow 2.6s ease-in-out infinite; }
+.tube::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:6px;
+  background:linear-gradient(180deg,#3a2c1c,#1a130c); border-top:1px solid #5e3a20; }
+
+/* ===== tube nixie (compteur incandescent) ===== */
+.nixie{ display:inline-flex; align-items:center; gap:11px; }
+.nixie b{ font-family:"VT323",monospace; font-size:44px; line-height:.8; color:#ffb347; min-width:64px; text-align:center;
+  background:linear-gradient(180deg,#1c1208,#0c0804); border:1.5px solid #5e3a20; border-radius:7px; padding:6px 14px;
+  text-shadow:0 0 9px rgba(255,160,60,.9), 0 0 20px rgba(255,110,28,.5);
+  box-shadow:inset 0 0 16px rgba(255,150,50,.18), inset 0 2px 5px rgba(0,0,0,.7), 0 0 0 3px rgba(125,74,40,.22); }
+.nixie .lab{ font-family:"Share Tech Mono",monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:#b89a64; }
+
+/* ===== jets de vapeur ===== */
+.steamfield{ position:absolute; pointer-events:none; overflow:visible; }
+.steam{ position:absolute; bottom:0; width:70px; height:70px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,242,224,.22), transparent 68%); filter:blur(7px);
+  animation:fx-rise 7.5s linear infinite; }
+
+@media (prefers-reduced-motion: reduce){
+  .fx-scan, .tube::before, .steam, .lamp.red, .valve.spin{ animation:none !important; }
+}

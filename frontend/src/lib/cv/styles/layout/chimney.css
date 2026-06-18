@@ -1,0 +1,330 @@
+/* ============================================================
+   CHEMINÉE À VAPEUR (fixe, à droite)
+   ============================================================ */
+.steam-chimney{
+  position:fixed; top:0; right:0; bottom:0; width:var(--chimney-w); z-index:35;
+  pointer-events:none; overflow:visible;
+}
+.chimney-body{
+  position:absolute; inset:0;
+  background:
+    var(--rivet-fx) calc(100% - 11px) 16px / 22px 22px no-repeat,
+    var(--rivet-fx) calc(100% - 11px) calc(100% - 16px) / 22px 22px no-repeat,
+    linear-gradient(180deg, rgba(26,19,12,.94) 0%, rgba(18,13,8,.90) 55%, rgba(12,9,6,.92) 100%);
+  border-left:3px solid #7d4a28;
+  box-shadow:
+    inset 2px 0 0 rgba(214,160,109,.22),
+    inset 8px 0 24px rgba(255,120,40,.04),
+    -6px 0 28px rgba(0,0,0,.5);
+}
+.chimney-trim{
+  position:absolute; top:0; bottom:0; left:0; width:5px; z-index:1;
+  background:linear-gradient(180deg,
+    rgba(214,160,109,.55) 0%,
+    rgba(168,110,58,.35) 35%,
+    rgba(255,140,50,.18) 70%,
+    rgba(168,110,58,.4) 100%);
+  box-shadow:1px 0 6px rgba(244,169,60,.15);
+}
+.chimney-heat{
+  position:absolute; left:50%; bottom:var(--ch-stack-bottom);
+  transform:translateX(-50%);
+  width:120px; height:calc(var(--ch-stack-h) * .45);
+  background:radial-gradient(ellipse at 50% 100%, rgba(255,120,40,.14), transparent 68%);
+  filter:blur(8px); z-index:0; pointer-events:none;
+  animation:chimney-heat-pulse 3.6s ease-in-out infinite;
+}
+@keyframes chimney-heat-pulse{
+  0%,100%{ opacity:.75; transform:translateX(-50%) scale(1); }
+  50%{ opacity:1; transform:translateX(-50%) scale(1.06); }
+}
+
+/* tuyauterie — bas cheminée → gauche → jauge → bas écran */
+.chimney-pipes{
+  position:absolute; inset:0; pointer-events:none; z-index:6; overflow:visible;
+}
+.cpipe{
+  position:absolute; border:2px solid #5e3a20;
+  background:linear-gradient(180deg,#e0c08a,#a4632f 55%,#7d4a28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 2px 2px 5px rgba(0,0,0,.4);
+}
+.cpipe-flange{
+  position:absolute; width:20px; height:20px; border-radius:50%; z-index:2;
+  background:radial-gradient(circle at 35% 30%,#f0cfa6,#a4632f 68%,#6f4222);
+  border:2px solid #5e3a20;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.2), 0 2px 4px rgba(0,0,0,.45);
+}
+
+/* tronçon horizontal : du centre cheminée vers la gauche, jusqu'à la jauge */
+.cpipe-left{
+  left:calc(50% - var(--pipe-h-len));
+  bottom:var(--pipe-elbow-y);
+  width:var(--pipe-h-len);
+  height:12px; border-radius:6px;
+}
+/* coude au centre (raccord sortie ↔ horizontal) */
+.flange-left{
+  left:50%; transform:translate(-50%, 50%);
+  bottom:calc(var(--pipe-elbow-y) + 6px);
+}
+
+/* jauge de pression au bout du tronçon horizontal */
+.pipe-gauge{
+  position:absolute;
+  left:calc(50% - var(--pipe-h-len) - var(--gauge-size));
+  bottom:calc(var(--pipe-elbow-y) + 6px - (var(--gauge-size) / 2));
+  width:var(--gauge-size); height:var(--gauge-size);
+}
+.cpipe-gauge-in{
+  position:absolute; right:-8px; top:50%; transform:translateY(-50%);
+  width:14px; height:12px; border-radius:0 6px 6px 0;
+  border-left:none;
+}
+.pipe-gauge-dial{
+  position:absolute; inset:0; border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%, #100b06 0 44%, transparent 45%),
+    conic-gradient(from 215deg, #f4a93c 0 var(--p,62%), rgba(244,169,60,.12) var(--p,62%) 270deg, rgba(0,0,0,.45) 270deg),
+    linear-gradient(180deg,#2a2117,#15100a);
+  border:3px solid #5e3a20;
+  box-shadow:inset 0 0 0 2px rgba(20,16,10,.9), 0 4px 12px rgba(0,0,0,.5), 0 0 14px rgba(244,169,60,.12);
+}
+.pipe-gauge-needle{
+  position:absolute; left:50%; top:14%; width:3px; height:34%;
+  transform-origin:50% 100%; transform:translateX(-50%) rotate(38deg);
+  background:linear-gradient(180deg,#ffe1a8,#caa06a);
+  border-radius:2px;
+  box-shadow:0 0 4px rgba(244,169,60,.5);
+}
+.pipe-gauge-val{
+  position:absolute; left:50%; bottom:11px; transform:translateX(-50%);
+  font-family:"VT323",monospace; font-size:15px; line-height:1; color:#ffb347;
+  text-shadow:0 0 6px rgba(255,160,60,.8);
+}
+.pipe-gauge-unit{
+  position:absolute; left:50%; bottom:2px; transform:translateX(-50%);
+  font-family:"Share Tech Mono",monospace; font-size:7px; letter-spacing:1px;
+  color:#b89a64; text-transform:uppercase;
+}
+/* sortie bas de jauge */
+.cpipe-gauge-out{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:-10px; width:12px; height:14px; border-radius:0 0 6px 6px;
+  border-top:none;
+}
+.flange-gauge{
+  left:50%; transform:translate(-50%, 50%);
+  bottom:-10px;
+}
+
+/* descente verticale alignée sous la jauge → hors écran */
+.cpipe-down{
+  left:calc(50% - var(--pipe-h-len) - (var(--gauge-size) / 2));
+  transform:translateX(-50%);
+  bottom:-44px;
+  width:12px;
+  height:calc(var(--pipe-elbow-y) + 6px - (var(--gauge-size) / 2) + 44px);
+  border-radius:0 0 6px 6px;
+}
+.flange-exit{
+  left:calc(50% - var(--pipe-h-len) - (var(--gauge-size) / 2));
+  transform:translate(-50%, 50%);
+  bottom:-44px;
+  opacity:.85;
+}
+
+.chimney-stack{
+  z-index:3; position:absolute; left:50%; bottom:var(--ch-stack-bottom); transform:translateX(-50%);
+  width:58px; height:var(--ch-stack-h);
+  background:
+    linear-gradient(180deg, rgba(8,6,4,.85) 0%, rgba(8,6,4,.35) 12%, transparent 22%),
+    repeating-linear-gradient(180deg,
+      transparent 0 11px,
+      rgba(0,0,0,.28) 11px 12px,
+      transparent 12px 24px),
+    repeating-linear-gradient(180deg,
+      #4a3828 0 12px, #3a2c1c 12px 24px),
+    linear-gradient(90deg,
+      #2a2117 0%,
+      #4a3828 18%,
+      #5a4432 42%,
+      #3a2c1c 58%,
+      #2a2117 100%);
+  border:2px solid #5e3a20;
+  border-radius:8px 8px 2px 2px;
+  box-shadow:
+    inset 0 0 0 1px rgba(214,160,109,.18),
+    inset 3px 0 12px rgba(0,0,0,.5),
+    inset -3px 0 12px rgba(0,0,0,.45),
+    0 0 20px rgba(255,100,30,.06),
+    4px 0 16px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+.chimney-soot{
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 120% 28% at 50% 0%, rgba(6,4,3,.92), transparent 70%),
+    linear-gradient(180deg, rgba(20,14,10,.6) 0%, transparent 18%);
+}
+.chimney-band{
+  position:absolute; left:-3px; right:-3px; height:10px; z-index:2;
+  background:linear-gradient(180deg, #8a5430, #5e3a20 45%, #3a2414);
+  border:1.5px solid #4a3018;
+  box-shadow:inset 0 1px 0 rgba(255,220,170,.25), 0 2px 4px rgba(0,0,0,.45);
+}
+.chimney-band::before,
+.chimney-band::after{
+  content:""; position:absolute; top:50%; transform:translateY(-50%);
+  width:6px; height:6px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #e8b988, #7d4a28 70%);
+  border:1px solid #4a3018;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.3);
+}
+.chimney-band::before{ left:5px; }
+.chimney-band::after{ right:5px; }
+.chimney-band.band-top{ top:14%; }
+.chimney-band.band-mid{ top:46%; }
+.chimney-band.band-low{ top:78%; }
+
+.chimney-rivet{
+  position:absolute; width:7px; height:7px; border-radius:50%; z-index:2;
+  background:radial-gradient(circle at 35% 30%, #f0cfa6, #a4632f 68%, #6f4222);
+  border:1.5px solid #5e3a20;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.15), 0 1px 2px rgba(0,0,0,.4);
+}
+.chimney-rivet.rivet-l{ left:7px; }
+.chimney-rivet.rivet-r{ right:7px; }
+.chimney-rivet:nth-child(4){ top:22%; }
+.chimney-rivet:nth-child(5){ top:22%; }
+.chimney-rivet:nth-child(6){ top:42%; }
+.chimney-rivet:nth-child(7){ top:42%; }
+.chimney-rivet:nth-child(8){ top:62%; }
+.chimney-rivet:nth-child(9){ top:62%; }
+.chimney-rivet:nth-child(10){ top:82%; }
+.chimney-rivet:nth-child(11){ top:82%; }
+
+.chimney-cap{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:calc(var(--ch-stack-bottom) + var(--ch-stack-h) - 2px);
+  width:72px; height:32px; z-index:4;
+}
+.chimney-cowl{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, #e0c08a 0%, #caa06a 25%, #a4632f 70%, #7d4a28 100%);
+  border:2px solid #5e3a20; border-radius:6px 6px 2px 2px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.4), inset 0 -4px 8px rgba(0,0,0,.35), 0 -3px 10px rgba(0,0,0,.4);
+}
+.chimney-cowl::before{
+  content:""; position:absolute; left:50%; top:-8px; transform:translateX(-50%);
+  width:52px; height:14px;
+  background:linear-gradient(180deg, #d6a96d, #8a5430);
+  border:2px solid #5e3a20; border-bottom:none; border-radius:8px 8px 0 0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+}
+.chimney-cowl::after{
+  content:""; position:absolute; left:50%; bottom:-4px; transform:translateX(-50%);
+  width:64px; height:6px;
+  background:linear-gradient(180deg, #6f4222, #4a3018);
+  border-radius:0 0 3px 3px; box-shadow:0 2px 4px rgba(0,0,0,.4);
+}
+.chimney-mouth{
+  position:absolute; left:50%; top:-4px; transform:translateX(-50%);
+  width:38px; height:16px; border-radius:5px 5px 0 0; z-index:1;
+  background:radial-gradient(ellipse at 50% 120%, #2a1508, #080504 72%);
+  border:2px solid #5e3a20; border-bottom:none;
+  box-shadow:inset 0 6px 16px rgba(255,140,40,.45), inset 0 -2px 8px rgba(255,80,20,.25), 0 0 28px rgba(255,120,30,.35);
+  animation:chimney-mouth-glow 2.8s ease-in-out infinite;
+  overflow:visible;
+}
+.chimney-mouth::after{
+  content:""; position:absolute; left:50%; top:-32px; transform:translateX(-50%);
+  width:90px; height:48px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,210,150,.28), transparent 68%);
+  filter:blur(12px); pointer-events:none;
+}
+.chimney-ember{
+  position:absolute; border-radius:50%;
+  background:radial-gradient(circle, #ffe1a8, #ff8830 55%, transparent 72%);
+  filter:blur(.5px);
+  animation:chimney-ember-float 2.4s ease-out infinite;
+  pointer-events:none;
+}
+.chimney-ember.e1{ left:30%; bottom:4px; width:4px; height:4px; animation-delay:0s; }
+.chimney-ember.e2{ left:55%; bottom:6px; width:3px; height:3px; animation-delay:.8s; animation-duration:2.8s; }
+.chimney-ember.e3{ left:42%; bottom:3px; width:5px; height:5px; animation-delay:1.6s; animation-duration:2.1s; }
+@keyframes chimney-ember-float{
+  0%{ transform:translateY(0) scale(1); opacity:.9; }
+  100%{ transform:translateY(-28px) translateX(4px) scale(.2); opacity:0; }
+}
+
+@keyframes chimney-mouth-glow{
+  0%,100%{ box-shadow:inset 0 6px 16px rgba(255,140,40,.45), inset 0 -2px 8px rgba(255,80,20,.25), 0 0 28px rgba(255,120,30,.35); }
+  50%{ box-shadow:inset 0 8px 20px rgba(255,170,60,.6), inset 0 -2px 10px rgba(255,100,30,.35), 0 0 42px rgba(255,120,30,.5); }
+}
+
+.chimney-steam{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:calc(var(--ch-stack-bottom) + var(--ch-stack-h) + 18px);
+  width:200px; height:320px; overflow:visible; z-index:5;
+}
+.steam-wisp{
+  position:absolute; bottom:0; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,240,220,.42), rgba(255,200,140,.16) 40%, transparent 72%);
+  filter:blur(11px);
+  animation:chimney-steam-rise 4.8s ease-out infinite;
+}
+.steam-wisp.w1{ left:10%; width:64px; height:64px; animation-delay:0s; }
+.steam-wisp.w2{ left:38%; width:88px; height:88px; animation-delay:.7s; animation-duration:5.4s; }
+.steam-wisp.w3{ left:22%; width:56px; height:56px; animation-delay:1.4s; }
+.steam-wisp.w4{ left:52%; width:72px; height:72px; animation-delay:2.1s; animation-duration:5.8s; }
+.steam-wisp.w5{ left:30%; width:96px; height:96px; animation-delay:2.8s; animation-duration:6.2s; }
+.steam-wisp.w6{ left:44%; width:60px; height:60px; animation-delay:3.5s; }
+.steam-wisp.w7{ left:16%; width:80px; height:80px; animation-delay:4.2s; animation-duration:5.6s; }
+.steam-wisp.w8{ left:58%; width:52px; height:52px; animation-delay:.3s; animation-duration:4.2s; }
+.steam-wisp.w9{ left:34%; width:70px; height:70px; animation-delay:1.9s; animation-duration:6.4s; }
+.steam-wisp.w10{ left:48%; width:84px; height:84px; animation-delay:3.1s; animation-duration:5.2s; }
+
+@keyframes chimney-steam-rise{
+  0%{ transform:translateY(10px) translateX(0) scale(.4); opacity:0; }
+  10%{ opacity:.72; }
+  55%{ transform:translateY(-140px) translateX(-8px) scale(1.35); opacity:.55; }
+  100%{ transform:translateY(-300px) translateX(12px) scale(2.1); opacity:0; }
+}
+
+.chimney-pedestal{
+  position:absolute; bottom:38px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px; z-index:3;
+}
+.chimney-pedestal::after{
+  content:""; width:70px; height:10px; margin-top:2px;
+  background:linear-gradient(180deg, #6f4222, #3a2414);
+  border:1.5px solid #5e3a20; border-radius:2px;
+  box-shadow:0 3px 6px rgba(0,0,0,.4), inset 0 1px 0 rgba(214,160,109,.15);
+}
+.chimney-plate{
+  font-family:"Share Tech Mono",monospace; font-size:7px; letter-spacing:2px;
+  text-transform:uppercase; color:#3a2414; white-space:nowrap;
+  padding:4px 8px;
+  background:var(--brass-plate);
+  border:1.5px solid #7d4a28; border-radius:3px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.45),
+    inset 0 -1px 0 rgba(0,0,0,.15),
+    0 2px 6px rgba(0,0,0,.4);
+}
+.chimney-base{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:10px 14px 8px;
+  background:linear-gradient(180deg, #3a2c1c, #1a120a);
+  border:2px solid #5e3a20; border-radius:6px 6px 4px 4px;
+  box-shadow:inset 0 1px 0 rgba(214,160,109,.2), inset 0 -3px 6px rgba(0,0,0,.4), 0 4px 10px rgba(0,0,0,.45);
+}
+.chimney-base .lamp{ width:14px; height:14px; animation:fx-pulse 2.4s ease-in-out infinite; }
+.chimney-status{
+  font-family:"VT323",monospace; font-size:13px; line-height:1; color:#ffb347;
+  text-shadow:0 0 6px rgba(255,160,60,.7); letter-spacing:.5px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .steam-wisp, .chimney-base .lamp, .chimney-mouth, .chimney-heat, .chimney-ember{ animation:none !important; }
+}
