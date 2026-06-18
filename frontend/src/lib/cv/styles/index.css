@@ -1,4 +1,8 @@
-/* CV styles — commit 14 */
+/* ============================================================
+   CENDRES & VAPEUR — Bibliothèque CSS (@cv)
+   Ordre d'import : tokens → base → design system → fx → layout → sections → responsive
+   ============================================================ */
+
 @import './tokens.css';
 @import './base.css';
 @import './components.css';
@@ -12,3 +16,4 @@
 @import './sections/toxicity.css';
 @import './sections/journal.css';
 @import './sections/chiffres.css';
+@import './responsive.css';
