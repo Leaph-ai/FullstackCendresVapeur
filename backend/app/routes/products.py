@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -36,8 +36,9 @@ def require_editor(
 @router.get("/", response_model=list[ProductResponse])
 def get_products(
     service: Annotated[ProductService, Depends(get_product_service)],
+    sort: Literal["default", "likes"] = "default",
 ) -> list[ProductResponse]:
-    return service.list_products()
+    return service.list_products(sort=sort)
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
