@@ -6,6 +6,24 @@
   background: transparent;
 }
 
+.auth-shell {
+  margin-left: var(--rail-w);
+  margin-right: var(--chimney-w);
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+  background: rgba(15,15,15,.95);
+  border: 2px solid #b87333;
+  border-radius: 14px;
+  box-shadow: 0 0 30px rgba(184,115,51,.2);
+}
+
 .register-container h1 {
   color: #d8975b;
   text-align: center;
@@ -29,6 +47,12 @@
   background: #252525;
   border: 1px solid #444;
   color: white;
+  outline: none;
+}
+
+.register-form input:focus {
+  border-color: #b87333;
+  box-shadow: 0 0 10px rgba(184,115,51,.25);
 }
 
 .register-form button {
@@ -37,4 +61,26 @@
   background: #b87333;
   color: white;
   cursor: pointer;
+  transition: background .25s ease;
+}
+
+.register-form button:hover {
+  background: #d8975b;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.auth-links a {
+  color: #aaa;
+  text-decoration: none;
+  text-align: center;
+}
+
+.auth-links a:hover {
+  color: #d8975b;
 }

@@ -6,6 +6,14 @@
   box-sizing: border-box;
 }
 
+.auth-shell {
+  margin-left: var(--rail-w);
+  margin-right: var(--chimney-w);
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -97,13 +105,21 @@ button:hover {
   background: #d8975b;
 }
 
-.login-form a {
-  text-align: center;
-  color: #aaa;
-  text-decoration: none;
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
 }
 
-.login-form a:hover {
+.auth-links a {
+  color: #aaa;
+  text-decoration: none;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.auth-links a:hover {
   color: #d8975b;
 }
 

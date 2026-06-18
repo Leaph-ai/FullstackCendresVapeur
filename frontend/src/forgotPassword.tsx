@@ -1,32 +1,53 @@
-import './forgotPassword.css'
+import { Link } from 'react-router-dom';
+import './forgotPassword.css';
+import { MachineRail } from '@cv/components/layout/MachineRail';
+import { SteamChimney } from '@cv/components/layout/SteamChimney';
+import { Topbar } from '@cv/components/layout/Topbar';
+import { useScrollRail } from '@cv/hooks/useScrollRail';
 
 function ForgotPassword() {
+  const railRef = useScrollRail();
+
   return (
-    <section className="forgot-page">
-      <div className="forgot-container">
+    <>
+      <MachineRail railRef={railRef} />
+      <SteamChimney />
+      <div className="auth-shell">
+        <Topbar cartCount={0} activeSection="forgot" />
 
-        <h1>Mot de passe oublié</h1>
+        <section className="forgot-page">
+          <div className="forgot-container">
 
-        <p>
-          Un code de récupération sera envoyé.
-        </p>
+          <h1>Mot de passe oublié</h1>
 
-        <form className="forgot-form">
+          <p>
+            Un code de récupération sera envoyé.
+          </p>
 
-          <input
-            type="email"
-            placeholder="citoyen@colonie.fr"
-          />
+          <form className="forgot-form">
 
-          <button type="submit">
-            Envoyer
-          </button>
+            <input
+              type="email"
+              placeholder="citoyen@colonie.fr"
+              aria-label="Adresse email"
+            />
 
-        </form>
+            <button type="submit">
+              Envoyer
+            </button>
 
+            <div className="auth-links">
+              <Link to="/login">Retour à la connexion</Link>
+              <Link to="/register">Créer un compte</Link>
+            </div>
+
+          </form>
+
+        </div>
+        </section>
       </div>
-    </section>
-  )
+    </>
+  );
 }
 
 export default ForgotPassword
