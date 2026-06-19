@@ -225,7 +225,7 @@ ENDPOINTS: tuple[EndpointDef, ...] = (
         method="POST",
         path="/dev/test-email",
         auth=AuthLevel.NONE,
-        description="Envoi d'email de test (Mailtrap)",
+        description="Envoi d'email de test (SMTP Google)",
         body={
             "send_to": "test@example.com",
             "subject": "API tester",
