@@ -14,10 +14,11 @@ class Settings(BaseSettings):
     jwt_access_expire_minutes: int = 30
     jwt_refresh_expire_days: int = 7
     allowed_origins: str = "http://localhost:5173"
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
     smtp_from: str = "noreply@zone-franche.local"
-    mailtrap_api_token: str = ""
-    mailtrap_use_sandbox: bool = True
-    mailtrap_inbox_id: str = ""
     two_factor_code_expire_minutes: int = 10
 
     @property
