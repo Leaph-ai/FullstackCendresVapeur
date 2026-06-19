@@ -6,6 +6,7 @@ import Cart from './cart';
 import Checkout from './checkout';
 import { CartProvider } from './context/CartContext';
 import { HomePage } from './pages/HomePage';
+import Verify2FA from './verify2FA';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/verify-2fa" element={<Verify2FA />} />
       </Routes>
     </CartProvider>
   );
