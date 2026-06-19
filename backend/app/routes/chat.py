@@ -1,6 +1,8 @@
+import asyncio
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from app.chat.hub import hub
@@ -40,3 +42,32 @@ def post_message(
     message = service.create_message(user["id"], payload.content)
     hub.publish({"type": "message", "data": message.model_dump(mode="json")})
     return message
+
+
+LONG_POLL_TIMEOUT_SECONDS = 25
+
+
+def get_long_poll_timeout() -> float:
+    return LONG_POLL_TIMEOUT_SECONDS
+
+
+@router.get("/poll", response_model=list[ChatMessageResponse])
+async def poll_messages(
+    after_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    _: Annotated[dict, Depends(require_role(RoleLevel.EDITOR))],
+    timeout: Annotated[float, Depends(get_long_poll_timeout)],
+) -> list:
+    service = ChatService(db)
+    # Subscribe BEFORE reading the DB so a message arriving in between is not lost.
+    with hub.subscription() as queue:
+        existing = await run_in_threadpool(service.list_recent, after_id, 50)
+        if existing:
+            return [m.model_dump(mode="json") for m in existing]
+        try:
+            while True:
+                event = await asyncio.wait_for(queue.get(), timeout=timeout)
+                if event.get("type") == "message" and event["data"]["id"] > after_id:
+                    return [event["data"]]
+        except asyncio.TimeoutError:
+            return []
