@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 from app.auth.router import router as auth_router
 from app.config import get_settings
-from app.routes import carts, discounts, dev_mail, orders, products, votes
+from app.routes import carts, chat, discounts, dev_mail, orders, products, votes
 
 settings = get_settings()
 
@@ -49,3 +49,4 @@ app.include_router(orders.router)
 app.include_router(discounts.router)
 app.include_router(dev_mail.router)
 app.include_router(votes.router)
+app.include_router(chat.router)
