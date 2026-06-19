@@ -9,3 +9,6 @@
 CLAUDE.md
 .claude/
 AGENTS.md
+
+# Git worktrees (isolated workspaces)
+.worktrees/
