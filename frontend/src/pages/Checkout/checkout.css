@@ -74,7 +74,7 @@
 }
 
 .checkout-content {
-  background:rgba(236,226,204,.06);
+  background:rgb(0, 0, 0);
   border:1.5px solid #6b5a43;
   border-radius:var(--r-lg);
   padding:30px;
@@ -108,7 +108,7 @@
 }
 
 .cv-label {
-  display:block; margin-bottom:8px; color:#897c64;
+  display:block; margin-bottom:8px;  margin-top:8px;  color:#897c64;
 }
 
 .discount-input {
@@ -157,7 +157,7 @@
 
 /* === Résumé latéral === */
 .checkout-summary {
-  background:rgba(236,226,204,.06);
+  background:rgb(0, 0, 0);
   border:1.5px solid #6b5a43;
   border-radius:var(--r-lg);
   padding:24px;
