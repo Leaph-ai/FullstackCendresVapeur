@@ -63,7 +63,7 @@ ENDPOINTS: tuple[EndpointDef, ...] = (
         path="/auth/login",
         auth=AuthLevel.NONE,
         description="Connexion (envoi code 2FA)",
-        body={"email": "admin@cendres.local", "password": "changeme"},
+        body={"email": "admin@example.com", "password": "changeme"},
         smoke_statuses=(200, 401, 500),
     ),
     EndpointDef(

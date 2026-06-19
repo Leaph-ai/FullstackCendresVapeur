@@ -75,7 +75,7 @@ uv run python -m api_tester --in-process --check-auth-guard
 | Variable | Description |
 |----------|-------------|
 | `API_TEST_BASE_URL` | URL de base (défaut : `http://localhost:8000`) |
-| `API_TEST_USER_EMAIL` | Email pour login auto (défaut : `admin@cendres.local`) |
+| `API_TEST_USER_EMAIL` | Email pour login auto (défaut : `admin@example.com`) |
 | `API_TEST_USER_PASSWORD` | Mot de passe (défaut : `changeme`) |
 | `API_TEST_USER_TOKEN` | JWT utilisateur (skip le login si fourni) |
 | `API_TEST_ADMIN_TOKEN` | JWT éditeur/admin |
