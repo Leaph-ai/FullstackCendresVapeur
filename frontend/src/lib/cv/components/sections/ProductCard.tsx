@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Product } from '../../types';
 
 interface ProductCardProps {
@@ -10,6 +10,14 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [liked, setLiked] = useState(false);
   const [votes, setVotes] = useState(product.votes);
   const [added, setAdded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+  const hasImage = Boolean(product.url && !imageFailed);
+
+  useEffect(() => {
+    setVotes(product.votes);
+    setLiked(false);
+    setImageFailed(false);
+  }, [product.id, product.url, product.votes]);
 
   const handleLike = () => {
     setLiked((prev) => {
@@ -26,7 +34,13 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   return (
     <article className="cv-pcard">
-      <div className="cv-ph">objet · photo</div>
+      <div className={`cv-ph${hasImage ? ' has-image' : ''}`}>
+        {hasImage ? (
+          <img src={product.url ?? ''} alt={product.name} onError={() => setImageFailed(true)} />
+        ) : (
+          'objet · photo'
+        )}
+      </div>
       <div>
         <div className="pname">{product.name}</div>
         <div className="pcat">{product.category}</div>

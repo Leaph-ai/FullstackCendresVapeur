@@ -88,6 +88,7 @@ class ProductService:
             category_id=payload.category_id,
             name=payload.name,
             description=payload.description,
+            url=payload.url,
             stock=payload.stock,
             price=payload.price,
         )
@@ -111,6 +112,9 @@ class ProductService:
 
         if "description" in data:
             product.description = data["description"]
+
+        if "url" in data:
+            product.url = data["url"]
 
         if "stock" in data:
             product.stock = data["stock"]

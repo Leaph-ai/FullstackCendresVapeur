@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
@@ -26,8 +26,7 @@ export interface CheckoutFormData {
 }
 
 function Checkout() {
-  const navigate = useNavigate();
-  const { items, getTotal, getItemCount, clearCart } = useCart();
+  const { items, getTotal, getItemCount } = useCart();
   const railRef = useScrollRail();
   const invoiceRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<'info' | 'payment' | 'review' | 'success'>('info');

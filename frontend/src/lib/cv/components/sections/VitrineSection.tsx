@@ -1,4 +1,7 @@
-import { PRODUCTS } from '../../types';
+import { useEffect, useState } from 'react';
+import { fetchProducts } from '../../api/products';
+import type { ProductDto } from '../../api/products';
+import type { Product } from '../../types';
 import { PanelBody, PanelHead, ScrollPanel } from '../primitives/ScrollPanel';
 import { SparkChart } from '../primitives/SparkChart';
 import { ProductCard } from './ProductCard';
@@ -20,6 +23,24 @@ export function VitrineSection({
   bourseSpark,
   onAddToCart,
 }: VitrineSectionProps) {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchProducts(controller.signal)
+      .then((apiProducts) => {
+        setProducts(apiProducts.map(toCardProduct));
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        console.error('Impossible de charger les produits depuis /products/.', error);
+        setProducts([]);
+      });
+
+    return () => controller.abort();
+  }, []);
+
   return (
     <ScrollPanel id="vitrine" locked={locked} clanking={clanking}>
       <PanelHead
@@ -44,11 +65,26 @@ export function VitrineSection({
           <span className="tag">offre / demande simulée</span>
         </div>
         <div className="home-pgrid">
-          {PRODUCTS.map((p) => (
+          {products.map((p) => (
             <ProductCard key={p.id} product={p} onAddToCart={onAddToCart} />
           ))}
         </div>
       </PanelBody>
     </ScrollPanel>
   );
+}
+
+function toCardProduct(product: ProductDto): Product {
+  const price = Number(product.price);
+  const previousPrice = product.previous_price === null ? null : Number(product.previous_price);
+
+  return {
+    id: product.id,
+    name: product.name,
+    category: product.category?.name ?? 'Sans catégorie',
+    price: Number.isFinite(price) ? price : 0,
+    trend: previousPrice !== null && price < previousPrice ? 'down' : 'up',
+    votes: product.likes_count,
+    url: product.url,
+  };
 }

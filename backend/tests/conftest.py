@@ -89,12 +89,13 @@ def factory(db_session):
             db_session.refresh(row)
             return row
 
-        def product(self, category=None, name="Engrenage", price="10.00", stock=5):
+        def product(self, category=None, name="Engrenage", price="10.00", stock=5, url=None):
             category = category or self.category()
             row = Product(
                 category_id=category.id,
                 name=name,
                 description=None,
+                url=url,
                 stock=stock,
                 price=Decimal(price),
             )

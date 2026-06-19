@@ -109,6 +109,7 @@ ENDPOINTS: tuple[EndpointDef, ...] = (
             "category_id": 1,
             "name": "Produit testeur API",
             "description": "Créé par api_tester",
+            "url": "https://example.com/produit-testeur.jpg",
             "stock": 5,
             "price": "19.99",
         },
@@ -121,7 +122,7 @@ ENDPOINTS: tuple[EndpointDef, ...] = (
         auth=AuthLevel.EDITOR,
         description="Mise à jour d'un produit",
         path_params={"product_id": 1},
-        body={"stock": 10},
+        body={"stock": 10, "url": "https://example.com/produit-testeur-maj.jpg"},
         smoke_statuses=(200, 403, 404),
     ),
     EndpointDef(
