@@ -53,7 +53,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--user-password",
-        default=os.getenv("API_TEST_USER_PASSWORD", "changeme"),
+        default=os.getenv("API_TEST_USER_PASSWORD", "Admin123!"),
     )
     parser.add_argument(
         "--user-token",

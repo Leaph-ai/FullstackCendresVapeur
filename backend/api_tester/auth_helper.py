@@ -23,6 +23,12 @@ def login_with_2fa(
     if login.status_code != 200:
         raise RuntimeError(f"Login échoué ({login.status_code}) : {login.body}")
 
+    if not login.body.get("requires_2fa", True):
+        token = login.body.get("access_token")
+        if not token:
+            raise RuntimeError("Login sans 2FA mais access_token absent.")
+        return token
+
     challenge_token = login.body["challenge_token"]
     resolved_code = code
     if resolved_code is None:
