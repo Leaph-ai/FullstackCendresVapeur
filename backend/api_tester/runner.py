@@ -49,7 +49,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--user-email",
-        default=os.getenv("API_TEST_USER_EMAIL", "admin@cendres.local"),
+        default=os.getenv("API_TEST_USER_EMAIL", "admin@example.com"),
     )
     parser.add_argument(
         "--user-password",
