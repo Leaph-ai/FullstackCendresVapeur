@@ -10,6 +10,8 @@ dependencies = [
     "pyjwt>=2.10.0",
     "pydantic-settings>=2.7.0",
     "sqlalchemy>=2.0.45",
+    "bcrypt>=5.0.0",
+    "mailtrap>=2.6.0",
 ]
 
 [dependency-groups]
@@ -26,7 +28,6 @@ pythonpath = ["."]
 testpaths = ["tests"]
 markers = [
     "integration: tests nécessitant Postgres et/ou mocks email",
-]
     "bcrypt>=5.0.0",
     "mailtrap>=2.6.0",
 ]
