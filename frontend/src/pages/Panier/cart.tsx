@@ -3,7 +3,7 @@ import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
-import { useCart } from './context/CartContext';
+import { useCart } from '../../context/CartContext';
 import './cart.css';
 
 function Cart() {

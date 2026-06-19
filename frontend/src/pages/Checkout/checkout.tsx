@@ -1,13 +1,13 @@
 import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
-import { useCart } from './context/CartContext';
-import { Invoice } from './components/Invoice';
+import { useCart } from '../../context/CartContext';
+import { Invoice } from '../../components/invoice/Invoice';
 import './checkout.css';
 
 export interface CheckoutFormData {
@@ -26,8 +26,7 @@ export interface CheckoutFormData {
 }
 
 function Checkout() {
-  const navigate = useNavigate();
-  const { items, getTotal, getItemCount, clearCart } = useCart();
+  const { items, getTotal, getItemCount } = useCart();
   const railRef = useScrollRail();
   const invoiceRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<'info' | 'payment' | 'review' | 'success'>('info');
@@ -243,7 +242,7 @@ function Checkout() {
                     <h2>Commande confirmée</h2>
                     <p className="order-number">Numéro de commande: #ORD-{Date.now().toString().slice(-8)}</p>
                     <p>Votre commande a été traitée avec succès. Vous recevrez une confirmation par email.</p>
-                    
+
                     <button
                       type="button"
                       className="cv-btn"
@@ -373,7 +372,7 @@ function Checkout() {
                     {step === 'payment' && (
                       <div className="form-section">
                         <h3 className="section-title">Informations de paiement</h3>
-                        
+
                         <div className="form-group">
                           <label htmlFor="cardNumber" className="cv-label">Numéro de carte</label>
                           <input
@@ -445,7 +444,7 @@ function Checkout() {
                     {step === 'review' && (
                       <div className="form-section">
                         <h3 className="section-title">Résumé de la commande</h3>
-                        
+
                         <div className="review-items">
                           {items.map((item) => (
                             <div key={item.productId} className="review-item">

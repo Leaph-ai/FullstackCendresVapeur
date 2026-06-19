@@ -10,6 +10,8 @@ import {
   useLiveData,
   usePanelReveal,
 } from '@cv';
+import { ChatModal } from '../../components/chatModal/chatModal';
+
 
 const PANEL_IDS = ['vitrine', 'toxicite', 'journal', 'chiffres'];
 
@@ -62,6 +64,7 @@ export function HomePage() {
         clanking={isClanking('chiffres')}
         nixieValues={live.nixieValues}
       />
+      <ChatModal />
     </SteampunkPageShell>
   );
 }
