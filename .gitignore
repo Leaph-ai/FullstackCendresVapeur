@@ -8,3 +8,7 @@ docs/
 *pycache*
 CLAUDE.md
 .claude/
+
+node/
+dev.cmd
+package.json
