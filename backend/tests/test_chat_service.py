@@ -50,3 +50,16 @@ def test_list_recent_filters_by_after_id(db_session, factory):
     result = service.list_recent(after_id=first.id)
 
     assert [m.content for m in result] == ["nouveau"]
+
+
+def test_list_recent_after_id_respects_limit(db_session, factory):
+    user = _make_editor(factory)
+    service = ChatService(db_session)
+    anchor = service.create_message(user.id, "ancre")
+    for i in range(5):
+        service.create_message(user.id, f"apres-{i}")
+
+    result = service.list_recent(after_id=anchor.id, limit=2)
+
+    assert len(result) == 2
+    assert [m.content for m in result] == ["apres-0", "apres-1"]

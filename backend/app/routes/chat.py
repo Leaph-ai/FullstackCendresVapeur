@@ -30,7 +30,7 @@ def get_chat_service(db: Annotated[Session, Depends(get_db)]) -> ChatService:
 def get_messages(
     service: Annotated[ChatService, Depends(get_chat_service)],
     _: Annotated[dict, Depends(require_role(RoleLevel.EDITOR))],
-    after_id: int | None = None,
+    after_id: Annotated[int | None, Query(ge=0)] = None,
     limit: int = 50,
 ) -> list[ChatMessageResponse]:
     return service.list_recent(after_id=after_id, limit=limit)
@@ -60,7 +60,7 @@ def get_long_poll_timeout() -> float:
 
 @router.get("/poll", response_model=list[ChatMessageResponse])
 async def poll_messages(
-    after_id: int,
+    after_id: Annotated[int, Query(ge=0)],
     db: Annotated[Session, Depends(get_db)],
     _: Annotated[dict, Depends(require_role(RoleLevel.EDITOR))],
     timeout: Annotated[float, Depends(get_long_poll_timeout)],

@@ -21,7 +21,7 @@ class ChatService:
     ) -> list[ChatMessageResponse]:
         stmt = select(ChatMessage).options(joinedload(ChatMessage.sender))
         if after_id is not None:
-            stmt = stmt.where(ChatMessage.id > after_id).order_by(ChatMessage.id.asc())
+            stmt = stmt.where(ChatMessage.id > after_id).order_by(ChatMessage.id.asc()).limit(limit)
             rows = self.db.execute(stmt).scalars().all()
         else:
             stmt = stmt.order_by(ChatMessage.id.desc()).limit(limit)

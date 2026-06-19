@@ -54,3 +54,12 @@ def test_poll_rejected_for_user_role(factory, as_user, fast_timeout):
     resp = plain.get("/chat/poll", params={"after_id": 0})
 
     assert resp.status_code == 403
+
+
+def test_poll_negative_after_id_returns_422(factory, as_user):
+    user = _seed_editor(factory)
+    editor = as_user(user_id=user.id, role_level=RoleLevel.EDITOR, role="editor")
+
+    resp = editor.get("/chat/poll", params={"after_id": -1})
+
+    assert resp.status_code == 422
