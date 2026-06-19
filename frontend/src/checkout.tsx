@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { Link, useNavigate } from 'react-router-dom';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
@@ -142,16 +144,15 @@ function Checkout() {
     }
   };
 
-  const handleDownloadInvoice = () => {
-    // Simple HTML to PDF simulation - in production use jsPDF or similar
-    const content = invoiceRef.current?.innerHTML || '';
-    const element = document.createElement('a');
-    const file = new Blob([content], { type: 'text/html' });
-    element.href = URL.createObjectURL(file);
-    element.download = `facture-${Date.now()}.html`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  const handleDownloadInvoice = async () => {
+    if (!invoiceRef.current) return;
+    const canvas = await html2canvas(invoiceRef.current, { scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = (canvas.height * pageWidth) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
+    pdf.save(`facture-${Date.now()}.pdf`);
   };
 
   const subtotal = getTotal();
