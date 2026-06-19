@@ -3,11 +3,12 @@ import json
 from typing import Annotated
 
 import jwt
-from fastapi import APIRouter, Depends, WebSocket, status
+from fastapi import APIRouter, Depends, Query, WebSocket, status
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 from starlette.websockets import WebSocketDisconnect
 
+from app.auth.service import AuthService
 from app.chat.hub import hub
 from app.chat.schemas import ChatMessageCreate, ChatMessageResponse
 from app.chat.service import ChatService
@@ -83,6 +84,8 @@ def _authenticate_ws_token(token: str | None) -> dict | None:
     if not token:
         return None
     settings = get_settings()
+    if AuthService(settings).is_token_revoked(token):
+        return None
     try:
         payload = decode_token(token, settings, expected_type="access")
     except jwt.PyJWTError:

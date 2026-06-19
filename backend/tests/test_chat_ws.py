@@ -1,6 +1,7 @@
 import pytest
 from starlette.websockets import WebSocketDisconnect
 
+from app.auth.service import AuthService, _store
 from app.chat.hub import hub
 from app.config import get_settings
 from app.security.jwt import create_access_token
@@ -100,3 +101,16 @@ def test_ws_invalid_frame_returns_error_and_keeps_socket(client, factory):
         ws.send_text("pas du json")
         event = _receive_until(ws, "error")
         assert "detail" in event["data"]
+
+
+def test_ws_with_revoked_token_is_rejected(client, factory):
+    user = _make_editor(factory, "banni")
+    token = _editor_token(user.id)
+    AuthService(get_settings()).logout(token)
+    try:
+        with pytest.raises(WebSocketDisconnect) as exc:
+            with client.websocket_connect(f"/chat/ws?token={token}"):
+                pass
+        assert exc.value.code == 4401
+    finally:
+        _store.revoked_access_tokens.discard(token)
