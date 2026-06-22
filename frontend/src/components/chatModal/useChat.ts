@@ -92,7 +92,8 @@ export function useChat(enabled: boolean): UseChatResult {
     getMessages()
       .then((history) => {
         if (cancelled) return;
-        setMessages(history);
+        // Garde-fou : un rendu chat ne doit jamais pouvoir vider toute l'app.
+        setMessages(Array.isArray(history) ? history : []);
       })
       .catch((e: unknown) => {
         if (cancelled) return;
