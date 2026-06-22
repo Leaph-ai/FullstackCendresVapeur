@@ -65,6 +65,41 @@ END
 WHERE "url" IS NULL
   AND "name" IN ('Engrenage en laiton', 'Alambic de poche', 'Montre à gousset fêlée');
 
+-- Likes de base pour que la vitrine ait une pression populaire visible.
+INSERT INTO "users" ("username", "email", "password_hash", "role_id")
+SELECT seed_user."username", seed_user."email",
+       '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RAES6.Hy',
+       (SELECT "id" FROM "roles" WHERE "name" = 'User')
+FROM (VALUES
+  ('voteur-cuivre-01', 'voteur-cuivre-01@example.com'),
+  ('voteur-cuivre-02', 'voteur-cuivre-02@example.com'),
+  ('voteur-cuivre-03', 'voteur-cuivre-03@example.com'),
+  ('voteur-cuivre-04', 'voteur-cuivre-04@example.com'),
+  ('voteur-cuivre-05', 'voteur-cuivre-05@example.com')
+) AS seed_user("username", "email")
+WHERE NOT EXISTS (
+  SELECT 1 FROM "users" WHERE "username" = seed_user."username"
+);
+
+INSERT INTO "product_votes" ("user_id", "product_id")
+SELECT voter."id", product."id"
+FROM (VALUES
+  ('Engrenage en laiton', 'voteur-cuivre-01'),
+  ('Engrenage en laiton', 'voteur-cuivre-02'),
+  ('Engrenage en laiton', 'voteur-cuivre-03'),
+  ('Alambic de poche', 'voteur-cuivre-01'),
+  ('Alambic de poche', 'voteur-cuivre-04'),
+  ('Montre à gousset fêlée', 'voteur-cuivre-02'),
+  ('Montre à gousset fêlée', 'voteur-cuivre-05'),
+  ('Lanterne d''éther', 'voteur-cuivre-01'),
+  ('Lanterne d''éther', 'voteur-cuivre-02'),
+  ('Lanterne d''éther', 'voteur-cuivre-03'),
+  ('Lanterne d''éther', 'voteur-cuivre-04')
+) AS seeded_vote("product_name", "username")
+JOIN "products" product ON product."name" = seeded_vote."product_name"
+JOIN "users" voter ON voter."username" = seeded_vote."username"
+ON CONFLICT ("user_id", "product_id") DO NOTHING;
+
 -- Code promo de test
 INSERT INTO "discount_codes" ("code", "percentage", "active") VALUES
   ('VAPEUR10', 10, true)

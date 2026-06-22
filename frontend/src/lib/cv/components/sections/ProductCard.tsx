@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { likeProduct } from '../../api/products';
 import type { Product } from '../../types';
 
 interface ProductCardProps {
@@ -11,19 +12,29 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [votes, setVotes] = useState(product.votes);
   const [added, setAdded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
   const hasImage = Boolean(product.url && !imageFailed);
 
   useEffect(() => {
     setVotes(product.votes);
     setLiked(false);
     setImageFailed(false);
+    setIsVoting(false);
   }, [product.id, product.url, product.votes]);
 
-  const handleLike = () => {
-    setLiked((prev) => {
-      setVotes((v) => v + (prev ? -1 : 1));
-      return !prev;
-    });
+  const handleLike = async () => {
+    if (liked || isVoting) return;
+
+    setIsVoting(true);
+    try {
+      const voteStatus = await likeProduct(product.id);
+      setVotes(voteStatus.likes_count);
+      setLiked(voteStatus.liked);
+    } catch (error) {
+      console.error('Impossible de liker ce produit.', error);
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   const handleAdd = () => {
@@ -58,6 +69,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           type="button"
           className={`cv-like${liked ? ' is-liked' : ''}`}
           aria-pressed={liked}
+          disabled={isVoting}
           onClick={handleLike}
         >
           <span className="heart">{liked ? '♥' : '♡'}</span>{' '}

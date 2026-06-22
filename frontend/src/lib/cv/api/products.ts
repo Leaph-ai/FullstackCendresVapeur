@@ -19,6 +19,12 @@ export interface ProductDto {
   } | null;
 }
 
+export interface VoteStatusDto {
+  product_id: number;
+  likes_count: number;
+  liked: boolean;
+}
+
 export async function fetchProducts(signal?: AbortSignal): Promise<ProductDto[]> {
   const response = await fetch(`${API_BASE_URL}/products/`, { signal });
 
@@ -27,4 +33,22 @@ export async function fetchProducts(signal?: AbortSignal): Promise<ProductDto[]>
   }
 
   return response.json();
+}
+
+export async function likeProduct(productId: number | string): Promise<VoteStatusDto> {
+  const accessToken = getAccessToken();
+  const response = await fetch(`${API_BASE_URL}/products/${productId}/vote`, {
+    method: 'POST',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur API vote (${response.status})`);
+  }
+
+  return response.json();
+}
+
+function getAccessToken(): string | null {
+  return localStorage.getItem('access_token') ?? sessionStorage.getItem('access_token');
 }
