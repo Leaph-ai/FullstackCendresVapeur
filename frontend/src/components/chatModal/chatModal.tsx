@@ -89,15 +89,21 @@ export function ChatModal() {
         </p>
       );
     }
-    if (status === 'connecting') {
-      return <p className="chat-state-notice">Établissement de la liaison…</p>;
-    }
-    if ((status === 'closed' || status === 'error') && messages.length === 0) {
-      return (
-        <p className="chat-state-notice">
-          {error ?? 'Liaison interrompue. Rouvrez le télégraphe pour réessayer.'}
-        </p>
-      );
+    // Tant qu'aucun message n'est chargé, on reflète l'état de connexion. Dès
+    // qu'on en a, on les garde affichés même pendant une reconnexion (à la
+    // réouverture du modal) : l'historique ne doit pas clignoter ni disparaître.
+    if (messages.length === 0) {
+      if (status === 'connecting') {
+        return <p className="chat-state-notice">Établissement de la liaison…</p>;
+      }
+      if (status === 'closed' || status === 'error') {
+        return (
+          <p className="chat-state-notice">
+            {error ?? 'Liaison interrompue. Rouvrez le télégraphe pour réessayer.'}
+          </p>
+        );
+      }
+      return <p className="chat-state-notice">Aucun message pour le moment.</p>;
     }
 
     return (
