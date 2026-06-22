@@ -271,6 +271,27 @@
     color: var(--ink);
 }
 
+/* Notices d'état (non connecté, accès refusé, connexion…) */
+.chat-state-notice {
+    margin: auto;
+    padding: 16px;
+    text-align: center;
+    color: var(--ink-3);
+    font-size: 13px;
+    line-height: 1.5;
+    font-family: "Special Elite", "Courier New", monospace;
+}
+
+/* Indicateur « en train d'écrire » */
+.chat-typing {
+    margin: 0;
+    padding: 2px 4px;
+    color: var(--ink-3);
+    font-size: 12px;
+    font-style: italic;
+    font-family: "Special Elite", "Courier New", monospace;
+}
+
 /* Input Area */
 .chat-input-area {
     display: flex;
