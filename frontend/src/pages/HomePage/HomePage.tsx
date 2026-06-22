@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   ChiffresSection,
@@ -10,7 +10,9 @@ import {
   useLiveData,
   usePanelReveal,
 } from '@cv';
+import type { Product } from '@cv';
 import { ChatModal } from '../../components/chatModal/chatModal';
+import { useCart } from '../../context/CartContext';
 
 
 const PANEL_IDS = ['vitrine', 'toxicite', 'journal', 'chiffres'];
@@ -19,11 +21,17 @@ export function HomePage() {
   const location = useLocation();
   const { isLocked, isClanking } = usePanelReveal(PANEL_IDS);
   const live = useLiveData();
-  const [cartCount, setCartCount] = useState(3);
+  const { addItem, getItemCount } = useCart();
 
-  const handleAddToCart = useCallback(() => {
-    setCartCount((c) => c + 1);
-  }, []);
+  const handleAddToCart = useCallback((product: Product) => {
+    void addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      category: product.category,
+      price: product.price,
+    });
+  }, [addItem]);
 
   useEffect(() => {
     const hash = location.hash;
@@ -38,7 +46,7 @@ export function HomePage() {
   }, [location.hash, location.pathname]);
 
   return (
-    <SteampunkPageShell cartCount={cartCount}>
+    <SteampunkPageShell cartCount={getItemCount()}>
       <HeroSection />
       <VitrineSection
         locked={isLocked('vitrine')}

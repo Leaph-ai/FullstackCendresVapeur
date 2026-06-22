@@ -3,7 +3,7 @@ import type { Product } from '../../types';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: () => void;
+  onAddToCart: (product: Product) => void;
 }
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
@@ -19,7 +19,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   };
 
   const handleAdd = () => {
-    onAddToCart();
+    onAddToCart(product);
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1300);
   };

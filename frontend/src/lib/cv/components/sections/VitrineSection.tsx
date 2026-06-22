@@ -1,4 +1,5 @@
 import { PRODUCTS } from '../../types';
+import type { Product } from '../../types';
 import { PanelBody, PanelHead, ScrollPanel } from '../primitives/ScrollPanel';
 import { SparkChart } from '../primitives/SparkChart';
 import { ProductCard } from './ProductCard';
@@ -9,7 +10,7 @@ interface VitrineSectionProps {
   bourseIdx: number;
   bourseTrend: { up: boolean; delta: number };
   bourseSpark: number[];
-  onAddToCart: () => void;
+  onAddToCart: (product: Product) => void;
 }
 
 export function VitrineSection({
