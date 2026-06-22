@@ -13,6 +13,11 @@ interface Product {
 
 const API_BASE = 'http://127.0.0.1:8000';
 
+const getAuthHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('access_token') ?? ''}`,
+});
+
 export function ProductsPanel() {
     const [products, setProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -81,7 +86,10 @@ export function ProductsPanel() {
     const handleDeleteProduct = async (id: number) => {
         if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
         try {
-            const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
+            const res = await fetch(`${API_BASE}/products/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+            });
             if (!res.ok) throw new Error(`Erreur ${res.status}`);
             setProducts((prev) => prev.filter((p) => p.id !== id));
         } catch (err) {
@@ -91,7 +99,7 @@ export function ProductsPanel() {
     };
 
     const handleSaveProduct = async () => {
-        if (!formData.name || formData.price < 0 || formData.stock < 0) {
+        if (!formData.name || formData.price <= 0 || formData.stock < 0) {
             alert('Veuillez remplir tous les champs correctement');
             return;
         }
@@ -108,7 +116,7 @@ export function ProductsPanel() {
             if (editingProduct) {
                 const res = await fetch(`${API_BASE}/products/${editingProduct.id}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify(body),
                 });
                 if (!res.ok) throw new Error(`Erreur ${res.status}`);
@@ -119,7 +127,7 @@ export function ProductsPanel() {
             } else {
                 const res = await fetch(`${API_BASE}/products`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify(body),
                 });
                 if (!res.ok) throw new Error(`Erreur ${res.status}`);
@@ -204,24 +212,52 @@ export function ProductsPanel() {
                         <div className="modal-body">
                             <div className="form-group">
                                 <label>Nom du produit</label>
-                                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="form-input" />
+                                <input
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="form-input"
+                                />
                             </div>
                             <div className="form-group">
                                 <label>Description</label>
-                                <input type="text" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="form-input" />
+                                <input
+                                    type="text"
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    className="form-input"
+                                />
                             </div>
                             <div className="form-group">
                                 <label>Category ID</label>
-                                <input type="number" value={formData.category_id} onChange={(e) => setFormData({ ...formData, category_id: parseInt(e.target.value) })} className="form-input" min="0" />
+                                <input
+                                    type="number"
+                                    value={formData.category_id}
+                                    onChange={(e) => setFormData({ ...formData, category_id: parseInt(e.target.value) || 0 })}
+                                    className="form-input"
+                                    min="0"
+                                />
                             </div>
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>Prix (ⵟ)</label>
-                                    <input type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="form-input" min="1" />
+                                    <input
+                                        type="number"
+                                        value={formData.price}
+                                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                                        className="form-input"
+                                        min="1"
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label>Stock</label>
-                                    <input type="number" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) })} className="form-input" min="0" />
+                                    <input
+                                        type="number"
+                                        value={formData.stock}
+                                        onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
+                                        className="form-input"
+                                        min="0"
+                                    />
                                 </div>
                             </div>
                         </div>
