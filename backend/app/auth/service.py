@@ -1,9 +1,9 @@
 import secrets
-from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 
 import jwt
 from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 
 from app.auth.schemas import LoginResponse, MessageResponse, TokenResponse
 from app.config import Settings
@@ -11,74 +11,55 @@ from app.security.jwt import create_2fa_challenge_token, create_access_token, de
 from app.security.password import hash_password, verify_password
 from app.security.roles import RoleLevel
 from app.services.mail import send_email
+from models.two_factor_code import TwoFactorCode
+from models.user import User
 
+# Révocation de tokens (en mémoire — pas de table dédiée en DB)
+_revoked_tokens: set[str] = set()
 
-@dataclass
-class UserRecord:
-    id: int
-    email: str
-    password_hash: str
-    role: str
-    role_level: int
-    is_active: bool = True
-
-
-@dataclass
-class TwoFactorCodeRecord:
-    user_id: int
-    code_hash: str
-    expires_at: datetime
-    used: bool = False
-
-
-@dataclass
-class AuthStore:
-    users: dict[str, UserRecord] = field(default_factory=dict)
-    two_factor_codes: dict[int, TwoFactorCodeRecord] = field(default_factory=dict)
-    revoked_access_tokens: set[str] = field(default_factory=set)
-    next_user_id: int = 1
-
-
-_store = AuthStore(
-    users={
-        "admin@example.com": UserRecord(
-            id=1,
-            email="admin@example.com",
-            password_hash=hash_password("Admin123!"),
-            role="admin",
-            role_level=RoleLevel.ADMIN,
-        )
-    },
-    next_user_id=2,
-)
+# Role IDs (correspondent au seed DB : 1=Guest, 2=User, 3=Editor, 4=Admin)
+_ROLE_ID_USER = 2
+_ROLE_ID_ADMIN = 4
 
 
 class AuthService:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, db: Session) -> None:
         self.settings = settings
+        self.db = db
 
     def register(self, email: str, password: str) -> MessageResponse:
         normalized_email = email.lower()
-        if normalized_email in _store.users:
+
+        existing = self.db.query(User).filter(User.email == normalized_email).first()
+        if existing is not None:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Un compte existe déjà avec cet email.",
             )
 
-        user = UserRecord(
-            id=_store.next_user_id,
+        # Dérive un username unique à partir de l'email
+        base_username = normalized_email.split("@")[0]
+        username = base_username
+        suffix = 1
+        while self.db.query(User).filter(User.username == username).first() is not None:
+            username = f"{base_username}{suffix}"
+            suffix += 1
+
+        user = User(
+            username=username,
             email=normalized_email,
             password_hash=hash_password(password),
-            role="user",
-            role_level=RoleLevel.USER,
+            role_id=_ROLE_ID_USER,
         )
-        _store.users[normalized_email] = user
-        _store.next_user_id += 1
+        self.db.add(user)
+        self.db.commit()
         return MessageResponse(message="Inscription réussie. Vous pouvez vous connecter.")
 
     def login(self, email: str, password: str) -> LoginResponse:
         user = self._authenticate_user(email, password)
-        extra = {"email": user.email, "role": user.role, "role_level": user.role_level}
+        role_name = user.role.name if user.role else "user"
+        role_level = self._role_level(role_name)
+        extra = {"email": user.email, "role": role_name.lower(), "role_level": role_level}
 
         if not self.settings.two_factor_enabled:
             return LoginResponse(
@@ -113,74 +94,71 @@ class AuthService:
             ) from exc
 
         user_id = int(payload["sub"])
-        record = _store.two_factor_codes.get(user_id)
-
-        if record is None or record.used or datetime.now(UTC) > record.expires_at:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Code invalide ou expiré.",
+        record = (
+            self.db.query(TwoFactorCode)
+            .filter(
+                TwoFactorCode.user_id == user_id,
+                TwoFactorCode.used.is_(False),
+                TwoFactorCode.expires_at > datetime.now(UTC).replace(tzinfo=None),
             )
+            .order_by(TwoFactorCode.expires_at.desc())
+            .first()
+        )
 
-        if not verify_password(code, record.code_hash):
+        if record is None or not verify_password(code, record.code_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Code invalide ou expiré.",
             )
 
         record.used = True
-        user = self._get_user_by_id(user_id)
+        self.db.commit()
+
+        user = self.db.query(User).filter(User.id == user_id).first()
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Utilisateur introuvable.",
             )
 
-        extra = {"email": user.email, "role": user.role, "role_level": user.role_level}
+        role_name = user.role.name if user.role else "user"
+        role_level = self._role_level(role_name)
+        extra = {"email": user.email, "role": role_name.lower(), "role_level": role_level}
         return TokenResponse(
             access_token=create_access_token(str(user.id), self.settings, extra),
         )
 
     def logout(self, access_token: str) -> MessageResponse:
-        _store.revoked_access_tokens.add(access_token)
+        _revoked_tokens.add(access_token)
         return MessageResponse(message="Déconnexion réussie.")
 
     def is_token_revoked(self, access_token: str) -> bool:
-        return access_token in _store.revoked_access_tokens
+        return access_token in _revoked_tokens
 
-    def _authenticate_user(self, email: str, password: str) -> UserRecord:
-        normalized_email = email.lower()
-        user = _store.users.get(normalized_email)
+    # ── helpers ──────────────────────────────────────────────────────────────
 
+    def _authenticate_user(self, email: str, password: str) -> User:
+        user = self.db.query(User).filter(User.email == email.lower()).first()
         if user is None or not verify_password(password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Email ou mot de passe incorrect.",
             )
-
-        if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Compte désactivé.",
-            )
-
         return user
-
-    def _get_user_by_id(self, user_id: int) -> UserRecord | None:
-        for user in _store.users.values():
-            if user.id == user_id:
-                return user
-        return None
 
     @staticmethod
     def _generate_2fa_code() -> str:
         return f"{secrets.randbelow(1_000_000):06d}"
 
     def _store_2fa_code(self, user_id: int, code: str) -> None:
-        _store.two_factor_codes[user_id] = TwoFactorCodeRecord(
+        record = TwoFactorCode(
             user_id=user_id,
             code_hash=hash_password(code),
-            expires_at=datetime.now(UTC) + timedelta(minutes=self.settings.two_factor_code_expire_minutes),
+            expires_at=datetime.now(UTC).replace(tzinfo=None)
+            + timedelta(minutes=self.settings.two_factor_code_expire_minutes),
         )
+        self.db.add(record)
+        self.db.commit()
 
     def _send_2fa_email(self, email: str, code: str) -> None:
         try:
@@ -199,3 +177,16 @@ class AuthService:
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Impossible d'envoyer le code de vérification par email.",
             ) from exc
+
+    @staticmethod
+    def _role_level(role_name: str) -> int:
+        mapping = {
+            "guest": RoleLevel.GUEST,
+            "user": RoleLevel.USER,
+            "editor": RoleLevel.EDITOR,
+            "admin": RoleLevel.ADMIN,
+        }
+        return mapping.get(role_name.lower(), RoleLevel.USER)
+
+
+

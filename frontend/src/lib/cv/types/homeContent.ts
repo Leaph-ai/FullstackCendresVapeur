@@ -1,5 +1,5 @@
 export interface Product {
-  id: string;
+  id: number;
   name: string;
   category: string;
   price: number;
@@ -23,12 +23,9 @@ export interface ToxGaugeConfig {
 }
 
 export const PRODUCTS: Product[] = [
-  { id: 'p1', name: 'Régulateur de pression Mk.III', category: 'Mécanique lourde', price: 48, trend: 'up', votes: 214 },
-  { id: 'p2', name: "Valve d'appoint laiton", category: 'Vapeur', price: 31, trend: 'down', votes: 188 },
-  { id: 'p3', name: 'Lentille optique cuivrée', category: 'Optique', price: 76, trend: 'up', votes: 156 },
-  { id: 'p4', name: 'Manomètre de quart', category: 'Mesure', price: 22, trend: 'down', votes: 132 },
-  { id: 'p5', name: 'Détendeur à soupape', category: 'Mécanique', price: 54, trend: 'up', votes: 98 },
-  { id: 'p6', name: 'Engrenage 14 dents', category: 'Cuivre brut', price: 19, trend: 'down', votes: 71 },
+  { id: 1, name: 'Engrenage en laiton',    category: 'Cuivre brut',      price: 12.50,  trend: 'down', votes: 71 },
+  { id: 2, name: 'Alambic de poche',       category: 'Mécanique lourde', price: 89.90,  trend: 'up',   votes: 188 },
+  { id: 3, name: 'Montre à gousset fêlée', category: 'Optique',          price: 250.00, trend: 'up',   votes: 156 },
 ];
 
 export const JOURNAL_LOGS: JournalLog[] = [
