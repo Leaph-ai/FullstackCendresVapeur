@@ -9,10 +9,14 @@ ON CONFLICT ("name") DO NOTHING;
 -- ATTENTION : password_hash = placeholder bcrypt (mot de passe dev "changeme").
 -- À réaligner avec le schéma de hash de l'auth quand elle sera implémentée.
 INSERT INTO "users" ("username", "email", "password_hash", "role_id")
-SELECT 'admin', 'admin@cendres.local',
+SELECT 'admin', 'admin@example.com',
        '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RAES6.Hy',
        (SELECT "id" FROM "roles" WHERE "name" = 'Admin')
 WHERE NOT EXISTS (SELECT 1 FROM "users" WHERE "username" = 'admin');
+
+-- Migration dev : ancien email .local invalide pour EmailStr (Pydantic)
+UPDATE "users" SET "email" = 'admin@example.com'
+WHERE "username" = 'admin' AND "email" = 'admin@cendres.local';
 
 -- Catégories
 INSERT INTO "categories" ("name") VALUES

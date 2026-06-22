@@ -5,8 +5,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.auth.dependencies import get_auth_service, get_current_user
 from app.auth.schemas import (
-    LoginPendingResponse,
     LoginRequest,
+    LoginResponse,
     MessageResponse,
     RegisterRequest,
     TokenResponse,
@@ -28,12 +28,12 @@ async def register(
     return auth_service.register(payload.email, payload.password)
 
 
-@router.post("/login", response_model=LoginPendingResponse)
+@router.post("/login", response_model=LoginResponse)
 async def login(
     payload: LoginRequest,
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
-) -> LoginPendingResponse:
-    """Connexion : vérifie email/mot de passe et envoie un code 2FA par email."""
+) -> LoginResponse:
+    """Connexion : en prod, envoie un code 2FA ; en dev, retourne directement un JWT."""
     return auth_service.login(payload.email, payload.password)
 
 

@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
-import type { CartItem } from '../context/CartContext';
-import type { CheckoutFormData } from '../checkout';
+import type { CartItem } from '../../context/CartContext';
+import type { CheckoutFormData } from '../../pages/Checkout/checkout';
 import './Invoice.css';
 
 interface InvoiceProps {

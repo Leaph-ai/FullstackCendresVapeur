@@ -63,7 +63,7 @@ ENDPOINTS: tuple[EndpointDef, ...] = (
         path="/auth/login",
         auth=AuthLevel.NONE,
         description="Connexion (envoi code 2FA)",
-        body={"email": "admin@cendres.local", "password": "changeme"},
+        body={"email": "admin@example.com", "password": "Admin123!"},
         smoke_statuses=(200, 401, 500),
     ),
     EndpointDef(
@@ -74,13 +74,6 @@ ENDPOINTS: tuple[EndpointDef, ...] = (
         description="Validation du code 2FA",
         body={"challenge_token": "invalid", "code": "000000"},
         smoke_statuses=(200, 401),
-    ),
-    EndpointDef(
-        id="auth.logout",
-        method="POST",
-        path="/auth/logout",
-        auth=AuthLevel.BEARER,
-        description="Déconnexion (révocation du token)",
     ),
     # --- Produits ---
     EndpointDef(
@@ -233,13 +226,20 @@ ENDPOINTS: tuple[EndpointDef, ...] = (
         method="POST",
         path="/dev/test-email",
         auth=AuthLevel.NONE,
-        description="Envoi d'email de test (Mailtrap)",
+        description="Envoi d'email de test (SMTP Google)",
         body={
             "send_to": "test@example.com",
             "subject": "API tester",
             "body": "Smoke test",
         },
         smoke_statuses=(200, 500),
+    ),
+    EndpointDef(
+        id="auth.logout",
+        method="POST",
+        path="/auth/logout",
+        auth=AuthLevel.BEARER,
+        description="Déconnexion (révocation du token)",
     ),
 )
 

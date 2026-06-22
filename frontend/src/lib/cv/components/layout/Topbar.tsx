@@ -28,17 +28,21 @@ export function Topbar({ cartCount, activeSection = 'vitrine' }: TopbarProps) {
         <span className="cv-toxpill" role="status">
           <span className="dot" /> Air · nominal
         </span>
+        <Link to="/admin" className="tb-admin" aria-label="Panneau d'administration">
+          <span className="tb-admin-icon">⚙</span>
+          <span>Admin</span>
+        </Link>
         <Link to="/login" className="tb-user" aria-label="Se connecter">
           <span className="tb-user-icon">⚙</span>
           <span>Se connecter</span>
         </Link>
-       <Link
-  to="/cart"
-  className="cv-iconbtn"
-  aria-label={`Panier, ${cartCount} articles`}
->
-  ▤<span className="cnt">{cartCount}</span>
-</Link>
+        <Link
+          to="/cart"
+          className="cv-iconbtn"
+          aria-label={`Panier, ${cartCount} articles`}
+        >
+          ▤<span className="cnt">{cartCount}</span>
+        </Link>
       </span>
     </header>
   );

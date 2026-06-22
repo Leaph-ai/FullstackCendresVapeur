@@ -11,9 +11,12 @@ class LoginRequest(BaseModel):
     password: str = Field(min_length=1, max_length=128)
 
 
-class LoginPendingResponse(BaseModel):
+class LoginResponse(BaseModel):
     message: str
-    challenge_token: str
+    requires_2fa: bool
+    challenge_token: str | None = None
+    access_token: str | None = None
+    token_type: str = "bearer"
 
 
 class Verify2FARequest(BaseModel):
