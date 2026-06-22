@@ -80,11 +80,11 @@ async def poll_messages(
             return []
 
 
-def _authenticate_ws_token(token: str | None) -> dict | None:
+def _authenticate_ws_token(token: str | None, db: Session) -> dict | None:
     if not token:
         return None
     settings = get_settings()
-    if AuthService(settings).is_token_revoked(token):
+    if AuthService(settings, db).is_token_revoked(token):
         return None
     try:
         payload = decode_token(token, settings, expected_type="access")
@@ -145,7 +145,7 @@ async def chat_ws(
     db: Annotated[Session, Depends(get_db)],
     token: str | None = None,
 ) -> None:
-    auth = _authenticate_ws_token(token)
+    auth = _authenticate_ws_token(token, db)
     if auth is None:
         await websocket.close(code=4401)
         return
