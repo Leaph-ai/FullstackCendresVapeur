@@ -1,5 +1,6 @@
 export interface Product {
   id: string | number;
+
   name: string;
   category: string;
   price: number;
@@ -54,6 +55,7 @@ export const PRODUCTS: Product[] = [
   { id: 'p4', name: 'Manomètre de quart', category: 'Mesure', price: 22, trend: 'down', votes: 132 },
   { id: 'p5', name: 'Détendeur à soupape', category: 'Mécanique', price: 54, trend: 'up', votes: 98 },
   { id: 'p6', name: 'Engrenage 14 dents', category: 'Cuivre brut', price: 19, trend: 'down', votes: 71 },
+
 ];
 
 export const JOURNAL_LOGS: JournalLog[] = [

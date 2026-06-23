@@ -12,7 +12,7 @@ interface VitrineSectionProps {
   bourseIdx: number;
   bourseTrend: { up: boolean; delta: number };
   bourseSpark: number[];
-  onAddToCart: () => void;
+  onAddToCart: (product: Product) => void;
 }
 
 export function VitrineSection({

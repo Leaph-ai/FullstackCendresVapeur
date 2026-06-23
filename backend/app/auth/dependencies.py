@@ -3,9 +3,11 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
 
 from app.auth.service import AuthService
 from app.config import Settings, get_settings
+from app.core.database import get_db
 from app.security.jwt import decode_token
 
 security_scheme = HTTPBearer(auto_error=False)
@@ -13,8 +15,9 @@ security_scheme = HTTPBearer(auto_error=False)
 
 def get_auth_service(
     settings: Annotated[Settings, Depends(get_settings)],
+    db: Annotated[Session, Depends(get_db)],
 ) -> AuthService:
-    return AuthService(settings)
+    return AuthService(settings, db)
 
 
 def get_current_user(

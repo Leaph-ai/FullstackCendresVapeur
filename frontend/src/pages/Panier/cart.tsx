@@ -7,12 +7,16 @@ import { useCart } from '../../context/CartContext';
 import './cart.css';
 
 function Cart() {
-  const { items, removeItem, updateQuantity, getTotal, getItemCount } = useCart();
+  const { items, loading, error, removeItem, updateQuantity, getTotal, getItemCount } = useCart();
   const railRef = useScrollRail();
 
   const handleQuantityChange = (productId: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const quantity = Math.max(1, parseInt(e.target.value) || 1);
     updateQuantity(productId, quantity);
+  };
+
+  const handleRemove = (productId: number) => {
+    void removeItem(productId);
   };
 
   return (
@@ -29,7 +33,17 @@ function Cart() {
               <p>Gestion des commandes en circuit fermé</p>
             </div>
 
-            {items.length === 0 ? (
+            {error && (
+              <div className="cv-alert is-danger" style={{ marginBottom: '1rem' }}>
+                {error}
+              </div>
+            )}
+
+            {loading && items.length === 0 ? (
+              <div className="cart-empty">
+                <p>Chargement du panier…</p>
+              </div>
+            ) : items.length === 0 ? (
               <div className="cart-empty">
                 <div className="empty-icon">⬚</div>
                 <h2>Panier vide</h2>
@@ -79,7 +93,8 @@ function Cart() {
                         <button
                           type="button"
                           className="cv-btn is-sm is-danger"
-                          onClick={() => removeItem(item.productId)}
+                          onClick={() => handleRemove(item.productId)}
+                          disabled={loading}
                           title="Retirer du panier"
                         >
                           ✕
