@@ -1,9 +1,12 @@
+import logging
 from decimal import Decimal, ROUND_HALF_UP
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
+from app.config import Settings
 from app.orders.schemas import OrderCreate
+from app.services.mail import send_email
 from models.cart import Cart
 from models.cart_item import CartItem
 from models.discount_code import DiscountCode
@@ -13,14 +16,17 @@ from models.order_item import OrderItem
 ORDER_STATUS_PENDING = "pending"
 EDITOR_ROLE_LEVEL = 2
 
+logger = logging.getLogger(__name__)
+
 
 def _money(value: Decimal) -> Decimal:
     return value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
 class OrderService:
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: Session, settings: Settings) -> None:
         self.db = db
+        self.settings = settings
 
     def create_order(self, user_id: int, payload: OrderCreate) -> Order:
         cart = (
@@ -103,7 +109,9 @@ class OrderService:
             self.db.delete(item)
 
         self.db.commit()
-        return self._fetch_order(order.id)
+        order = self._fetch_order(order.id)
+        self._send_confirmation_email(order)
+        return order
 
     def get_order(self, order_id: int, requesting_user_id: int, role_level: int) -> Order:
         order = self._fetch_order(order_id)
@@ -144,10 +152,51 @@ class OrderService:
         self.db.delete(order)
         self.db.commit()
 
+    def _send_confirmation_email(self, order: Order) -> None:
+        if order.user is None:
+            logger.warning(
+                "Impossible d'envoyer la confirmation de commande %s : utilisateur introuvable.",
+                order.id,
+            )
+            return
+
+        try:
+            send_email(
+                self.settings,
+                to=order.user.email,
+                subject=f"Confirmation de commande #{order.id} — Cendres & Vapeur",
+                body=self._build_confirmation_email_body(order),
+            )
+        except Exception:
+            logger.exception(
+                "Échec de l'envoi de la confirmation de commande %s à %s.",
+                order.id,
+                order.user.email,
+            )
+
+    def _build_confirmation_email_body(self, order: Order) -> str:
+        lines = [
+            "Merci pour votre commande !",
+            "",
+            f"Numéro de commande : #{order.id}",
+            f"Statut : {order.status}",
+            f"Montant total : {order.total_amount} €",
+            "",
+            "Articles :",
+        ]
+        for item in order.items:
+            product_name = item.product.name if item.product else f"Produit #{item.product_id}"
+            lines.append(f"  - {product_name} x{item.quantity} — {item.unit_price} € / unité")
+        lines.extend(["", "À bientôt sur Cendres & Vapeur."])
+        return "\n".join(lines)
+
     def _fetch_order(self, order_id: int) -> Order:
         order = (
             self.db.query(Order)
-            .options(joinedload(Order.items).joinedload(OrderItem.product))
+            .options(
+                joinedload(Order.items).joinedload(OrderItem.product),
+                joinedload(Order.user),
+            )
             .filter(Order.id == order_id)
             .first()
         )
