@@ -10,7 +10,7 @@ ON CONFLICT ("name") DO NOTHING;
 -- À réaligner avec le schéma de hash de l'auth quand elle sera implémentée.
 INSERT INTO "users" ("username", "email", "password_hash", "role_id")
 SELECT 'admin', 'admin@example.com',
-       '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RAES6.Hy',
+       '$2b$12$wU2wFpj1bpqRyzUUMCXiSeRl2HJnNefBiqdDnQ2AzwyrOrgZzY8de',
        (SELECT "id" FROM "roles" WHERE "name" = 'Admin')
 WHERE NOT EXISTS (SELECT 1 FROM "users" WHERE "username" = 'admin');
 
