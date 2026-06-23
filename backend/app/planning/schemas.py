@@ -34,3 +34,13 @@ class ShiftNoteResponse(BaseModel):
     content: str | None
 
     model_config = {"from_attributes": True}
+
+
+class MonthPlanningResponse(BaseModel):
+    """Réponse unique pour le calendrier complet d'un mois.
+    Permet au frontend de tout charger en une seule requête.
+    """
+    year: int
+    month: int
+    events: list[ColonyEventResponse]
+    shift_notes: list[ShiftNoteResponse]

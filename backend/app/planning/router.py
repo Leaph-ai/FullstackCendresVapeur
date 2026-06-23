@@ -8,7 +8,7 @@ from app.core.database import get_db
 from app.security.rbac import require_role
 from app.security.roles import RoleLevel
 
-from .schemas import ColonyEventCreate, ColonyEventResponse, ShiftNoteResponse, ShiftNoteUpsert
+from .schemas import ColonyEventCreate, ColonyEventResponse, MonthPlanningResponse, ShiftNoteResponse, ShiftNoteUpsert
 from .service import PlanningService
 
 router = APIRouter(prefix="/planning", tags=["Planning"])
@@ -18,6 +18,25 @@ def get_planning_service(db: Annotated[Session, Depends(get_db)]) -> PlanningSer
     return PlanningService(db)
 
 
+@router.get("/month", response_model=MonthPlanningResponse)
+def get_month_planning(
+    year: int = Query(..., ge=2000, le=2100, description="Année (ex: 2026)"),
+    month: int = Query(..., ge=1, le=12, description="Mois (1-12)"),
+    current_user: Annotated[dict, Depends(get_current_user)] = ...,
+    service: Annotated[PlanningService, Depends(get_planning_service)] = ...,
+) -> MonthPlanningResponse:
+    """Retourne en une seule requête tous les événements de la colonie
+    ET les notes de quart de l'utilisateur courant pour le mois demandé.
+
+    Le frontend n'a besoin que de cet endpoint pour afficher le calendrier complet.
+    """
+    return MonthPlanningResponse(
+        year=year,
+        month=month,
+        events=service.list_events(year, month),
+        shift_notes=service.list_shift_notes(current_user["id"], year, month),
+    )
+
 
 @router.get("/events", response_model=list[ColonyEventResponse])
 def list_events(
@@ -25,6 +44,9 @@ def list_events(
     month: int = Query(..., ge=1, le=12, description="Mois (1-12)"),
     service: Annotated[PlanningService, Depends(get_planning_service)] = ...,
 ) -> list[ColonyEventResponse]:
+    """Retourne les événements de la colonie pour le mois demandé.
+    Accessible à tous les utilisateurs authentifiés.
+    """
     return service.list_events(year, month)
 
 
@@ -53,7 +75,6 @@ def delete_event(
 ) -> None:
     """Supprime un événement. Réservé aux administrateurs."""
     service.delete_event(event_id)
-
 
 
 @router.get("/notes", response_model=list[ShiftNoteResponse])
