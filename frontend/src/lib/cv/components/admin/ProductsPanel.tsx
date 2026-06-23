@@ -10,6 +10,8 @@ interface Product {
     status: 'active' | 'inactive';
 }
 
+type ProductFormData = Omit<Product, 'id'>;
+
 const DEMO_PRODUCTS: Product[] = [
     {
         id: 1,
@@ -58,12 +60,12 @@ export function ProductsPanel() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<ProductFormData>({
         name: '',
         category: '',
         price: 0,
         stock: 0,
-        status: 'active' as const,
+        status: 'active',
     });
 
     const filteredProducts = products.filter(

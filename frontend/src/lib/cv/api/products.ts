@@ -1,6 +1,7 @@
 const rawApiBaseUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
 
 export const API_BASE_URL = (rawApiBaseUrl?.trim() || '/api').replace(/\/+$/, '');
+const FALLBACK_API_BASE_URLS = ['http://127.0.0.1:8000', 'http://localhost:8000'];
 
 export interface ProductDto {
   id: number;
@@ -26,27 +27,36 @@ export interface VoteStatusDto {
 }
 
 export async function fetchProducts(signal?: AbortSignal): Promise<ProductDto[]> {
-  const response = await fetch(`${API_BASE_URL}/products/`, { signal });
-
-  if (!response.ok) {
-    throw new Error(`Erreur API produits (${response.status})`);
-  }
-
-  return response.json();
+  return fetchFromApi<ProductDto[]>('/products/', { signal });
 }
 
 export async function likeProduct(productId: number | string): Promise<VoteStatusDto> {
   const accessToken = getAccessToken();
-  const response = await fetch(`${API_BASE_URL}/products/${productId}/vote`, {
+  return fetchFromApi<VoteStatusDto>(`/products/${productId}/vote`, {
     method: 'POST',
     headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
   });
+}
 
-  if (!response.ok) {
-    throw new Error(`Erreur API vote (${response.status})`);
+async function fetchFromApi<T>(path: string, init: RequestInit = {}): Promise<T> {
+  let lastError: unknown;
+  const baseUrls = rawApiBaseUrl?.trim() ? [API_BASE_URL] : [API_BASE_URL, ...FALLBACK_API_BASE_URLS];
+
+  for (const baseUrl of baseUrls) {
+    try {
+      const response = await fetch(`${baseUrl}${path}`, init);
+
+      if (!response.ok) {
+        throw new Error(`Erreur API ${path} (${response.status})`);
+      }
+
+      return response.json();
+    } catch (error) {
+      lastError = error;
+    }
   }
 
-  return response.json();
+  throw lastError;
 }
 
 function getAccessToken(): string | null {

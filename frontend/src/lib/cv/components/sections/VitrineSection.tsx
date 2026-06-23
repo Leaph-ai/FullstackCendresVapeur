@@ -24,18 +24,22 @@ export function VitrineSection({
   onAddToCart,
 }: VitrineSectionProps) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
+    setLoadError(false);
 
     fetchProducts(controller.signal)
       .then((apiProducts) => {
         setProducts(apiProducts.map(toCardProduct));
+        setLoadError(false);
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
         console.error('Impossible de charger les produits depuis /products/.', error);
         setProducts([]);
+        setLoadError(true);
       });
 
     return () => controller.abort();
@@ -68,6 +72,11 @@ export function VitrineSection({
           {products.map((p) => (
             <ProductCard key={p.id} product={p} onAddToCart={onAddToCart} />
           ))}
+          {loadError && (
+            <p className="cv-note">
+              Impossible de charger les produits. Vérifie que l'API backend tourne sur le port 8000.
+            </p>
+          )}
         </div>
       </PanelBody>
     </ScrollPanel>
