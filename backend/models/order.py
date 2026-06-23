@@ -16,4 +16,4 @@ class Order(Base):
 
     user = relationship("User", back_populates="orders")
     discount_code = relationship("DiscountCode", back_populates="orders")
-    items = relationship("OrderItem", back_populates="order")
+    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
