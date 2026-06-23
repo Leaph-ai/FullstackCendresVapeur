@@ -5,13 +5,17 @@ from sqlalchemy.orm import Session
 
 from app.contact.schemas import ContactMessageCreate, ContactMessageResponse
 from app.contact.service import ContactService
+from app.config import Settings, get_settings
 from app.core.database import get_db
 
 router = APIRouter(tags=["Contact"])
 
 
-def get_contact_service(db: Annotated[Session, Depends(get_db)]) -> ContactService:
-    return ContactService(db)
+def get_contact_service(
+    db: Annotated[Session, Depends(get_db)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> ContactService:
+    return ContactService(db, settings)
 
 
 @router.post(

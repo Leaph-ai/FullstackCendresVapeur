@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_from: str = "noreply@zone-franche.local"
+    contact_admin_email: str = ""
     two_factor_code_expire_minutes: int = 10
 
     @property
