@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user
-from app.carts.schemas import CartItemCreate, CartResponse
+from app.carts.schemas import CartItemCreate, CartItemUpdate, CartResponse
 from app.carts.service import CartService
 from app.core.database import get_db
 
@@ -43,6 +43,23 @@ def add_item(
     return service.add_item(
         user_id,
         payload,
+        current_user["id"],
+        current_user.get("role_level", 0),
+    )
+
+
+@router.patch("/{user_id}/items/{item_id}", response_model=CartResponse)
+def update_item_quantity(
+    user_id: int,
+    item_id: int,
+    payload: CartItemUpdate,
+    current_user: Annotated[dict, Depends(get_current_user)],
+    service: Annotated[CartService, Depends(get_cart_service)],
+) -> CartResponse:
+    return service.update_item_quantity(
+        user_id,
+        item_id,
+        payload.quantity,
         current_user["id"],
         current_user.get("role_level", 0),
     )

@@ -12,7 +12,7 @@ function Cart() {
 
   const handleQuantityChange = (productId: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const quantity = Math.max(1, parseInt(e.target.value) || 1);
-    updateQuantity(productId, quantity);
+    void updateQuantity(productId, quantity);
   };
 
   const handleRemove = (productId: number) => {

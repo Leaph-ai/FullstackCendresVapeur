@@ -8,6 +8,7 @@ import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { useCart } from '../../context/CartContext';
 import { Invoice } from '../../components/invoice/Invoice';
+import { createOrder, validateDiscountCode } from '../../api/orders';
 import './checkout.css';
 
 export interface CheckoutFormData {
@@ -26,12 +27,15 @@ export interface CheckoutFormData {
 }
 
 function Checkout() {
-  const { items, getTotal, getItemCount } = useCart();
+  const { items, getTotal, getItemCount, clearCart } = useCart();
   const railRef = useScrollRail();
   const invoiceRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<'info' | 'payment' | 'review' | 'success'>('info');
   const [isProcessing, setIsProcessing] = useState(false);
   const [discount, setDiscount] = useState(0);
+  const [discountError, setDiscountError] = useState<string | null>(null);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [confirmedOrderId, setConfirmedOrderId] = useState<number | null>(null);
   const [showInvoice, setShowInvoice] = useState(false);
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: '',
@@ -96,17 +100,22 @@ function Checkout() {
     return true;
   };
 
-  const handleApplyDiscount = (code: string) => {
-    // Simulation de codes de réduction
-    const discountCodes: Record<string, number> = {
-      'VAPEUR10': 10,
-      'CENDRES15': 15,
-      'COLONIE20': 20,
-    };
-    const discountAmount = discountCodes[code.toUpperCase()] || 0;
-    setDiscount(discountAmount);
-    if (discountAmount > 0) {
+  const handleApplyDiscount = async (code: string) => {
+    if (!code.trim()) return;
+    setDiscountError(null);
+    try {
+      const result = await validateDiscountCode(code);
+      if (!result.active) {
+        setDiscountError('Ce code de réduction est inactif.');
+        setDiscount(0);
+        return;
+      }
+      const percentage = parseFloat(result.percentage);
+      setDiscount(percentage);
       setFormData((prev) => ({ ...prev, discountCode: code }));
+    } catch {
+      setDiscountError('Code de réduction invalide ou introuvable.');
+      setDiscount(0);
     }
   };
 
@@ -126,10 +135,17 @@ function Checkout() {
 
   const handleProcessPayment = async () => {
     setIsProcessing(true);
-    // Simulation du traitement du paiement
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsProcessing(false);
-    setStep('success');
+    setOrderError(null);
+    try {
+      const order = await createOrder(formData.discountCode || null);
+      setConfirmedOrderId(order.id);
+      clearCart();
+      setStep('success');
+    } catch (err) {
+      setOrderError(err instanceof Error ? err.message : 'Erreur lors de la commande.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handlePrintInvoice = () => {
@@ -240,7 +256,7 @@ function Checkout() {
                   <div className="success-state">
                     <div className="success-icon">✓</div>
                     <h2>Commande confirmée</h2>
-                    <p className="order-number">Numéro de commande: #ORD-{Date.now().toString().slice(-8)}</p>
+                    <p className="order-number">Numéro de commande: #ORD-{confirmedOrderId ?? Date.now().toString().slice(-8)}</p>
                     <p>Votre commande a été traitée avec succès. Vous recevrez une confirmation par email.</p>
 
                     <button
@@ -436,7 +452,8 @@ function Checkout() {
                               Appliquer
                             </button>
                           </div>
-                          <p className="hint">Codes disponibles: VAPEUR10, CENDRES15, COLONIE20</p>
+                          {discountError && <p className="hint" style={{ color: 'var(--cv-danger, #c0392b)' }}>{discountError}</p>}
+                          {discount > 0 && <p className="hint" style={{ color: 'green' }}>Code appliqué : -{discount}%</p>}
                         </div>
                       </div>
                     )}
@@ -495,15 +512,20 @@ function Checkout() {
                         </button>
                       )}
                       {step === 'review' ? (
-                        <button
-                          type="button"
-                          className="cv-btn is-block"
-                          onClick={handleProcessPayment}
-                          disabled={isProcessing}
-                          data-loading={isProcessing}
-                        >
-                          {isProcessing ? 'Traitement...' : 'Confirmer le paiement'}
-                        </button>
+                        <>
+                          {orderError && (
+                            <p style={{ color: 'var(--cv-danger, #c0392b)', marginBottom: '0.5rem' }}>{orderError}</p>
+                          )}
+                          <button
+                            type="button"
+                            className="cv-btn is-block"
+                            onClick={handleProcessPayment}
+                            disabled={isProcessing}
+                            data-loading={isProcessing}
+                          >
+                            {isProcessing ? 'Traitement...' : 'Confirmer le paiement'}
+                          </button>
+                        </>
                       ) : (
                         <button
                           type="button"
