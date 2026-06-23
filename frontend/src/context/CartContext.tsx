@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { addCartItem, getCart, removeCartItem } from '../api/cart';
+import { addCartItem, getCart, removeCartItem, updateCartItemQuantity } from '../api/cart';
 import type { CartResponse } from '../api/cart';
 import { getUserIdFromToken } from '../api/client';
 
@@ -20,7 +20,7 @@ export interface CartContextType {
   error: string | null;
   addItem: (item: Omit<CartItem, 'quantity'>) => Promise<void>;
   removeItem: (productId: number) => Promise<void>;
-  updateQuantity: (productId: number, quantity: number) => void;
+  updateQuantity: (productId: number, quantity: number) => Promise<void>;
   clearCart: () => void;
   refreshCart: () => Promise<void>;
   getTotal: () => number;
@@ -100,13 +100,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items]);
 
-  // updateQuantity : mise à jour locale uniquement (pas d'endpoint PATCH côté backend)
-  const updateQuantity = useCallback((productId: number, quantity: number) => {
-    setItems((prev) => {
-      if (quantity <= 0) return prev.filter((i) => i.productId !== productId);
-      return prev.map((i) => (i.productId === productId ? { ...i, quantity } : i));
-    });
-  }, []);
+  // updateQuantity : synchronise la quantité avec le backend
+  const updateQuantity = useCallback(async (productId: number, quantity: number) => {
+    const userId = getUserIdFromToken();
+    const target = items.find((i) => i.productId === productId);
+    if (!target) return;
+    if (quantity <= 0) {
+      await removeItem(productId);
+      return;
+    }
+    // Optimistic update
+    setItems((prev) => prev.map((i) => (i.productId === productId ? { ...i, quantity } : i)));
+    if (userId !== null) {
+      try {
+        const data = await updateCartItemQuantity(userId, target.id, quantity);
+        setItems(toCartItems(data));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Impossible de modifier la quantité');
+        void fetchCart(); // rollback
+      }
+    }
+  }, [items, removeItem, fetchCart]);
 
   const clearCart = useCallback(() => setItems([]), []);
 
