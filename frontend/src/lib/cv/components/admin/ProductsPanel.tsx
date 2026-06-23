@@ -11,6 +11,50 @@ interface Product {
     status: 'active' | 'inactive';
 }
 
+type ProductFormData = Omit<Product, 'id'>;
+
+const DEMO_PRODUCTS: Product[] = [
+    {
+        id: 1,
+        name: 'Régulateur de pression Mk.III',
+        category: 'Mécanique lourde',
+        price: 48,
+        stock: 12,
+        status: 'active',
+    },
+    {
+        id: 2,
+        name: 'Valve d\'appoint laiton',
+        category: 'Vapeur',
+        price: 31,
+        stock: 8,
+        status: 'active',
+    },
+    {
+        id: 3,
+        name: 'Lentille optique cuivrée',
+        category: 'Optique',
+        price: 76,
+        stock: 5,
+        status: 'active',
+    },
+    {
+        id: 4,
+        name: 'Manomètre de quart',
+        category: 'Mesure',
+        price: 22,
+        stock: 0,
+        status: 'inactive',
+    },
+    {
+        id: 5,
+        name: 'Détendeur à soupape',
+        category: 'Mécanique',
+        price: 54,
+        stock: 15,
+        status: 'active',
+    },
+];
 const API_BASE = 'http://127.0.0.1:8000';
 
 const getAuthHeaders = () => ({
@@ -23,6 +67,7 @@ export function ProductsPanel() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [formData, setFormData] = useState<ProductFormData>({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({

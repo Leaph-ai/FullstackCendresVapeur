@@ -9,6 +9,8 @@ interface User {
     joinDate: string;
 }
 
+type UserFormData = Pick<User, 'name' | 'email' | 'role'>;
+
 const DEMO_USERS: User[] = [
     {
         id: 1,
@@ -42,6 +44,9 @@ const DEMO_USERS: User[] = [
 
 export function UsersPanel() {
     const [searchQuery, setSearchQuery] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [formData, setFormData] = useState<UserFormData>({ name: '', email: '', role: 'user' });
 
     const filteredUsers = DEMO_USERS.filter(
         (user) =>

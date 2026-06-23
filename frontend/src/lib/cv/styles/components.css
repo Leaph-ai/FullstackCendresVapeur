@@ -255,7 +255,10 @@ select.cv-control{ appearance:none; cursor:pointer;
   border:1.5px solid var(--line); border-radius:var(--r);
   display:flex; align-items:center; justify-content:center; text-align:center;
   color:var(--ink-3); font-size:12px; letter-spacing:.5px; padding:10px;
+  overflow:hidden;
 }
+.cv-ph.has-image{ padding:0; background:var(--paper-deep); }
+.cv-ph img{ width:100%; height:100%; object-fit:cover; display:block; }
 
 /* ============================================================
    primitives layout (helpers réutilisables)

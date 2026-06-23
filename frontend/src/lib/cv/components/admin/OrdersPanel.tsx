@@ -10,6 +10,8 @@ interface Order {
     date: string;
 }
 
+type OrderFormData = Pick<Order, 'orderNumber' | 'customer' | 'total' | 'status'>;
+
 const DEMO_ORDERS: Order[] = [
     {
         id: 1,
@@ -57,11 +59,11 @@ export function OrdersPanel() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingOrder, setEditingOrder] = useState<Order | null>(null);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<OrderFormData>({
         orderNumber: '',
         customer: '',
         total: 0,
-        status: 'pending' as const,
+        status: 'pending',
     });
 
     const filteredOrders = orders.filter(
