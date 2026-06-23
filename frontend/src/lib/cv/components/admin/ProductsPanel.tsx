@@ -1,86 +1,72 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './panels.css';
 
 interface Product {
     id: number;
     name: string;
-    category: string;
+    description: string;
+    category_id: number;
     price: number;
     stock: number;
     status: 'active' | 'inactive';
 }
 
-const DEMO_PRODUCTS: Product[] = [
-    {
-        id: 1,
-        name: 'Régulateur de pression Mk.III',
-        category: 'Mécanique lourde',
-        price: 48,
-        stock: 12,
-        status: 'active',
-    },
-    {
-        id: 2,
-        name: 'Valve d\'appoint laiton',
-        category: 'Vapeur',
-        price: 31,
-        stock: 8,
-        status: 'active',
-    },
-    {
-        id: 3,
-        name: 'Lentille optique cuivrée',
-        category: 'Optique',
-        price: 76,
-        stock: 5,
-        status: 'active',
-    },
-    {
-        id: 4,
-        name: 'Manomètre de quart',
-        category: 'Mesure',
-        price: 22,
-        stock: 0,
-        status: 'inactive',
-    },
-    {
-        id: 5,
-        name: 'Détendeur à soupape',
-        category: 'Mécanique',
-        price: 54,
-        stock: 15,
-        status: 'active',
-    },
-];
+const API_BASE = 'http://127.0.0.1:8000';
+
+const getAuthHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('access_token') ?? ''}`,
+});
 
 export function ProductsPanel() {
-    const [products, setProducts] = useState<Product[]>(DEMO_PRODUCTS);
+    const [products, setProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         name: '',
-        category: '',
+        description: '',
+        category_id: 0,
         price: 0,
         stock: 0,
-        status: 'active' as const,
+        status: 'active' as 'active' | 'inactive',
     });
 
+    const fetchProducts = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await fetch(`${API_BASE}/products`);
+            if (!res.ok) throw new Error(`Erreur ${res.status}`);
+            const data = await res.json();
+            setProducts(data);
+        } catch (err) {
+            setError('Impossible de charger les produits.');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
     const filteredProducts = products.filter(
-        (product) =>
-            product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.category.toLowerCase().includes(searchQuery.toLowerCase())
+        (p) =>
+            p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            String(p.category_id).includes(searchQuery)
     );
+
+    const resetForm = () => {
+        setFormData({ name: '', description: '', category_id: 0, price: 0, stock: 0, status: 'active' });
+    };
 
     const handleAddProduct = () => {
         setEditingProduct(null);
-        setFormData({
-            name: '',
-            category: '',
-            price: 0,
-            stock: 0,
-            status: 'active',
-        });
+        resetForm();
         setShowModal(true);
     };
 
@@ -88,7 +74,8 @@ export function ProductsPanel() {
         setEditingProduct(product);
         setFormData({
             name: product.name,
-            category: product.category,
+            description: product.description ?? '',
+            category_id: product.category_id,
             price: product.price,
             stock: product.stock,
             status: product.status,
@@ -96,41 +83,62 @@ export function ProductsPanel() {
         setShowModal(true);
     };
 
-    const handleDeleteProduct = (id: number) => {
-        if (window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
-            setProducts(products.filter((p) => p.id !== id));
+    const handleDeleteProduct = async (id: number) => {
+        if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
+        try {
+            const res = await fetch(`${API_BASE}/products/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+            });
+            if (!res.ok) throw new Error(`Erreur ${res.status}`);
+            setProducts((prev) => prev.filter((p) => p.id !== id));
+        } catch (err) {
+            alert('Erreur lors de la suppression.');
+            console.error(err);
         }
     };
 
-    const handleSaveProduct = () => {
-        if (!formData.name || !formData.category || formData.price < 0 || formData.stock < 0) {
+    const handleSaveProduct = async () => {
+        if (!formData.name || formData.price <= 0 || formData.stock < 0) {
             alert('Veuillez remplir tous les champs correctement');
             return;
         }
 
-        if (editingProduct) {
-            setProducts(
-                products.map((p) =>
-                    p.id === editingProduct.id
-                        ? {
-                            ...p,
-                            name: formData.name,
-                            category: formData.category,
-                            price: formData.price,
-                            stock: formData.stock,
-                            status: formData.status,
-                        }
-                        : p
-                )
-            );
-        } else {
-            const newProduct: Product = {
-                id: Math.max(...products.map((p) => p.id), 0) + 1,
-                ...formData,
-            };
-            setProducts([...products, newProduct]);
+        const body = {
+            name: formData.name,
+            description: formData.description,
+            category_id: formData.category_id,
+            price: formData.price,
+            stock: formData.stock,
+        };
+
+        try {
+            if (editingProduct) {
+                const res = await fetch(`${API_BASE}/products/${editingProduct.id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(body),
+                });
+                if (!res.ok) throw new Error(`Erreur ${res.status}`);
+                const updated = await res.json();
+                setProducts((prev) =>
+                    prev.map((p) => (p.id === editingProduct.id ? { ...p, ...updated } : p))
+                );
+            } else {
+                const res = await fetch(`${API_BASE}/products`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(body),
+                });
+                if (!res.ok) throw new Error(`Erreur ${res.status}`);
+                const created = await res.json();
+                setProducts((prev) => [...prev, created]);
+            }
+            setShowModal(false);
+        } catch (err) {
+            alert('Erreur lors de la sauvegarde.');
+            console.error(err);
         }
-        setShowModal(false);
     };
 
     return (
@@ -138,7 +146,7 @@ export function ProductsPanel() {
             <div className="panel-header">
                 <h2>Gestion des Produits</h2>
                 <p className="panel-subtitle">
-                    {filteredProducts.filter((p) => p.status === 'active').length} produit(s) actif(s)
+                    {filteredProducts.length} produit(s) affiché(s)
                 </p>
             </div>
 
@@ -155,57 +163,44 @@ export function ProductsPanel() {
                 </div>
             </div>
 
-            <div className="panel-table-wrapper">
-                <table className="panel-table">
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Catégorie</th>
-                            <th>Prix (ⵟ)</th>
-                            <th>Stock</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredProducts.map((product) => (
-                            <tr key={product.id}>
-                                <td className="product-name">{product.name}</td>
-                                <td>{product.category}</td>
-                                <td className="price-cell">{product.price}</td>
-                                <td>
-                                    <span
-                                        className={`stock-indicator ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}
-                                    >
-                                        {product.stock > 0 ? `${product.stock} unités` : 'Rupture'}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span className={`status-badge status-${product.status}`}>
-                                        {product.status === 'active' ? 'Actif' : 'Inactif'}
-                                    </span>
-                                </td>
-                                <td className="actions-cell">
-                                    <button
-                                        className="btn-small btn-edit"
-                                        title="Modifier"
-                                        onClick={() => handleEditProduct(product)}
-                                    >
-                                        ✎
-                                    </button>
-                                    <button
-                                        className="btn-small btn-delete"
-                                        title="Supprimer"
-                                        onClick={() => handleDeleteProduct(product.id)}
-                                    >
-                                        ✕
-                                    </button>
-                                </td>
+            {loading && <p className="panel-feedback">Chargement...</p>}
+            {error && <p className="panel-feedback panel-error">{error}</p>}
+
+            {!loading && !error && (
+                <div className="panel-table-wrapper">
+                    <table className="panel-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Cat. ID</th>
+                                <th>Description</th>
+                                <th>Prix (ⵟ)</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {filteredProducts.map((product) => (
+                                <tr key={product.id}>
+                                    <td className="product-name">{product.name}</td>
+                                    <td>{product.category_id}</td>
+                                    <td>{product.description}</td>
+                                    <td className="price-cell">{product.price}</td>
+                                    <td>
+                                        <span className={`stock-indicator ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                                            {product.stock > 0 ? `${product.stock} unités` : 'Rupture'}
+                                        </span>
+                                    </td>
+                                    <td className="actions-cell">
+                                        <button className="btn-small btn-edit" title="Modifier" onClick={() => handleEditProduct(product)}>✎</button>
+                                        <button className="btn-small btn-delete" title="Supprimer" onClick={() => handleDeleteProduct(product.id)}>✕</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
             {showModal && (
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
@@ -225,12 +220,22 @@ export function ProductsPanel() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Catégorie</label>
+                                <label>Description</label>
                                 <input
                                     type="text"
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     className="form-input"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Category ID</label>
+                                <input
+                                    type="number"
+                                    value={formData.category_id}
+                                    onChange={(e) => setFormData({ ...formData, category_id: parseInt(e.target.value) || 0 })}
+                                    className="form-input"
+                                    min="0"
                                 />
                             </div>
                             <div className="form-row">
@@ -239,11 +244,9 @@ export function ProductsPanel() {
                                     <input
                                         type="number"
                                         value={formData.price}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, price: parseFloat(e.target.value) })
-                                        }
+                                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
                                         className="form-input"
-                                        min="0"
+                                        min="1"
                                     />
                                 </div>
                                 <div className="form-group">
@@ -251,35 +254,15 @@ export function ProductsPanel() {
                                     <input
                                         type="number"
                                         value={formData.stock}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, stock: parseInt(e.target.value) })
-                                        }
+                                        onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
                                         className="form-input"
                                         min="0"
                                     />
                                 </div>
                             </div>
-                            <div className="form-group">
-                                <label>Statut</label>
-                                <select
-                                    value={formData.status}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            status: e.target.value as 'active' | 'inactive',
-                                        })
-                                    }
-                                    className="form-input"
-                                >
-                                    <option value="active">Actif</option>
-                                    <option value="inactive">Inactif</option>
-                                </select>
-                            </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn-cancel" onClick={() => setShowModal(false)}>
-                                Annuler
-                            </button>
+                            <button className="btn-cancel" onClick={() => setShowModal(false)}>Annuler</button>
                             <button className="btn-save" onClick={handleSaveProduct}>
                                 {editingProduct ? 'Modifier' : 'Ajouter'}
                             </button>
