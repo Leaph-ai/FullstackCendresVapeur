@@ -23,9 +23,9 @@ export interface ToxGaugeConfig {
 }
 
 export const PRODUCTS: Product[] = [
-  { id: 1, name: 'Engrenage en laiton',    category: 'Cuivre brut',      price: 12.50,  trend: 'down', votes: 71 },
-  { id: 2, name: 'Alambic de poche',       category: 'Mécanique lourde', price: 89.90,  trend: 'up',   votes: 188 },
-  { id: 3, name: 'Montre à gousset fêlée', category: 'Optique',          price: 250.00, trend: 'up',   votes: 156 },
+  { id: 1, name: 'Engrenage en laiton', category: 'Cuivre brut', price: 12.50, trend: 'down', votes: 71 },
+  { id: 2, name: 'Alambic de poche', category: 'Mécanique lourde', price: 89.90, trend: 'up', votes: 188 },
+  { id: 3, name: 'Montre à gousset fêlée', category: 'Optique', price: 250.00, trend: 'up', votes: 156 },
 ];
 
 export const JOURNAL_LOGS: JournalLog[] = [
@@ -60,5 +60,6 @@ export const NAV_LINKS = [
   { href: '#toxicite', label: 'Toxicité', id: 'toxicite' },
   { href: '#journal', label: 'Journal', id: 'journal' },
   { href: '#chiffres', label: 'Colonie', id: 'chiffres' },
+  { href: '#contact', label: 'Contact', id: 'contact' },
   { href: '#footer', label: 'Guilde', id: 'footer' },
 ];
