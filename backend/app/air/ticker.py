@@ -9,6 +9,7 @@ from app.air.schemas import AirSnapshot
 from app.config import Settings
 from app.core.database import SessionLocal
 from models.air_quality import AirQuality
+from models.colony_log import ColonyLog
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,12 @@ def persist_alert(snapshot: AirSnapshot, session_factory=SessionLocal) -> None:
     try:
         session.add(
             AirQuality(sulfur_level=snapshot.sulfur_level, alert_red=True)
+        )
+        session.add(
+            ColonyLog(
+                user_id=None,
+                action=f"événement: Alerte rouge — taux de soufre à {snapshot.sulfur_level}",
+            )
         )
         session.commit()
     except Exception:  # noqa: BLE001 — le ticker ne doit jamais crasher
