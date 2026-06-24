@@ -31,3 +31,22 @@ class TokenResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
+
+
+# ── OAuth ──────────────────────────────────────────────────────────────────────
+
+
+class OAuthRedirectResponse(BaseModel):
+    """URL vers laquelle le frontend doit rediriger l'utilisateur (consent screen Google)."""
+
+    authorization_url: str
+
+
+class OAuthUserInfo(BaseModel):
+    """Informations renvoyées par Google après échange du code.
+    Uniquement utilisé en interne par le service OAuth."""
+
+    provider: str
+    provider_id: str
+    email: EmailStr
+    username: str
