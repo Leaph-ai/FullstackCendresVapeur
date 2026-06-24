@@ -1,6 +1,8 @@
 /* CV — page base / body */
 *{ box-sizing:border-box; }
-html{ scroll-behavior:smooth; }
+html{ scroll-behavior:smooth; scroll-padding-top:88px; }
+/* Décalage d'ancrage : les liens de nav ne passent plus sous la topbar collante. */
+.panel, #footer{ scroll-margin-top:88px; }
 body{
   margin:0; color:#e8dcc4; font-family:"Special Elite","Courier New",monospace;
   -webkit-font-smoothing:antialiased;
