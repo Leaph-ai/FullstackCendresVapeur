@@ -34,3 +34,24 @@ def test_order_succeeds_when_logging_fails(_log, _mail, client, factory, as_user
     user, _ = _seed_cart(db_session, factory, quantity=1)
     resp = as_user(user_id=user.id).post("/orders/", json={})
     assert resp.status_code == 201  # le logging best-effort ne casse pas la commande
+
+
+def test_voting_writes_vote_log(client, factory, as_user, db_session):
+    user = factory.user()
+    product = factory.product(name="Boussole en laiton")
+    resp = as_user(user_id=user.id).post(f"/products/{product.id}/vote")
+    assert resp.status_code == 201
+    logs = db_session.query(ColonyLog).filter(ColonyLog.action.like("vote:%")).all()
+    assert len(logs) == 1
+    assert "Boussole en laiton" in logs[0].action
+    assert logs[0].user_id == user.id
+
+
+def test_duplicate_vote_does_not_duplicate_log(client, factory, as_user, db_session):
+    user = factory.user()
+    product = factory.product(name="Boussole en laiton")
+    c = as_user(user_id=user.id)
+    c.post(f"/products/{product.id}/vote")
+    c.post(f"/products/{product.id}/vote")  # idempotent
+    logs = db_session.query(ColonyLog).filter(ColonyLog.action.like("vote:%")).all()
+    assert len(logs) == 1
