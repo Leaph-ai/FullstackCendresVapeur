@@ -14,12 +14,8 @@ export function ChiffresSection({ locked, clanking, nixieValues }: ChiffresSecti
       <PanelBody>
         <div className="chiffres-grid">
           {COLONY_STATS.map((stat) => {
-            const display =
-              stat.id === 'citizens'
-                ? nixieValues.citizens ?? stat.value
-                : stat.id === 'orders'
-                  ? nixieValues.orders ?? stat.value
-                  : stat.value;
+            // Toutes les valeurs proviennent du backend ; « — » tant qu'elles chargent.
+            const display = nixieValues[stat.id] ?? '—';
 
             return (
               <div key={stat.id} className="chiffre">

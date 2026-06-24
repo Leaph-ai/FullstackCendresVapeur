@@ -178,3 +178,14 @@ FROM (VALUES
 WHERE NOT EXISTS (
   SELECT 1 FROM "colony_logs" WHERE "colony_logs"."action" = seed_log."action"
 );
+
+-- Qualité de l'air / pression chaudière : métriques affichées sur la Home.
+-- Compatibilité bases de dev créées avant l'ajout de ces colonnes.
+ALTER TABLE "air_quality" ADD COLUMN IF NOT EXISTS "monoxide_level" decimal;
+ALTER TABLE "air_quality" ADD COLUMN IF NOT EXISTS "particulate_level" decimal;
+ALTER TABLE "air_quality" ADD COLUMN IF NOT EXISTS "boiler_pressure" decimal;
+
+INSERT INTO "air_quality"
+  ("sulfur_level", "monoxide_level", "particulate_level", "boiler_pressure", "alert_red")
+SELECT 34, 22, 48, 62, false
+WHERE NOT EXISTS (SELECT 1 FROM "air_quality");

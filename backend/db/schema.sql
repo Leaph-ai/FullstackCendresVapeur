@@ -138,6 +138,9 @@ CREATE TABLE "colony_logs" (
 CREATE TABLE "air_quality" (
   "id" integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "sulfur_level" decimal NOT NULL,
+  "monoxide_level" decimal,
+  "particulate_level" decimal,
+  "boiler_pressure" decimal,
   "alert_red" boolean NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT now()
 );

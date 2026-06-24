@@ -16,7 +16,8 @@ EXPECTED = {
     ChatMessage: {"id", "sender_id", "content", "created_at"},
     ContactMessage: {"id", "name", "email", "subject", "message", "created_at"},
     ColonyLog: {"id", "user_id", "action", "created_at"},
-    AirQuality: {"id", "sulfur_level", "alert_red", "created_at"},
+    AirQuality: {"id", "sulfur_level", "monoxide_level", "particulate_level",
+                 "boiler_pressure", "alert_red", "created_at"},
 }
 
 
