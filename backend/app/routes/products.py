@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user
@@ -36,10 +36,19 @@ def require_editor(
 @router.get("/", response_model=list[ProductResponse])
 def get_products(
     service: Annotated[ProductService, Depends(get_product_service)],
-    sort: Literal["default", "likes"] = "default",
+    sort: Literal["default", "likes", "price", "new"] = "default",
     order: Literal["asc", "desc"] = "desc",
+    category_id: Annotated[int | None, Query(ge=1)] = None,
+    search: Annotated[str | None, Query(max_length=255)] = None,
+    limit: Annotated[int | None, Query(ge=1, le=100)] = None,
 ) -> list[ProductResponse]:
-    return service.list_products(sort=sort, order=order)
+    return service.list_products(
+        sort=sort,
+        order=order,
+        category_id=category_id,
+        search=search,
+        limit=limit,
+    )
 
 
 @router.get("/by-likes", response_model=list[ProductResponse])
