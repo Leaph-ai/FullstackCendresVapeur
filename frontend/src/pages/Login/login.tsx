@@ -62,7 +62,7 @@ function Login() {
       <div className="auth-shell">
         <Topbar cartCount={0} activeSection="login" />
 
-        <section className="login-page">
+        <main className="login-page" id="contenu">
           <div className="login-container">
 
             <div className="login-header">
@@ -117,7 +117,7 @@ function Login() {
             </div>
 
           </div>
-        </section>
+        </main>
       </div>
     </>
   );

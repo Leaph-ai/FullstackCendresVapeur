@@ -11,7 +11,7 @@ export default function ErrorPage({
   detail?: string;
 }) {
   return (
-    <main className="cv-errpage" role="main">
+    <main className="cv-errpage" role="main" id="contenu">
       <p className="cv-errpage__plate" aria-label={`Code d'erreur ${code}`}>
         {code}
       </p>

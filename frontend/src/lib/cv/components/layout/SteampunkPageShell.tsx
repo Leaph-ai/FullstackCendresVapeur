@@ -25,7 +25,7 @@ export function SteampunkPageShell({
       <SteamChimney />
       <div className="home">
         <Topbar cartCount={cartCount} activeSection={activeSection} />
-        <main className="home-main">{children}</main>
+        <main className="home-main" id="contenu">{children}</main>
       </div>
       <FooterBoiler />
       <OverlayFx />

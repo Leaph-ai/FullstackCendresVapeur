@@ -26,7 +26,7 @@ function Cart() {
       <div className="auth-shell">
         <Topbar cartCount={getItemCount()} activeSection="cart" />
 
-        <section className="cart-page">
+        <main className="cart-page" id="contenu">
           <div className="cart-container">
             <div className="cart-header">
               <h1>Panier · Voûte Marchande</h1>
@@ -132,7 +132,7 @@ function Cart() {
               </>
             )}
           </div>
-        </section>
+        </main>
       </div>
     </>
   );

@@ -91,7 +91,7 @@ function Verify2FA() {
       <div className="auth-shell">
         <Topbar cartCount={0} activeSection="2fa" />
 
-        <div className="verify-page">
+        <main className="verify-page" id="contenu">
           <div className="verify-container">
             <h1>Vérification 2FA</h1>
 
@@ -121,7 +121,7 @@ function Verify2FA() {
           </button>
         </form>
           </div>
-        </div>
+        </main>
       </div>
     </>
   );

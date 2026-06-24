@@ -75,7 +75,7 @@ const handleSubmit = async (e: any) => {
       <div className="auth-shell">
         <Topbar cartCount={0} activeSection="register" />
 
-        <section className="register-page">
+        <main className="register-page" id="contenu">
           <div className="register-container">
             <h1>Rejoindre la Colonie</h1>
 
@@ -133,7 +133,7 @@ const handleSubmit = async (e: any) => {
               </div>
             </form>
           </div>
-        </section>
+        </main>
       </div>
     </>
   );

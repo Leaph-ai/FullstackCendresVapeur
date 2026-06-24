@@ -91,7 +91,7 @@ function Checkout() {
         <SteamChimney />
         <div className="auth-shell">
           <Topbar cartCount={0} activeSection="checkout" />
-          <section className="checkout-page">
+          <main className="checkout-page" id="contenu">
             <div className="checkout-container">
               <div className="empty-state">
                 <h2>Panier vide</h2>
@@ -99,7 +99,7 @@ function Checkout() {
                 <Link to="/" className="cv-btn">Retour au catalogue</Link>
               </div>
             </div>
-          </section>
+          </main>
         </div>
       </>
     );
@@ -262,7 +262,7 @@ function Checkout() {
       <div className="auth-shell">
         <Topbar cartCount={getItemCount()} activeSection="checkout" />
 
-        <section className="checkout-page">
+        <main className="checkout-page" id="contenu">
           <div className="checkout-container">
             <div className="checkout-header">
               <h1>Tunnel d'achat</h1>
@@ -686,7 +686,7 @@ function Checkout() {
               </div>
             </div>
           </div>
-        </section>
+        </main>
       </div>
 
       {/* Modal de facture */}
