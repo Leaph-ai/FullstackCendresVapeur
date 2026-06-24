@@ -1,0 +1,25 @@
+.cv-banner {
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  background: #2a1414;
+  border-left: 4px solid #b87333;
+  border-radius: 3px;
+  color: #f3e9da;
+}
+.cv-banner__code {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: #d99a4e;
+  text-transform: uppercase;
+}
+.cv-banner__msg {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+}
+.cv-banner__fields {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.82rem;
+}

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { addCartItem, getCart, removeCartItem, updateCartItemQuantity } from '../api/cart';
 import type { CartResponse } from '../api/cart';
 import { getUserIdFromToken } from '../api/client';
+import { useToast } from '../components/feedback/useToast';
 
 export interface CartItem {
   id: number;       // id de la ligne CartItem en DB
@@ -42,6 +43,7 @@ function toCartItems(data: CartResponse): CartItem[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { showError } = useToast();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,11 +78,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setItems(toCartItems(data));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Impossible d\'ajouter l\'article');
+      showError(err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showError]);
 
   const removeItem = useCallback(async (productId: number) => {
     const userId = getUserIdFromToken();

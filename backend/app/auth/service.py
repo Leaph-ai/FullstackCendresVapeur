@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.auth.schemas import LoginResponse, MessageResponse, TokenResponse
 from app.config import Settings
+from app.errors.codes import ErrorCode
+from app.errors.exceptions import AppError
 from app.security.jwt import create_2fa_challenge_token, create_access_token, decode_token
 from app.security.password import hash_password, verify_password
 from app.security.roles import RoleLevel
@@ -140,9 +142,8 @@ class AuthService:
     def _authenticate_user(self, email: str, password: str) -> User:
         user = self.db.query(User).filter(User.email == email.lower()).first()
         if user is None or not verify_password(password, user.password_hash):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Email ou mot de passe incorrect.",
+            raise AppError.unauthorized(
+                ErrorCode.INVALID_CREDENTIALS, "Email ou mot de passe incorrect."
             )
         return user
 
