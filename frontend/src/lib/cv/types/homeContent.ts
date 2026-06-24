@@ -14,17 +14,6 @@ export interface JournalLog {
   text: string;
 }
 
-export interface ToxGaugeConfig {
-  id: string;
-  label: string;
-  center: number;
-  unit: string;
-  warn: number;
-  danger: number;
-  initialWarn?: boolean;
-}
-
-
 export const JOURNAL_LOGS: JournalLog[] = [
   { type: 'troc', text: 'Troc validé — Régulateur de pression Mk.III (Cobalt-114)' },
   { type: 'acces', text: 'Nouvel accès accrédité — secteur Pourpre' },
@@ -36,13 +25,6 @@ export const JOURNAL_LOGS: JournalLog[] = [
   { type: 'chaudiere', text: 'Ravitaillement reçu — quai des soupapes' },
   { type: 'vote', text: 'Manomètre de quart grimpe au classement' },
   { type: 'troc', text: 'Détendeur à soupape échangé contre 54 ⵟ' },
-];
-
-export const TOX_GAUGES: ToxGaugeConfig[] = [
-  { id: 'soufre', label: 'Soufre', center: 34, unit: 'ppm', warn: 45, danger: 70, initialWarn: true },
-  { id: 'monoxyde', label: 'Monoxyde', center: 22, unit: 'ppm', warn: 45, danger: 70 },
-  { id: 'particules', label: 'Particules', center: 48, unit: 'µg', warn: 45, danger: 75, initialWarn: true },
-  { id: 'pression', label: 'Pression chaudière', center: 40, unit: '%', warn: 70, danger: 88 },
 ];
 
 export const COLONY_STATS = [

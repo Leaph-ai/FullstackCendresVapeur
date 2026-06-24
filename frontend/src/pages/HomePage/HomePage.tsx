@@ -8,6 +8,7 @@ import {
   SteampunkPageShell,
   ToxicitySection,
   VitrineSection,
+  useAirQuality,
   useLiveData,
   usePanelReveal,
 } from '@cv';
@@ -22,6 +23,14 @@ export function HomePage() {
   const location = useLocation();
   const { isLocked, isClanking } = usePanelReveal(PANEL_IDS);
   const live = useLiveData();
+  const air = useAirQuality();
+  const alertRed = air?.alertRed ?? false;
+
+  useEffect(() => {
+    document.body.classList.toggle('cv-redalert', alertRed);
+    return () => document.body.classList.remove('cv-redalert');
+  }, [alertRed]);
+
   const { addItem, getItemCount } = useCart();
 
   const handleAddToCart = useCallback((product: Product) => {
@@ -48,6 +57,12 @@ export function HomePage() {
 
   return (
     <SteampunkPageShell cartCount={getItemCount()}>
+      {alertRed && (
+        <div className="cv-alertbanner" role="alert" aria-live="assertive">
+          <span className="led" aria-hidden="true" />
+          ALERTE ROUGE — taux de soufre critique dans l'atmosphère de la colonie.
+        </div>
+      )}
       <HeroSection />
       <VitrineSection
         locked={isLocked('vitrine')}
@@ -60,8 +75,7 @@ export function HomePage() {
       <ToxicitySection
         locked={isLocked('toxicite')}
         clanking={isClanking('toxicite')}
-        gauges={live.gauges}
-        toxSpark={live.toxSpark}
+        air={air}
       />
       <JournalSection
         locked={isLocked('journal')}

@@ -1,12 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { JOURNAL_LOGS, TOX_GAUGES, type JournalLog } from '../types';
-import type { GaugeState, JournalEntry } from '../types/live';
+import { JOURNAL_LOGS, type JournalLog } from '../types';
+import type { JournalEntry } from '../types/live';
 
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-function jitter(center: number, amp: number) {
-  return Math.max(4, Math.min(96, center + (Math.random() * 2 - 1) * amp));
-}
 
 let minute = 2;
 function nextStamp() {
@@ -23,17 +19,6 @@ export function useLiveData() {
   const [bourseTrend, setBourseTrend] = useState({ up: true, delta: 2 });
   const [bourseSpark, setBourseSpark] = useState<number[]>(() =>
     Array.from({ length: 14 }, () => 40 + Math.random() * 50),
-  );
-  const [toxSpark, setToxSpark] = useState<number[]>(() =>
-    Array.from({ length: 16 }, () => 35 + Math.random() * 35),
-  );
-  const [gauges, setGauges] = useState<GaugeState[]>(() =>
-    TOX_GAUGES.map((g) => ({
-      id: g.id,
-      value: g.center,
-      warn: g.initialWarn ?? false,
-      danger: false,
-    })),
   );
   const [journal, setJournal] = useState<JournalEntry[]>(() =>
     JOURNAL_LOGS.slice(0, 6).map(makeEntry),
@@ -59,25 +44,6 @@ export function useLiveData() {
       setBourseSpark((prev) => shiftSpark(prev, 30, 92));
     }, 3200);
 
-    const toxGaugeTimer = window.setInterval(() => {
-      setGauges((prev) =>
-        prev.map((g, i) => {
-          const cfg = TOX_GAUGES[i];
-          const value = Math.round(jitter(cfg.center, 6));
-          return {
-            id: g.id,
-            value,
-            warn: value >= cfg.warn && value < cfg.danger,
-            danger: value >= cfg.danger,
-          };
-        }),
-      );
-    }, 2600);
-
-    const toxSparkTimer = window.setInterval(() => {
-      setToxSpark((prev) => shiftSpark(prev, 35, 80));
-    }, 1400);
-
     const journalTimer = window.setInterval(() => {
       const log = JOURNAL_LOGS[Math.floor(Math.random() * JOURNAL_LOGS.length)];
       setJournal((prev) => [makeEntry(log), ...prev].slice(0, 6));
@@ -99,8 +65,6 @@ export function useLiveData() {
 
     return () => {
       window.clearInterval(bourseTimer);
-      window.clearInterval(toxGaugeTimer);
-      window.clearInterval(toxSparkTimer);
       window.clearInterval(journalTimer);
       window.clearInterval(nixieTimer);
     };
@@ -110,8 +74,6 @@ export function useLiveData() {
     bourseIdx,
     bourseTrend,
     bourseSpark,
-    toxSpark,
-    gauges,
     journal,
     nixieValues,
   };
