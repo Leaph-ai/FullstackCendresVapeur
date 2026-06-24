@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,6 +19,7 @@ from app.routes import carts, categories, chat, contact, copper, discounts, dev_
 
 settings = get_settings()
 
+Path("uploads").mkdir(exist_ok=True)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -41,6 +43,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(auth_router)
 
@@ -70,3 +73,6 @@ app.include_router(dev_mail.router)
 app.include_router(votes.router)
 app.include_router(chat.router)
 app.include_router(copper.router)
+app.include_router(files.router)
+app.include_router(categories.router)
+app.include_router(contact.router)
