@@ -14,6 +14,9 @@ export function Topbar({ cartCount, activeSection = 'vitrine' }: TopbarProps) {
         <small>comptoir de la zone franche · secteur 12</small>
       </span>
       <nav className="tb-nav" aria-label="Navigation principale">
+        <Link to="/catalogue" className={activeSection === 'catalogue' ? 'cur' : undefined}>
+          Catalogue
+        </Link>
         {NAV_LINKS.map((link) => (
           <Link
             key={link.id}
