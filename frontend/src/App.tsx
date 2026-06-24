@@ -8,6 +8,7 @@ import { Admin } from './pages/Admin/Admin';
 import { CartProvider } from './context/CartContext';
 import { HomePage } from './pages/HomePage/HomePage';
 import ErrorPage from './components/feedback/ErrorPage';
+import Verify2FA from './pages/Verify2FA/verify2FA';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             />
           }
         />
+        <Route path="/verify-2fa" element={<Verify2FA />} />
       </Routes>
     </CartProvider>
   );
