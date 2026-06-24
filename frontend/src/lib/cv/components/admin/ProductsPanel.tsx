@@ -167,16 +167,16 @@ export function ProductsPanel() {
             {error && <p className="panel-feedback panel-error">{error}</p>}
 
             {!loading && !error && (
-                <div className="panel-table-wrapper">
+                <div className="panel-table-wrapper" tabIndex={0} role="region" aria-label="Tableau des produits">
                     <table className="panel-table">
                         <thead>
                             <tr>
-                                <th>Nom</th>
-                                <th>Cat. ID</th>
-                                <th>Description</th>
-                                <th>Prix (ⵟ)</th>
-                                <th>Stock</th>
-                                <th>Actions</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Cat. ID</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Prix (ⵟ)</th>
+                                <th scope="col">Stock</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>

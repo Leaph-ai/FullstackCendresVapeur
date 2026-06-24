@@ -73,14 +73,14 @@ export function UsersPanel() {
             {error && <p className="panel-feedback panel-error">{error}</p>}
 
             {!loading && !error && (
-                <div className="panel-table-wrapper">
+                <div className="panel-table-wrapper" tabIndex={0} role="region" aria-label="Tableau des utilisateurs">
                     <table className="panel-table">
                         <thead>
                             <tr>
-                                <th>Nom</th>
-                                <th>Email</th>
-                                <th>Rôle</th>
-                                <th>Date d'inscription</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Rôle</th>
+                                <th scope="col">Date d'inscription</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -120,17 +120,17 @@ const handleDeleteOrder = async (id: number) => {
             {error && <p className="panel-feedback panel-error">{error}</p>}
 
             {!loading && !error && (
-                <div className="panel-table-wrapper">
+                <div className="panel-table-wrapper" tabIndex={0} role="region" aria-label="Tableau des commandes">
                     <table className="panel-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>User ID</th>
-                                <th>Total (ⵟ)</th>
-                                <th>Statut</th>
-                                <th>Articles</th>
-                                <th>Date</th>
-                                <th>Actions</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">User ID</th>
+                                <th scope="col">Total (ⵟ)</th>
+                                <th scope="col">Statut</th>
+                                <th scope="col">Articles</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
