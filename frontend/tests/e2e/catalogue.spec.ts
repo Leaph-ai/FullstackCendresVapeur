@@ -57,12 +57,16 @@ test.describe('Page catalogue', () => {
     // En tri prix, le bouton de sens apparaît ; on bascule en croissant.
     await page.getByRole('button', { name: /Prix/ }).click();
 
-    const prices = await page
-      .locator('.catalogue-grid .cv-pcard .cv-price .amt')
-      .allInnerTexts();
-    const numbers = prices.map((text) => Number(text.replace(/[^\d.]/g, '')));
-    const sorted = [...numbers].sort((a, b) => a - b);
-    expect(numbers).toEqual(sorted);
+    // Le re-fetch est asynchrone : on attend que la grille soit bien triée.
+    await expect
+      .poll(async () => {
+        const prices = await page
+          .locator('.catalogue-grid .cv-pcard .cv-price .amt')
+          .allInnerTexts();
+        const numbers = prices.map((text) => Number(text.replace(/[^\d.]/g, '')));
+        return JSON.stringify(numbers) === JSON.stringify([...numbers].sort((a, b) => a - b));
+      })
+      .toBe(true);
   });
 
   test('ouvre la vue détail produit', async ({ page }) => {
