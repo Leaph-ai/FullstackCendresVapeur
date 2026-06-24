@@ -1,12 +1,13 @@
 import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { useCart } from '../../context/CartContext';
+import { getUserIdFromToken } from '../../api/client';
 import { Invoice } from '../../components/invoice/Invoice';
 import { createOrder, validateDiscountCode } from '../../api/orders';
 import './checkout.css';
@@ -29,6 +30,8 @@ export interface CheckoutFormData {
 function Checkout() {
   const { items, getTotal, getItemCount, clearCart } = useCart();
   const railRef = useScrollRail();
+  const navigate = useNavigate();
+  const isAuthenticated = getUserIdFromToken() !== null;
   const invoiceRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<'info' | 'payment' | 'review' | 'success'>('info');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -134,6 +137,11 @@ function Checkout() {
   };
 
   const handleProcessPayment = async () => {
+    // La commande est rattachée à un compte : on exige une connexion au paiement.
+    if (!isAuthenticated) {
+      navigate('/login?redirect=/checkout');
+      return;
+    }
     setIsProcessing(true);
     setOrderError(null);
     try {
@@ -256,7 +264,7 @@ function Checkout() {
                   <div className="success-state">
                     <div className="success-icon">✓</div>
                     <h2>Commande confirmée</h2>
-                    <p className="order-number">Numéro de commande: #ORD-{confirmedOrderId ?? Date.now().toString().slice(-8)}</p>
+                    <p className="order-number">Numéro de commande: #ORD-{confirmedOrderId}</p>
                     <p>Votre commande a été traitée avec succès. Vous recevrez une confirmation par email.</p>
 
                     <button
@@ -513,6 +521,11 @@ function Checkout() {
                       )}
                       {step === 'review' ? (
                         <>
+                          {!isAuthenticated && (
+                            <p className="hint" style={{ marginBottom: '0.5rem' }}>
+                              Connecte-toi pour finaliser ta commande — ton panier est conservé.
+                            </p>
+                          )}
                           {orderError && (
                             <p style={{ color: 'var(--cv-danger, #c0392b)', marginBottom: '0.5rem' }}>{orderError}</p>
                           )}
@@ -523,7 +536,11 @@ function Checkout() {
                             disabled={isProcessing}
                             data-loading={isProcessing}
                           >
-                            {isProcessing ? 'Traitement...' : 'Confirmer le paiement'}
+                            {isProcessing
+                              ? 'Traitement...'
+                              : isAuthenticated
+                                ? 'Confirmer le paiement'
+                                : 'Se connecter pour payer'}
                           </button>
                         </>
                       ) : (
