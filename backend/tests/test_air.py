@@ -143,3 +143,39 @@ def test_persist_alert_writes_single_row():
         assert float(rows[0].sulfur_level) == snapshot.sulfur_level
     finally:
         session.close()
+
+
+import json
+
+from fastapi.testclient import TestClient
+
+from app.main import app
+from app.routes.air import _sse_event
+
+
+def test_air_sse_event_format():
+    sim = AirMonitor()
+    event = _sse_event(sim.snapshot())
+    assert event.startswith("data: ")
+    assert event.endswith("\n\n")
+    payload = json.loads(event.removeprefix("data: ").strip())
+    assert "sulfur_level" in payload
+    assert len(payload["gauges"]) == 4
+
+
+def test_air_current_returns_snapshot():
+    with TestClient(app) as client:
+        response = client.get("/air/current")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["gauges"]) == 4
+    assert len(data["sulfur_spark"]) == 16
+    assert "alert_red" in data
+    assert data["threshold"] == 70.0
+
+
+def test_air_routes_registered():
+    with TestClient(app) as client:
+        paths = client.get("/openapi.json").json()["paths"]
+    assert "/air/current" in paths
+    assert "/air/stream" in paths

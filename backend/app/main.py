@@ -13,9 +13,10 @@ from pydantic import BaseModel
 
 from app.auth.router import router as auth_router
 from app.config import get_settings
+from app.air.ticker import run_air_ticker
 from app.copper.ticker import run_copper_ticker
 from app.errors.handlers import register_error_handlers
-from app.routes import carts, categories, chat, contact, copper, discounts, dev_mail, orders, products, users, votes, files
+from app.routes import air, carts, categories, chat, contact, copper, discounts, dev_mail, orders, products, users, votes, files
 
 settings = get_settings()
 
@@ -23,13 +24,16 @@ Path("uploads").mkdir(exist_ok=True)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    ticker_task = asyncio.create_task(run_copper_ticker(settings))
+    copper_task = asyncio.create_task(run_copper_ticker(settings))
+    air_task = asyncio.create_task(run_air_ticker(settings))
     yield
-    ticker_task.cancel()
-    try:
-        await ticker_task
-    except asyncio.CancelledError:
-        pass
+    for task in (copper_task, air_task):
+        task.cancel()
+    for task in (copper_task, air_task):
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(title="Cendres et Vapeur API", lifespan=lifespan)
@@ -73,6 +77,7 @@ app.include_router(dev_mail.router)
 app.include_router(votes.router)
 app.include_router(chat.router)
 app.include_router(copper.router)
+app.include_router(air.router)
 app.include_router(files.router)
 app.include_router(categories.router)
 app.include_router(contact.router)
