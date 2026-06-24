@@ -1,4 +1,7 @@
+from datetime import UTC, datetime
+
 from app.air.constants import GAUGE_CONFIGS, SULFUR_ID
+from app.air.schemas import AirSnapshot, GaugeReading
 from app.config import get_settings
 
 
@@ -18,3 +21,19 @@ def test_air_settings_defaults():
     assert settings.air_sulfur_threshold_low == 60.0
     assert settings.air_spark_length == 16
     assert 0.0 < settings.air_sulfur_spike_chance < 1.0
+
+
+def test_air_snapshot_serializes():
+    snap = AirSnapshot(
+        gauges=[GaugeReading(id="soufre", label="Soufre", value=34, unit="ppm", warn=False, danger=False)],
+        sulfur_spark=[34.0, 36.0],
+        sulfur_level=34.0,
+        alert_red=False,
+        threshold=70.0,
+        timestamp=datetime.now(UTC),
+    )
+    payload = snap.model_dump(mode="json")
+    assert payload["alert_red"] is False
+    assert payload["threshold"] == 70.0
+    assert payload["gauges"][0]["id"] == "soufre"
+    assert len(payload["sulfur_spark"]) == 2
