@@ -42,14 +42,17 @@ interface PanelHeadProps {
   title: string;
   lamp?: 'default' | 'amber';
   right?: ReactNode;
+  /** Niveau de titre : 2 par défaut, 1 pour le titre principal d'une page. */
+  headingLevel?: 1 | 2;
 }
 
-export function PanelHead({ sector, title, lamp = 'default', right }: PanelHeadProps) {
+export function PanelHead({ sector, title, lamp = 'default', right, headingLevel = 2 }: PanelHeadProps) {
+  const Heading = headingLevel === 1 ? 'h1' : 'h2';
   return (
     <div className="panel-head">
       <span className={`lamp${lamp === 'amber' ? ' amber' : ''}`} />
       <span className="panel-sect">{sector}</span>
-      <h2 className="panel-title">{title}</h2>
+      <Heading className="panel-title">{title}</Heading>
       {right && <span className="right">{right}</span>}
     </div>
   );
