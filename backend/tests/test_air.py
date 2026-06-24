@@ -105,3 +105,41 @@ async def test_hub_broadcasts_tick_to_subscriber():
         air_hub.unsubscribe(queue)
         air_monitor.reset()
         air_hub.reset()
+
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+
+import models  # noqa: F401 — enregistre les modèles sur Base.metadata
+from app.air.ticker import persist_alert
+from app.core.database import Base
+from models.air_quality import AirQuality
+
+
+def _memory_session_factory():
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(engine)
+    return sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+
+def test_persist_alert_writes_single_row():
+    factory = _memory_session_factory()
+    sim = AirMonitor(threshold_high=70.0)
+    sim._apply_hysteresis(80.0)
+    snapshot = sim.snapshot()
+
+    persist_alert(snapshot, session_factory=factory)
+
+    session = factory()
+    try:
+        rows = session.query(AirQuality).all()
+        assert len(rows) == 1
+        assert rows[0].alert_red is True
+        assert float(rows[0].sulfur_level) == snapshot.sulfur_level
+    finally:
+        session.close()
