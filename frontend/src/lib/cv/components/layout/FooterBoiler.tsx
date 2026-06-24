@@ -29,21 +29,21 @@ export function FooterBoiler() {
           </div>
         </div>
         <div>
-          <h4>Comptoir</h4>
+          <h2>Comptoir</h2>
           <a href="#vitrine">Vitrine</a>
           <a href="#">Panier</a>
           <a href="#">Bourse du cuivre</a>
           <a href="#">Mon établi</a>
         </div>
         <div>
-          <h4>Colonie</h4>
+          <h2>Colonie</h2>
           <a href="#journal">Journal des survivants</a>
           <a href="#toxicite">Moniteur de toxicité</a>
           <a href="#">Calendrier de rotation</a>
           <a href="#chiffres">Chiffres</a>
         </div>
         <div>
-          <h4>Guilde</h4>
+          <h2>Guilde</h2>
           <div className="secteurs">
             <a href="#">
               <span>

@@ -18,6 +18,9 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 
+# Rapports d'audit accessibilité générés
+/a11y-report/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

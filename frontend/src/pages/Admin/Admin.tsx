@@ -59,11 +59,11 @@ export function Admin() {
                     </aside>
 
                     {/* Contenu principal */}
-                    <main className="admin-content">
+                    <section className="admin-content">
                         <div className="admin-panel-wrapper">
                             {renderPanel()}
                         </div>
-                    </main>
+                    </section>
                 </div>
             </div>
         </SteampunkPageShell>

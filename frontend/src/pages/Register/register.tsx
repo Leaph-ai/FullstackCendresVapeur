@@ -5,6 +5,7 @@ import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
+import ErrorBanner from '../../components/feedback/ErrorBanner';
 
 function Register() {
   const railRef = useScrollRail();
@@ -14,12 +15,15 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<unknown>(null);
 
 const handleSubmit = async (e: any) => {
   e.preventDefault();
 
+    setError(null);
+
     if (password !== confirmPassword) {
-      alert('Les mots de passe ne correspondent pas');
+      setError(new Error('Les mots de passe ne correspondent pas.'));
       return;
     }
 
@@ -54,14 +58,9 @@ const handleSubmit = async (e: any) => {
         },
       });
 
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        error instanceof Error
-          ? error.message
-          : 'Une erreur est survenue'
-      );
+    } catch (err) {
+      console.error(err);
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -75,7 +74,7 @@ const handleSubmit = async (e: any) => {
       <div className="auth-shell">
         <Topbar cartCount={0} activeSection="register" />
 
-        <section className="register-page">
+        <main className="register-page" id="contenu">
           <div className="register-container">
             <h1>Rejoindre la Colonie</h1>
 
@@ -87,24 +86,32 @@ const handleSubmit = async (e: any) => {
               className="register-form"
               onSubmit={handleSubmit}
             >
+              <ErrorBanner error={error} />
+
+              <label htmlFor="register-email">Adresse email</label>
               <input
                 type="email"
+                id="register-email"
                 placeholder="Adresse email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
 
+              <label htmlFor="register-password">Mot de passe</label>
               <input
                 type="password"
+                id="register-password"
                 placeholder="Mot de passe"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
 
+              <label htmlFor="register-confirm">Confirmation du mot de passe</label>
               <input
                 type="password"
+                id="register-confirm"
                 placeholder="Confirmation"
                 value={confirmPassword}
                 onChange={(e) =>
@@ -133,7 +140,7 @@ const handleSubmit = async (e: any) => {
               </div>
             </form>
           </div>
-        </section>
+        </main>
       </div>
     </>
   );

@@ -58,7 +58,7 @@ function ResetPassword() {
       <div className="auth-shell">
         <Topbar cartCount={0} activeSection="forgot" />
 
-        <section className="forgot-page">
+        <main className="forgot-page" id="contenu">
           <div className="forgot-container">
 
             <h1>Nouveau mot de passe</h1>
@@ -113,7 +113,7 @@ function ResetPassword() {
             </form>
 
           </div>
-        </section>
+        </main>
       </div>
     </>
   );

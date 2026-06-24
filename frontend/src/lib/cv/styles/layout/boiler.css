@@ -9,7 +9,7 @@
 .boiler .steamfield{ left:0; right:0; top:-44px; height:60px; }
 .boiler-inner{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:34px 40px 26px;
   display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:30px; }
-.boiler h4{ font-family:"Share Tech Mono",monospace; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--phos-amber); margin:0 0 12px; }
+.boiler h2{ font-family:"Share Tech Mono",monospace; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--phos-amber); margin:0 0 12px; }
 .boiler .blogo{ font-family:"Special Elite",monospace; font-size:20px; color:#f0e4cd; letter-spacing:1px; }
 .boiler .blogo b{ color:var(--phos-amber); }
 .boiler p, .boiler a{ font-family:"Share Tech Mono",monospace; font-size:12px; color:#bcae93; line-height:1.7; }

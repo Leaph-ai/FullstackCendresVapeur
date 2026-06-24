@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './chatModal.css';
 import { useChat } from './useChat';
+import { useFocusTrap } from '@cv/hooks/useFocusTrap';
 
 const TYPING_PING_INTERVAL_MS = 2000;
 
@@ -47,6 +48,7 @@ export function ChatModal() {
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const lastTypingSent = useRef(0);
+  const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
 
   // Auto-scroll vers le bas à chaque nouveau message / frappe.
   useEffect(() => {
@@ -163,11 +165,21 @@ export function ChatModal() {
       {/* Modal du chat */}
       {isOpen && (
         <div className="chat-modal-overlay" onClick={() => setIsOpen(false)}>
-          <div className="chat-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={trapRef}
+            className="chat-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="chat-title"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') setIsOpen(false);
+            }}
+          >
             {/* Header */}
             <div className="chat-header">
               <div className="chat-header-content">
-                <h3>Télégraphe de l'Ombre</h3>
+                <h3 id="chat-title">Télégraphe de l'Ombre</h3>
                 <p className="chat-status">{statusLabel(status, onlineCount)}</p>
               </div>
               <button
