@@ -32,9 +32,6 @@ function Login() {
 
       const data = await apiPost<LoginResponse>('/auth/login', { email, password });
 
-      console.log('Login response:', data);
-      console.log('Requires 2FA:', data.requires_2fa);
-
       if (data.requires_2fa) {
         localStorage.setItem('challenge_token', data.challenge_token ?? '');
         navigate('/verify-2fa');
