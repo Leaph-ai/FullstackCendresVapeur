@@ -1,0 +1,240 @@
+/* ============================================================
+   CATALOGUE — barre de filtres, chips de catégories, modale détail
+   Réutilise les tokens et atomes @cv (cv-control, cv-btn, cv-pcard…).
+   ============================================================ */
+
+.catalogue-filters {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.catalogue-search {
+  flex: 1 1 280px;
+}
+
+.catalogue-sort {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.catalogue-sort .cv-control {
+  min-width: 190px;
+}
+
+/* Onglets / chips de catégories */
+.catalogue-cats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
+  border-bottom: 1.5px dashed var(--line);
+}
+
+.cv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Special Elite", monospace;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--paper-hi);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: transform .12s, border-color .12s, background .12s, box-shadow .12s;
+}
+
+.cv-chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--copper);
+}
+
+.cv-chip.is-active {
+  background: linear-gradient(180deg, var(--brass), var(--copper));
+  border-color: var(--copper);
+  color: #2a2017;
+  box-shadow: var(--shadow);
+}
+
+.cv-chip-count {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 11px;
+  background: rgba(36, 31, 24, .14);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.cv-chip.is-active .cv-chip-count {
+  background: rgba(42, 32, 23, .28);
+}
+
+.catalogue-grid {
+  margin-top: 4px;
+}
+
+/* Nom de produit cliquable (ouvre la modale) */
+.pname-link {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.pname-link:hover {
+  color: var(--copper);
+  text-decoration: underline;
+}
+
+.cv-ph.is-clickable {
+  cursor: pointer;
+}
+
+/* ============================================================
+   MODALE DÉTAIL PRODUIT
+   ============================================================ */
+.cv-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 16, 11, .62);
+  backdrop-filter: blur(3px);
+  animation: cv-modal-fade .16s ease-out;
+}
+
+.cv-modal {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--panel, var(--paper));
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-lg, 14px);
+  box-shadow: var(--shadow-lg, 0 6px 22px rgba(36, 31, 24, .22));
+  animation: cv-modal-rise .18s ease-out;
+}
+
+.cv-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--paper-hi);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cv-modal-close:hover {
+  border-color: var(--alert);
+  color: var(--alert);
+}
+
+.cv-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.cv-modal-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  background: var(--paper-deep, #d9cbb0);
+  color: var(--ink-3);
+  font-family: "Share Tech Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.cv-modal-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cv-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 30px 28px;
+}
+
+.cv-modal-cat {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--copper);
+}
+
+.cv-modal-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.cv-modal-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-2, var(--ink));
+}
+
+.cv-modal-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.cv-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.cv-modal-actions .cv-btn {
+  flex: 1;
+}
+
+@keyframes cv-modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cv-modal-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .cv-modal-grid {
+    grid-template-columns: 1fr;
+  }
+  .cv-modal-photo {
+    min-height: 200px;
+  }
+}

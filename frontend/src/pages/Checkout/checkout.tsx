@@ -1,15 +1,42 @@
 import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { useCart } from '../../context/CartContext';
+import type { CartItem } from '../../context/CartContext';
+import { AUTH_CHANGED_EVENT } from '../../context/authEvents';
+import { apiPost, getUserIdFromToken } from '../../api/client';
 import { Invoice } from '../../components/invoice/Invoice';
 import { createOrder, validateDiscountCode } from '../../api/orders';
 import './checkout.css';
+
+interface LoginResponse {
+  requires_2fa: boolean;
+  challenge_token?: string;
+  access_token?: string;
+}
+
+interface OrderSnapshot {
+  orderId: number;
+  items: CartItem[];
+  subtotal: number;
+  discount: number;
+  discountAmount: number;
+  tax: number;
+  total: number;
+}
+
+/** Génère un mot de passe robuste (≥ 12 caractères). */
+function generateStrongPassword(): string {
+  const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*';
+  const values = new Uint32Array(16);
+  crypto.getRandomValues(values);
+  return Array.from(values, (n) => charset[n % charset.length]).join('');
+}
 
 export interface CheckoutFormData {
   firstName: string;
@@ -27,8 +54,10 @@ export interface CheckoutFormData {
 }
 
 function Checkout() {
-  const { items, getTotal, getItemCount, clearCart } = useCart();
+  const { items, getTotal, getItemCount, clearCart, refreshCart } = useCart();
   const railRef = useScrollRail();
+  const navigate = useNavigate();
+  const isAuthenticated = getUserIdFromToken() !== null;
   const invoiceRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<'info' | 'payment' | 'review' | 'success'>('info');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -37,6 +66,9 @@ function Checkout() {
   const [orderError, setOrderError] = useState<string | null>(null);
   const [confirmedOrderId, setConfirmedOrderId] = useState<number | null>(null);
   const [showInvoice, setShowInvoice] = useState(false);
+  const [snapshot, setSnapshot] = useState<OrderSnapshot | null>(null);
+  const [accountPassword, setAccountPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: '',
     lastName: '',
@@ -133,19 +165,65 @@ function Checkout() {
     else if (step === 'review') setStep('payment');
   };
 
+  // Crée la commande puis fige un instantané (le panier est vidé juste après).
+  const finalizeOrder = async () => {
+    const order = await createOrder(formData.discountCode || null);
+    setSnapshot({ orderId: order.id, items, subtotal, discount, discountAmount, tax, total });
+    setConfirmedOrderId(order.id);
+    clearCart();
+    setStep('success');
+  };
+
   const handleProcessPayment = async () => {
+    if (!isAuthenticated) return; // le panneau invité gère ce cas
     setIsProcessing(true);
     setOrderError(null);
     try {
-      const order = await createOrder(formData.discountCode || null);
-      setConfirmedOrderId(order.id);
-      clearCart();
-      setStep('success');
+      await finalizeOrder();
     } catch (err) {
       setOrderError(err instanceof Error ? err.message : 'Erreur lors de la commande.');
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  // Création de compte express depuis les infos du checkout, puis paiement.
+  const handleQuickRegisterAndPay = async () => {
+    if (accountPassword.length < 8) {
+      setOrderError('Le mot de passe doit contenir au moins 8 caractères.');
+      return;
+    }
+    setIsProcessing(true);
+    setOrderError(null);
+    try {
+      await apiPost('/auth/register', { email: formData.email, password: accountPassword });
+      const login = await apiPost<LoginResponse>('/auth/login', {
+        email: formData.email,
+        password: accountPassword,
+      });
+      if (login.requires_2fa) {
+        localStorage.setItem('challenge_token', login.challenge_token ?? '');
+        navigate('/verify-2fa?redirect=/checkout');
+        return;
+      }
+      localStorage.setItem('access_token', login.access_token ?? '');
+      // On fusionne le panier invité dans le panier serveur AVANT de commander
+      // (await direct : éviter la course avec l'écouteur d'auth global).
+      await refreshCart();
+      window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+      await finalizeOrder();
+    } catch (err) {
+      setOrderError(
+        err instanceof Error ? err.message : 'Impossible de créer le compte et la commande.',
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleGeneratePassword = () => {
+    setAccountPassword(generateStrongPassword());
+    setShowPassword(true);
   };
 
   const handlePrintInvoice = () => {
@@ -170,11 +248,12 @@ function Checkout() {
     pdf.save(`facture-${Date.now()}.pdf`);
   };
 
+  // Les prix produits sont TTC : le total facturé = sous-total − remise (comme l'API).
+  // La TVA (20%) est donc déjà comprise et affichée à titre informatif.
   const subtotal = getTotal();
   const discountAmount = (subtotal * discount) / 100;
-  const subtotalAfterDiscount = subtotal - discountAmount;
-  const tax = subtotalAfterDiscount * 0.20;
-  const total = subtotalAfterDiscount + tax;
+  const total = subtotal - discountAmount;
+  const tax = total - total / 1.2;
 
   return (
     <>
@@ -235,13 +314,13 @@ function Checkout() {
                       <span>-ⵟ {discountAmount.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="total-line">
-                    <span>TVA</span>
-                    <span>ⵟ {tax.toFixed(2)}</span>
-                  </div>
                   <div className="total-line is-final">
-                    <span>Total</span>
+                    <span>Total TTC</span>
                     <span>ⵟ {total.toFixed(2)}</span>
+                  </div>
+                  <div className="total-line">
+                    <span>dont TVA (20%)</span>
+                    <span>ⵟ {tax.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -256,7 +335,7 @@ function Checkout() {
                   <div className="success-state">
                     <div className="success-icon">✓</div>
                     <h2>Commande confirmée</h2>
-                    <p className="order-number">Numéro de commande: #ORD-{confirmedOrderId ?? Date.now().toString().slice(-8)}</p>
+                    <p className="order-number">Numéro de commande: #ORD-{confirmedOrderId}</p>
                     <p>Votre commande a été traitée avec succès. Vous recevrez une confirmation par email.</p>
 
                     <button
@@ -482,13 +561,13 @@ function Checkout() {
                               <span>-ⵟ {discountAmount.toFixed(2)}</span>
                             </div>
                           )}
-                          <div className="summary-line">
-                            <span>TVA (20%)</span>
-                            <span>ⵟ {tax.toFixed(2)}</span>
-                          </div>
                           <div className="summary-line total">
                             <span>Total TTC</span>
                             <span>ⵟ {total.toFixed(2)}</span>
+                          </div>
+                          <div className="summary-line">
+                            <span>dont TVA (20%)</span>
+                            <span>ⵟ {tax.toFixed(2)}</span>
                           </div>
                         </div>
 
@@ -512,20 +591,86 @@ function Checkout() {
                         </button>
                       )}
                       {step === 'review' ? (
-                        <>
-                          {orderError && (
-                            <p style={{ color: 'var(--cv-danger, #c0392b)', marginBottom: '0.5rem' }}>{orderError}</p>
-                          )}
-                          <button
-                            type="button"
-                            className="cv-btn is-block"
-                            onClick={handleProcessPayment}
-                            disabled={isProcessing}
-                            data-loading={isProcessing}
-                          >
-                            {isProcessing ? 'Traitement...' : 'Confirmer le paiement'}
-                          </button>
-                        </>
+                        isAuthenticated ? (
+                          <>
+                            {orderError && (
+                              <p style={{ color: 'var(--cv-danger, #c0392b)', marginBottom: '0.5rem' }}>{orderError}</p>
+                            )}
+                            <button
+                              type="button"
+                              className="cv-btn is-block"
+                              onClick={handleProcessPayment}
+                              disabled={isProcessing}
+                              data-loading={isProcessing}
+                            >
+                              {isProcessing ? 'Traitement...' : 'Confirmer le paiement'}
+                            </button>
+                          </>
+                        ) : (
+                          <div className="guest-account">
+                            <h4 className="section-title">Créez votre compte pour finaliser</h4>
+                            <p className="hint">
+                              On réutilise vos informations. Choisissez un mot de passe (ou
+                              générez-en un) : votre panier est conservé.
+                            </p>
+                            <div className="form-group">
+                              <label htmlFor="accountEmail" className="cv-label">Email du compte</label>
+                              <input
+                                type="email"
+                                id="accountEmail"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                className="cv-control"
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label htmlFor="accountPassword" className="cv-label">Mot de passe</label>
+                              <div className="discount-input">
+                                <input
+                                  type={showPassword ? 'text' : 'password'}
+                                  id="accountPassword"
+                                  value={accountPassword}
+                                  onChange={(e) => setAccountPassword(e.target.value)}
+                                  placeholder="8 caractères minimum"
+                                  className="cv-control"
+                                  autoComplete="new-password"
+                                />
+                                <button
+                                  type="button"
+                                  className="cv-btn is-sm is-ghost"
+                                  onClick={() => setShowPassword((v) => !v)}
+                                  aria-label={showPassword ? 'Masquer' : 'Afficher'}
+                                >
+                                  {showPassword ? 'Masquer' : 'Afficher'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="cv-btn is-sm"
+                                  onClick={handleGeneratePassword}
+                                >
+                                  Générer
+                                </button>
+                              </div>
+                            </div>
+                            {orderError && (
+                              <p style={{ color: 'var(--cv-danger, #c0392b)', marginBottom: '0.5rem' }}>{orderError}</p>
+                            )}
+                            <button
+                              type="button"
+                              className="cv-btn is-block"
+                              onClick={handleQuickRegisterAndPay}
+                              disabled={isProcessing}
+                              data-loading={isProcessing}
+                            >
+                              {isProcessing ? 'Traitement...' : 'Créer le compte et payer'}
+                            </button>
+                            <p className="hint" style={{ marginTop: '0.6rem' }}>
+                              Déjà un compte ?{' '}
+                              <Link to="/login?redirect=/checkout">Se connecter</Link>
+                            </p>
+                          </div>
+                        )
                       ) : (
                         <button
                           type="button"
@@ -557,13 +702,14 @@ function Checkout() {
             </button>
             <Invoice
               ref={invoiceRef}
-              items={items}
+              items={snapshot?.items ?? items}
               formData={formData}
-              subtotal={subtotal}
-              discount={discount}
-              discountAmount={discountAmount}
-              tax={tax}
-              total={total}
+              subtotal={snapshot?.subtotal ?? subtotal}
+              discount={snapshot?.discount ?? discount}
+              discountAmount={snapshot?.discountAmount ?? discountAmount}
+              tax={snapshot?.tax ?? tax}
+              total={snapshot?.total ?? total}
+              orderId={snapshot?.orderId ?? confirmedOrderId}
             />
             <div className="modal-actions">
               <button

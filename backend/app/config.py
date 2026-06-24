@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_from: str = "noreply@zone-franche.local"
+    contact_admin_email: str = ""
     two_factor_code_expire_minutes: int = 10
     copper_base_index: float = 248.0
     copper_min_index: float = 180.0

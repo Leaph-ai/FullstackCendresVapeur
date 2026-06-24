@@ -24,39 +24,6 @@ export interface ToxGaugeConfig {
   initialWarn?: boolean;
 }
 
-export const PRODUCTS: Product[] = [
-  {
-    id: 1,
-    name: 'Régulateur de pression Mk.III',
-    category: 'Mécanique lourde',
-    price: 48,
-    trend: 'up',
-    votes: 214,
-    url: 'https://images.unsplash.com/photo-1516192518150-0d8fee5425e3?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 2,
-    name: "Valve d'appoint laiton",
-    category: 'Vapeur',
-    price: 31,
-    trend: 'down',
-    votes: 188,
-    url: 'https://images.unsplash.com/photo-1516937941344-00b4e0337589?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 3,
-    name: 'Lentille optique cuivrée',
-    category: 'Optique',
-    price: 76,
-    trend: 'up',
-    votes: 156,
-    url: 'https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?auto=format&fit=crop&w=900&q=80',
-  },
-  { id: 4, name: 'Manomètre de quart', category: 'Mesure', price: 22, trend: 'down', votes: 132 },
-  { id: 5, name: 'Détendeur à soupape', category: 'Mécanique', price: 54, trend: 'up', votes: 98 },
-  { id: 6, name: 'Engrenage 14 dents', category: 'Cuivre brut', price: 19, trend: 'down', votes: 71 },
-
-];
 
 export const JOURNAL_LOGS: JournalLog[] = [
   { type: 'troc', text: 'Troc validé — Régulateur de pression Mk.III (Cobalt-114)' },
@@ -90,5 +57,6 @@ export const NAV_LINKS = [
   { href: '#toxicite', label: 'Toxicité', id: 'toxicite' },
   { href: '#journal', label: 'Journal', id: 'journal' },
   { href: '#chiffres', label: 'Colonie', id: 'chiffres' },
+  { href: '#contact', label: 'Contact', id: 'contact' },
   { href: '#footer', label: 'Guilde', id: 'footer' },
 ];

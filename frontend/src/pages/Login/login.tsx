@@ -1,49 +1,55 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import './login.css';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
+import { apiPost } from '../../api/client';
+import { AUTH_CHANGED_EVENT } from '../../context/authEvents';
+import ErrorBanner from '../../components/feedback/ErrorBanner';
+
+/** N'autorise que des redirections internes (évite les redirections ouvertes). */
+function safeRedirect(target: string | null): string {
+  return target && target.startsWith('/') && !target.startsWith('//') ? target : '/';
+}
+
+interface LoginResponse {
+  requires_2fa: boolean;
+  challenge_token?: string;
+  access_token?: string;
+}
 
 function Login() {
   const railRef = useScrollRail();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = safeRedirect(searchParams.get('redirect'));
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<unknown>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       setLoading(true);
+      setError(null);
 
-      const response = await fetch('http://127.0.0.1:8000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Identifiants invalides');
-      }
-      console.log('Login response:', data);
-      console.log('Requires 2FA:', data.requires_2fa);
-      console.log("tedtttttttttttt")
+      const data = await apiPost<LoginResponse>('/auth/login', { email, password });
 
       if (data.requires_2fa) {
-        localStorage.setItem('challenge_token', data.challenge_token);
-        navigate('/verify-2fa');
+        localStorage.setItem('challenge_token', data.challenge_token ?? '');
+        navigate(`/verify-2fa?redirect=${encodeURIComponent(redirectTo)}`);
       } else {
-        localStorage.setItem('access_token', data.access_token);
-        navigate('/');
+        localStorage.setItem('access_token', data.access_token ?? '');
+        window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+        navigate(redirectTo);
       }
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'Erreur de connexion');
+    } catch (e) {
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -65,6 +71,8 @@ function Login() {
             </div>
 
             <form className="login-form" onSubmit={handleSubmit}>
+
+              <ErrorBanner error={error} />
 
               <div className="form-group">
                 <label htmlFor="email">Identifiant Citoyen</label>
