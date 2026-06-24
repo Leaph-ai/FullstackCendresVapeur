@@ -5,6 +5,7 @@ import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
+import ErrorBanner from '../../components/feedback/ErrorBanner';
 
 function Register() {
   const railRef = useScrollRail();
@@ -14,12 +15,15 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<unknown>(null);
 
 const handleSubmit = async (e: any) => {
   e.preventDefault();
 
+    setError(null);
+
     if (password !== confirmPassword) {
-      alert('Les mots de passe ne correspondent pas');
+      setError(new Error('Les mots de passe ne correspondent pas.'));
       return;
     }
 
@@ -54,14 +58,9 @@ const handleSubmit = async (e: any) => {
         },
       });
 
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        error instanceof Error
-          ? error.message
-          : 'Une erreur est survenue'
-      );
+    } catch (err) {
+      console.error(err);
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -87,6 +86,8 @@ const handleSubmit = async (e: any) => {
               className="register-form"
               onSubmit={handleSubmit}
             >
+              <ErrorBanner error={error} />
+
               <label htmlFor="register-email">Adresse email</label>
               <input
                 type="email"
