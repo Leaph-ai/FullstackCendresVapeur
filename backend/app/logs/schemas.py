@@ -16,9 +16,14 @@ class ColonyLogCreate(BaseModel):
     action: str
 
 
+class ColonyLogUpdate(BaseModel):
+    action: str
+
+
 class PublicLogResponse(BaseModel):
     """Log formaté pour l'affichage public (live feed).
-    Pas d'user_id exposé — on affiche juste le message et la date.
+    Pas d'user_id exposé — on affiche l'id (clé stable), le message et la date.
     """
+    id: int
     message: str
     created_at: datetime

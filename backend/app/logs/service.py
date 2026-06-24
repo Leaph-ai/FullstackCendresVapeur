@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from fastapi import HTTPException, status
 from models.colony_log import ColonyLog
 
 # Actions visibles publiquement dans le live feed
@@ -34,7 +35,7 @@ class LogService:
             .all()
         )
         public = [
-            {"message": log.action, "created_at": log.created_at}
+            {"id": log.id, "message": log.action, "created_at": log.created_at}
             for log in logs
             if any(log.action.lower().startswith(p) for p in PUBLIC_ACTION_PREFIXES)
         ]
@@ -58,3 +59,26 @@ class LogService:
         self.db.commit()
         self.db.refresh(log)
         return log
+
+    def _get_or_404(self, log_id: int) -> ColonyLog:
+        log = self.db.query(ColonyLog).get(log_id)
+        if log is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Entrée de journal introuvable.",
+            )
+        return log
+
+    def update_log(self, log_id: int, action: str) -> ColonyLog:
+        """Modifie le texte d'une entrée. Réservé aux administrateurs."""
+        log = self._get_or_404(log_id)
+        log.action = action
+        self.db.commit()
+        self.db.refresh(log)
+        return log
+
+    def delete_log(self, log_id: int) -> None:
+        """Supprime une entrée. Réservé aux administrateurs."""
+        log = self._get_or_404(log_id)
+        self.db.delete(log)
+        self.db.commit()
