@@ -37,3 +37,48 @@ def test_air_snapshot_serializes():
     assert payload["threshold"] == 70.0
     assert payload["gauges"][0]["id"] == "soufre"
     assert len(payload["sulfur_spark"]) == 2
+
+
+from app.air.monitor import AirMonitor
+
+
+def test_tick_keeps_values_within_bounds():
+    sim = AirMonitor(spark_length=16, volatility=6.0)
+    for _ in range(100):
+        snap, _ = sim.tick()
+        assert len(snap.gauges) == 4
+        assert len(snap.sulfur_spark) == 16
+        for g in snap.gauges:
+            assert 4 <= g.value <= 96
+
+
+def test_hysteresis_activates_above_high_threshold():
+    sim = AirMonitor(threshold_high=70.0, threshold_low=60.0)
+    assert sim._apply_hysteresis(75.0) is True   # front montant
+    snap = sim.snapshot()
+    assert snap.alert_red is True
+
+
+def test_hysteresis_holds_between_thresholds():
+    sim = AirMonitor(threshold_high=70.0, threshold_low=60.0)
+    sim._apply_hysteresis(75.0)                   # activée
+    assert sim._apply_hysteresis(65.0) is False   # reste active, pas de nouveau front
+    assert sim.snapshot().alert_red is True
+
+
+def test_hysteresis_releases_below_low_threshold():
+    sim = AirMonitor(threshold_high=70.0, threshold_low=60.0)
+    sim._apply_hysteresis(75.0)
+    assert sim._apply_hysteresis(55.0) is False   # levée (pas un front montant)
+    assert sim.snapshot().alert_red is False
+
+
+def test_rising_edge_fires_only_once_while_active():
+    sim = AirMonitor(threshold_high=70.0, threshold_low=60.0)
+    assert sim._apply_hysteresis(80.0) is True
+    assert sim._apply_hysteresis(85.0) is False   # déjà en alerte → pas de re-front
+
+
+def test_snapshot_exposes_threshold_high():
+    sim = AirMonitor(threshold_high=70.0)
+    assert sim.snapshot().threshold == 70.0
