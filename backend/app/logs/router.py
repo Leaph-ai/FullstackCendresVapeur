@@ -6,7 +6,12 @@ from sqlalchemy.orm import Session
 from app.auth.dependencies import get_current_user
 from app.core.database import get_db
 
-from .schemas import ColonyLogResponse, PublicLogResponse
+from .schemas import (
+    ColonyLogCreate,
+    ColonyLogResponse,
+    ColonyLogUpdate,
+    PublicLogResponse,
+)
 from .service import LogService
 
 router = APIRouter(prefix="/logs", tags=["Logs"])
@@ -53,3 +58,36 @@ def public_feed(
     le défilement d'activité en temps réel.
     """
     return service.public_feed(limit=limit)
+
+
+@router.post("/", response_model=ColonyLogResponse, status_code=status.HTTP_201_CREATED)
+def create_log(
+    payload: ColonyLogCreate,
+    admin: Annotated[dict, Depends(require_admin)],
+    service: Annotated[LogService, Depends(get_log_service)],
+) -> ColonyLogResponse:
+    """Crée une entrée de journal (saisie manuelle admin, incl. entrées « fun »).
+    L'auteur enregistré est l'administrateur authentifié.
+    """
+    return service.add_log(user_id=admin["id"], action=payload.action)
+
+
+@router.patch("/{log_id}", response_model=ColonyLogResponse)
+def update_log(
+    log_id: int,
+    payload: ColonyLogUpdate,
+    _: Annotated[dict, Depends(require_admin)],
+    service: Annotated[LogService, Depends(get_log_service)],
+) -> ColonyLogResponse:
+    """Modifie le texte d'une entrée. Réservé aux administrateurs."""
+    return service.update_log(log_id, payload.action)
+
+
+@router.delete("/{log_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_log(
+    log_id: int,
+    _: Annotated[dict, Depends(require_admin)],
+    service: Annotated[LogService, Depends(get_log_service)],
+) -> None:
+    """Supprime une entrée. Réservé aux administrateurs."""
+    service.delete_log(log_id)
