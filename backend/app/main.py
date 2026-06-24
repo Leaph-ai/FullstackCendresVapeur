@@ -12,9 +12,13 @@ from app.auth.router import router as auth_router
 from app.config import get_settings
 from app.routes import carts, chat, discounts, dev_mail, orders, products, votes
 
+from app.logs.router import router as logs_router
+
 settings = get_settings()
 
 app = FastAPI(title="Cendres et Vapeur API")
+
+app.include_router(logs_router)
 
 app.add_middleware(
     CORSMiddleware,
