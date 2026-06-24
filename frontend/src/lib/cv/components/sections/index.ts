@@ -5,3 +5,4 @@ export { ProductCard } from './ProductCard';
 export { ProductModal } from './ProductModal';
 export { ToxicitySection } from './ToxicitySection';
 export { VitrineSection } from './VitrineSection';
+export { ContactSection } from './ContactSection';
