@@ -11,6 +11,7 @@ import { HomePage } from './pages/HomePage/HomePage';
 import { Catalogue } from './pages/Catalogue/Catalogue';
 import ErrorPage from './components/feedback/ErrorPage';
 import Verify2FA from './pages/Verify2FA/verify2FA';
+import OAuthCallback from './pages/OAuthCallback/OAuthCallback';
 import { getRoleLevelFromToken } from './api/chat';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
           }
         />
         <Route path="/verify-2fa" element={<Verify2FA />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
       </Routes>
     </CartProvider>
   );
