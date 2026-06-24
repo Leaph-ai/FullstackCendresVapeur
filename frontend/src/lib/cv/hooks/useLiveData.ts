@@ -1,21 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
-import { JOURNAL_LOGS, TOX_GAUGES, type JournalLog } from '../types';
+import { TOX_GAUGES } from '../types';
 import type { GaugeState, JournalEntry } from '../types/live';
+import { fetchJournal, toJournalEntry } from '../api/journal';
 
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const JOURNAL_WINDOW = 6;
+const JOURNAL_POLL_MS = 5000;
+
 function jitter(center: number, amp: number) {
   return Math.max(4, Math.min(96, center + (Math.random() * 2 - 1) * amp));
-}
-
-let minute = 2;
-function nextStamp() {
-  minute = (minute + Math.floor(Math.random() * 3) + 1) % 60;
-  return `14:${String(minute).padStart(2, '0')} · cycle 14`;
-}
-
-function makeEntry(log: JournalLog): JournalEntry {
-  return { ...log, key: `${Date.now()}-${Math.random()}`, stamp: nextStamp() };
 }
 
 export function useLiveData() {
@@ -35,9 +29,7 @@ export function useLiveData() {
       danger: false,
     })),
   );
-  const [journal, setJournal] = useState<JournalEntry[]>(() =>
-    JOURNAL_LOGS.slice(0, 6).map(makeEntry),
-  );
+  const [journal, setJournal] = useState<JournalEntry[]>([]);
   const [nixieValues, setNixieValues] = useState<Record<string, string>>({
     citizens: '1 284',
     orders: '96',
@@ -78,11 +70,6 @@ export function useLiveData() {
       setToxSpark((prev) => shiftSpark(prev, 35, 80));
     }, 1400);
 
-    const journalTimer = window.setInterval(() => {
-      const log = JOURNAL_LOGS[Math.floor(Math.random() * JOURNAL_LOGS.length)];
-      setJournal((prev) => [makeEntry(log), ...prev].slice(0, 6));
-    }, 3800);
-
     const nixieTimer = window.setInterval(() => {
       setNixieValues((prev) => {
         const next = { ...prev };
@@ -101,10 +88,37 @@ export function useLiveData() {
       window.clearInterval(bourseTimer);
       window.clearInterval(toxGaugeTimer);
       window.clearInterval(toxSparkTimer);
-      window.clearInterval(journalTimer);
       window.clearInterval(nixieTimer);
     };
   }, [shiftSpark]);
+
+  // Journal des survivants : flux réel branché sur /journal/.
+  // Fetch initial inconditionnel, puis polling (sauf en mouvement réduit).
+  useEffect(() => {
+    let cancelled = false;
+    const controller = new AbortController();
+
+    const load = () => {
+      fetchJournal(JOURNAL_WINDOW, controller.signal)
+        .then((dtos) => {
+          if (cancelled) return;
+          setJournal(dtos.map(toJournalEntry));
+        })
+        .catch((error: unknown) => {
+          if (error instanceof DOMException && error.name === 'AbortError') return;
+          console.error('Impossible de charger le journal des survivants.', error);
+        });
+    };
+
+    load();
+    const timer = REDUCED_MOTION ? null : window.setInterval(load, JOURNAL_POLL_MS);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      if (timer !== null) window.clearInterval(timer);
+    };
+  }, []);
 
   return {
     bourseIdx,
