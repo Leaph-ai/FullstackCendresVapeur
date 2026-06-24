@@ -2,14 +2,21 @@ import { useScrollRail } from '@cv/hooks/useScrollRail';
 import './verify2FA.css';
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { Topbar } from '@cv/components/layout/Topbar';
+import { AUTH_CHANGED_EVENT } from '../../context/authEvents';
 
 function Verify2FA() {
   const railRef = useScrollRail();
     const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectParam = searchParams.get('redirect');
+  const redirectTo =
+    redirectParam && redirectParam.startsWith('/') && !redirectParam.startsWith('//')
+      ? redirectParam
+      : '/';
 
 
   const [code, setCode] = useState('');
@@ -63,7 +70,8 @@ function Verify2FA() {
         'challenge_token'
       );
 
-      navigate('/');
+      window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+      navigate(redirectTo);
     } catch (error) {
       alert(
         error instanceof Error
