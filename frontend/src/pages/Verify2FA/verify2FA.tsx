@@ -101,8 +101,12 @@ function Verify2FA() {
         </p>
 
         <form onSubmit={handleSubmit}>
+          <label htmlFor="code-2fa">Code de vérification</label>
           <input
             type="text"
+            id="code-2fa"
+            inputMode="numeric"
+            autoComplete="one-time-code"
             placeholder="350285"
             value={code}
             onChange={(e) =>
