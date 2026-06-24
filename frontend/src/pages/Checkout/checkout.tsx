@@ -93,6 +93,7 @@ function Checkout() {
           <Topbar cartCount={0} activeSection="checkout" />
           <main className="checkout-page" id="contenu">
             <div className="checkout-container">
+              <h1 className="cv-visually-hidden">Tunnel d'achat</h1>
               <div className="empty-state">
                 <h2>Panier vide</h2>
                 <p>Impossible de procéder au paiement sans articles.</p>
@@ -358,6 +359,7 @@ function Checkout() {
                               type="text"
                               id="firstName"
                               name="firstName"
+                              autoComplete="given-name"
                               placeholder="Jean"
                               value={formData.firstName}
                               onChange={handleInputChange}
@@ -370,6 +372,7 @@ function Checkout() {
                               type="text"
                               id="lastName"
                               name="lastName"
+                              autoComplete="family-name"
                               placeholder="Dupont"
                               value={formData.lastName}
                               onChange={handleInputChange}
@@ -385,6 +388,7 @@ function Checkout() {
                               type="email"
                               id="email"
                               name="email"
+                              autoComplete="email"
                               placeholder="jean@exemple.fr"
                               value={formData.email}
                               onChange={handleInputChange}
@@ -397,6 +401,7 @@ function Checkout() {
                               type="tel"
                               id="phone"
                               name="phone"
+                              autoComplete="tel"
                               placeholder="+33 6 12 34 56 78"
                               value={formData.phone}
                               onChange={handleInputChange}
@@ -411,6 +416,7 @@ function Checkout() {
                             type="text"
                             id="address"
                             name="address"
+                            autoComplete="street-address"
                             placeholder="123 Rue de la Vapeur"
                             value={formData.address}
                             onChange={handleInputChange}
@@ -425,6 +431,7 @@ function Checkout() {
                               type="text"
                               id="city"
                               name="city"
+                              autoComplete="address-level2"
                               placeholder="Paris"
                               value={formData.city}
                               onChange={handleInputChange}
@@ -437,6 +444,7 @@ function Checkout() {
                               type="text"
                               id="postalCode"
                               name="postalCode"
+                              autoComplete="postal-code"
                               placeholder="75001"
                               value={formData.postalCode}
                               onChange={handleInputChange}
@@ -450,6 +458,7 @@ function Checkout() {
                           <select
                             id="country"
                             name="country"
+                            autoComplete="country-name"
                             value={formData.country}
                             onChange={handleInputChange}
                             className="cv-control"
@@ -474,6 +483,7 @@ function Checkout() {
                             type="text"
                             id="cardNumber"
                             name="cardNumber"
+                            autoComplete="cc-number"
                             placeholder="1234 5678 9012 3456"
                             value={formData.cardNumber}
                             onChange={handleInputChange}
@@ -489,6 +499,7 @@ function Checkout() {
                               type="text"
                               id="cardExpiry"
                               name="cardExpiry"
+                              autoComplete="cc-exp"
                               placeholder="12/25"
                               value={formData.cardExpiry}
                               onChange={handleInputChange}
@@ -502,6 +513,7 @@ function Checkout() {
                               type="text"
                               id="cardCvc"
                               name="cardCvc"
+                              autoComplete="cc-csc"
                               placeholder="123"
                               value={formData.cardCvc}
                               onChange={handleInputChange}

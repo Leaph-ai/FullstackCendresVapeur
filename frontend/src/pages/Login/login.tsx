@@ -112,7 +112,7 @@ function Login() {
             </form>
 
             <div className="security-box">
-              <h3>🔒 Transmission sécurisée</h3>
+              <h2>🔒 Transmission sécurisée</h2>
               <p>Certains secteurs nécessitent une double authentification (2FA).</p>
             </div>
 
