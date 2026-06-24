@@ -1,11 +1,20 @@
+import { useScrollRail } from '@cv/hooks/useScrollRail';
+import './verify2FA.css';
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SteamChimney } from '@cv/components/layout/SteamChimney';
+import { MachineRail } from '@cv/components/layout/MachineRail';
+import { Topbar } from '@cv/components/layout/Topbar';
 
 function Verify2FA() {
+  const railRef = useScrollRail();
+    const navigate = useNavigate();
+
+
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
 
   const handleSubmit = async (
     e: React.FormEvent
@@ -67,9 +76,16 @@ function Verify2FA() {
   };
 
   return (
-    <div className="verify-page">
-      <div className="verify-container">
-        <h1>Vérification 2FA</h1>
+    <>
+      <MachineRail railRef={railRef} />
+      <SteamChimney />
+
+      <div className="auth-shell">
+        <Topbar cartCount={0} activeSection="2fa" />
+
+        <div className="verify-page">
+          <div className="verify-container">
+            <h1>Vérification 2FA</h1>
 
         <p>
           Entrez le code envoyé par email ou
@@ -96,8 +112,10 @@ function Verify2FA() {
               : 'Valider'}
           </button>
         </form>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
