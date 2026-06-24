@@ -1,6 +1,6 @@
 """Colonnes des 12 nouveaux modèles, conformes à schema.sql."""
 from models import (
-    Role, User, TwoFactorCode, PriceHistory, ProductVote, ColonyEvent,
+    Role, User, TwoFactorCode, PasswordResetCode, PriceHistory, ProductVote, ColonyEvent,
     ShiftNote, ChatMessage, ContactMessage, ColonyLog, AirQuality,
 )
 
@@ -9,6 +9,7 @@ EXPECTED = {
     User: {"id", "username", "email", "password_hash", "role_id",
            "oauth_provider", "oauth_provider_id", "created_at"},
     TwoFactorCode: {"id", "user_id", "code_hash", "expires_at", "used"},
+    PasswordResetCode: {"id", "user_id", "code_hash", "expires_at", "used"},
     PriceHistory: {"id", "product_id", "price", "created_at"},
     ProductVote: {"id", "user_id", "product_id", "created_at"},
     ColonyEvent: {"id", "title", "description", "event_date", "priority"},

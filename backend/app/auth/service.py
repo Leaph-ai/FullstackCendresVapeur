@@ -13,6 +13,7 @@ from app.security.jwt import create_2fa_challenge_token, create_access_token, de
 from app.security.password import hash_password, verify_password
 from app.security.roles import RoleLevel
 from app.services.mail import send_email
+from models.password_reset_code import PasswordResetCode
 from models.two_factor_code import TwoFactorCode
 from models.user import User
 
@@ -134,6 +135,50 @@ class AuthService:
         _revoked_tokens.add(access_token)
         return MessageResponse(message="Déconnexion réussie.")
 
+    def forgot_password(self, email: str) -> MessageResponse:
+        user = self.db.query(User).filter(User.email == email.lower()).first()
+        if user is not None:
+            code = self._generate_2fa_code()
+            self._store_password_reset_code(user.id, code)
+            self._send_password_reset_email(user.email, code)
+
+        return MessageResponse(
+            message="Si un compte est associé à cet email, un code de récupération a été envoyé."
+        )
+
+    def reset_password(self, email: str, code: str, new_password: str) -> MessageResponse:
+        user = self.db.query(User).filter(User.email == email.lower()).first()
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Code invalide ou expiré.",
+            )
+
+        record = (
+            self.db.query(PasswordResetCode)
+            .filter(
+                PasswordResetCode.user_id == user.id,
+                PasswordResetCode.used.is_(False),
+                PasswordResetCode.expires_at > datetime.now(UTC).replace(tzinfo=None),
+            )
+            .order_by(PasswordResetCode.expires_at.desc())
+            .first()
+        )
+
+        if record is None or not verify_password(code, record.code_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Code invalide ou expiré.",
+            )
+
+        record.used = True
+        user.password_hash = hash_password(new_password)
+        self.db.commit()
+
+        return MessageResponse(
+            message="Mot de passe réinitialisé. Vous pouvez vous connecter."
+        )
+
     def is_token_revoked(self, access_token: str) -> bool:
         return access_token in _revoked_tokens
 
@@ -161,6 +206,16 @@ class AuthService:
         self.db.add(record)
         self.db.commit()
 
+    def _store_password_reset_code(self, user_id: int, code: str) -> None:
+        record = PasswordResetCode(
+            user_id=user_id,
+            code_hash=hash_password(code),
+            expires_at=datetime.now(UTC).replace(tzinfo=None)
+            + timedelta(minutes=self.settings.two_factor_code_expire_minutes),
+        )
+        self.db.add(record)
+        self.db.commit()
+
     def _send_2fa_email(self, email: str, code: str) -> None:
         try:
             send_email(
@@ -177,6 +232,24 @@ class AuthService:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Impossible d'envoyer le code de vérification par email.",
+            ) from exc
+
+    def _send_password_reset_email(self, email: str, code: str) -> None:
+        try:
+            send_email(
+                self.settings,
+                to=email,
+                subject="Réinitialisation du mot de passe — Cendres & Vapeur",
+                body=(
+                    "Votre code de récupération est : "
+                    f"{code}\n\n"
+                    f"Il expire dans {self.settings.two_factor_code_expire_minutes} minutes."
+                ),
+            )
+        except Exception as exc:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Impossible d'envoyer le code de récupération par email.",
             ) from exc
 
     @staticmethod
