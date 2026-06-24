@@ -82,3 +82,26 @@ def test_rising_edge_fires_only_once_while_active():
 def test_snapshot_exposes_threshold_high():
     sim = AirMonitor(threshold_high=70.0)
     assert sim.snapshot().threshold == 70.0
+
+
+import asyncio
+
+import pytest
+
+from app.air.hub import hub as air_hub
+from app.air.monitor import monitor as air_monitor
+
+
+@pytest.mark.anyio
+async def test_hub_broadcasts_tick_to_subscriber():
+    queue = air_hub.subscribe()
+    try:
+        snapshot, _ = air_monitor.tick()
+        air_hub.publish(snapshot)
+        received = await asyncio.wait_for(queue.get(), timeout=1)
+        assert received.sulfur_level == snapshot.sulfur_level
+        assert received.sulfur_spark == snapshot.sulfur_spark
+    finally:
+        air_hub.unsubscribe(queue)
+        air_monitor.reset()
+        air_hub.reset()
