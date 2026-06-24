@@ -11,6 +11,7 @@ class Product(Base):
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="RESTRICT"), nullable=False)
     name = Column(String, nullable=False)
     description = Column(Text)
+    url = Column(String(2048))
     stock = Column(Integer, nullable=False, default=0)
     price = Column(Numeric(10, 2), nullable=False)
     previous_price = Column(Numeric(10, 2))

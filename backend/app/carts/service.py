@@ -84,6 +84,48 @@ class CartService:
         self.db.commit()
         return self.get_cart(user_id, requesting_user_id, role_level)
 
+    def update_item_quantity(
+        self,
+        user_id: int,
+        item_id: int,
+        quantity: int,
+        requesting_user_id: int,
+        role_level: int,
+    ) -> CartResponse:
+        self._ensure_cart_access(user_id, requesting_user_id, role_level)
+
+        cart = self.db.query(Cart).filter(Cart.user_id == user_id).first()
+        if cart is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Panier introuvable.",
+            )
+
+        item = (
+            self.db.query(CartItem)
+            .filter(CartItem.id == item_id, CartItem.cart_id == cart.id)
+            .first()
+        )
+        if item is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Article introuvable dans le panier.",
+            )
+
+        product = item.product
+        if product is not None and quantity > product.stock:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    f"Stock insuffisant pour « {product.name} » "
+                    f"(demandé : {quantity}, disponible : {product.stock})."
+                ),
+            )
+
+        item.quantity = quantity
+        self.db.commit()
+        return self.get_cart(user_id, requesting_user_id, role_level)
+
     def remove_item(
         self,
         user_id: int,

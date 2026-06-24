@@ -26,7 +26,10 @@ class ProductService:
         )
 
     def list_products(
-        self, sort: str = "default", liked_by_user_id: int | None = None
+        self,
+        sort: str = "default",
+        order: str = "desc",
+        liked_by_user_id: int | None = None,
     ) -> list[Product]:
         likes_count = self._likes_count_column()
         query = (
@@ -55,7 +58,9 @@ class ProductService:
             )
             query = query.order_by(latest_like.desc(), Product.id.desc())
         elif sort == "likes":
-            query = query.order_by(likes_count.desc(), Product.id)
+            likes_order = likes_count.desc() if order == "desc" else likes_count.asc()
+            id_order = Product.id.desc() if order == "desc" else Product.id.asc()
+            query = query.order_by(likes_order, id_order)
         else:
             query = query.order_by(Product.id)
 
@@ -88,6 +93,7 @@ class ProductService:
             category_id=payload.category_id,
             name=payload.name,
             description=payload.description,
+            url=payload.url,
             stock=payload.stock,
             price=payload.price,
         )
@@ -111,6 +117,9 @@ class ProductService:
 
         if "description" in data:
             product.description = data["description"]
+
+        if "url" in data:
+            product.url = data["url"]
 
         if "stock" in data:
             product.stock = data["stock"]

@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     smtp_from: str = "noreply@zone-franche.local"
     contact_admin_email: str = ""
     two_factor_code_expire_minutes: int = 10
+    copper_base_index: float = 248.0
+    copper_min_index: float = 180.0
+    copper_max_index: float = 320.0
+    copper_tick_seconds: float = 3.0
+    copper_spark_length: int = 14
+    copper_volatility: float = 6.0
 
     @property
     def two_factor_enabled(self) -> bool:

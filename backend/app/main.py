@@ -1,5 +1,7 @@
+import asyncio
 from datetime import datetime
 from pathlib import Path
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -10,11 +12,24 @@ from pydantic import BaseModel
 
 from app.auth.router import router as auth_router
 from app.config import get_settings
-from app.routes import carts, chat, contact, discounts, dev_mail, orders, products, votes
+from app.copper.ticker import run_copper_ticker
+from app.routes import carts, chat, contact, copper, discounts, dev_mail, orders, products, users, votes
 
 settings = get_settings()
 
-app = FastAPI(title="Cendres et Vapeur API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    ticker_task = asyncio.create_task(run_copper_ticker(settings))
+    yield
+    ticker_task.cancel()
+    try:
+        await ticker_task
+    except asyncio.CancelledError:
+        pass
+
+
+app = FastAPI(title="Cendres et Vapeur API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,6 +59,7 @@ async def create_secret(payload: TypePayload):
 
 
 app.include_router(products.router)
+app.include_router(users.router)
 app.include_router(carts.router)
 app.include_router(orders.router)
 app.include_router(discounts.router)
@@ -51,3 +67,4 @@ app.include_router(dev_mail.router)
 app.include_router(votes.router)
 app.include_router(chat.router)
 app.include_router(contact.router)
+app.include_router(copper.router)

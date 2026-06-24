@@ -26,7 +26,24 @@ def test_sort_likes_orders_by_count_desc(factory, db_session, client):
         ProductVote(user_id=2, product_id=p2.id),
     ])
     db_session.commit()
-    ids = [p["id"] for p in client.get("/products/?sort=likes").json()]
+    ids = [p["id"] for p in client.get("/products/by-likes?order=desc").json()]
     assert ids == [p2.id, p1.id]
-    counts = {p["id"]: p["likes_count"] for p in client.get("/products/?sort=likes").json()}
+    counts = {
+        p["id"]: p["likes_count"]
+        for p in client.get("/products/by-likes?order=desc").json()
+    }
     assert counts == {p2.id: 2, p1.id: 1}
+
+
+def test_sort_likes_orders_by_count_asc(factory, db_session, client):
+    cat = factory.category()
+    p1 = factory.product(category=cat, name="A")
+    p2 = factory.product(category=cat, name="B")
+    db_session.add_all([
+        ProductVote(user_id=1, product_id=p1.id),
+        ProductVote(user_id=1, product_id=p2.id),
+        ProductVote(user_id=2, product_id=p2.id),
+    ])
+    db_session.commit()
+    ids = [p["id"] for p in client.get("/products/by-likes?order=asc").json()]
+    assert ids == [p1.id, p2.id]

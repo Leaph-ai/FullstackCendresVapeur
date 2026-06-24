@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { likeProduct } from '../../api/products';
 import type { Product } from '../../types';
 
 interface ProductCardProps {
@@ -10,12 +11,30 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [liked, setLiked] = useState(false);
   const [votes, setVotes] = useState(product.votes);
   const [added, setAdded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const hasImage = Boolean(product.url && !imageFailed);
 
-  const handleLike = () => {
-    setLiked((prev) => {
-      setVotes((v) => v + (prev ? -1 : 1));
-      return !prev;
-    });
+  useEffect(() => {
+    setVotes(product.votes);
+    setLiked(false);
+    setImageFailed(false);
+    setIsVoting(false);
+  }, [product.id, product.url, product.votes]);
+
+  const handleLike = async () => {
+    if (liked || isVoting) return;
+
+    setIsVoting(true);
+    try {
+      const voteStatus = await likeProduct(product.id);
+      setVotes(voteStatus.likes_count);
+      setLiked(voteStatus.liked);
+    } catch (error) {
+      console.error('Impossible de liker ce produit.', error);
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   const handleAdd = () => {
@@ -26,7 +45,13 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   return (
     <article className="cv-pcard">
-      <div className="cv-ph">objet · photo</div>
+      <div className={`cv-ph${hasImage ? ' has-image' : ''}`}>
+        {hasImage ? (
+          <img src={product.url ?? ''} alt={product.name} onError={() => setImageFailed(true)} />
+        ) : (
+          'objet · photo'
+        )}
+      </div>
       <div>
         <div className="pname">{product.name}</div>
         <div className="pcat">{product.category}</div>
@@ -44,6 +69,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           type="button"
           className={`cv-like${liked ? ' is-liked' : ''}`}
           aria-pressed={liked}
+          disabled={isVoting}
           onClick={handleLike}
         >
           <span className="heart">{liked ? '♥' : '♡'}</span>{' '}

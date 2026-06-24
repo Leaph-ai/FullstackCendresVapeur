@@ -37,8 +37,17 @@ def require_editor(
 def get_products(
     service: Annotated[ProductService, Depends(get_product_service)],
     sort: Literal["default", "likes"] = "default",
+    order: Literal["asc", "desc"] = "desc",
 ) -> list[ProductResponse]:
-    return service.list_products(sort=sort)
+    return service.list_products(sort=sort, order=order)
+
+
+@router.get("/by-likes", response_model=list[ProductResponse])
+def get_products_by_likes(
+    service: Annotated[ProductService, Depends(get_product_service)],
+    order: Literal["asc", "desc"] = "desc",
+) -> list[ProductResponse]:
+    return service.list_products(sort="likes", order=order)
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
