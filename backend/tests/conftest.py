@@ -12,6 +12,7 @@ from app.auth.dependencies import get_current_user
 from app.core.database import Base, get_db
 from app.main import app
 from models.category import Category
+from models.colony_log import ColonyLog
 from models.product import Product
 from models.role import Role
 from models.user import User
@@ -99,6 +100,13 @@ def factory(db_session):
                 stock=stock,
                 price=Decimal(price),
             )
+            db_session.add(row)
+            db_session.commit()
+            db_session.refresh(row)
+            return row
+
+        def colony_log(self, action="Connexion accréditée — citoyen", user=None):
+            row = ColonyLog(user_id=user.id if user else None, action=action)
             db_session.add(row)
             db_session.commit()
             db_session.refresh(row)
