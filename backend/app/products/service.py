@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
@@ -26,13 +26,31 @@ class ProductService:
         )
 
     def list_products(
-        self, sort: str = "default", liked_by_user_id: int | None = None
+        self,
+        sort: str = "default",
+        order: str = "desc",
+        liked_by_user_id: int | None = None,
+        category_id: int | None = None,
+        search: str | None = None,
+        limit: int | None = None,
     ) -> list[Product]:
         likes_count = self._likes_count_column()
         query = (
             self.db.query(Product, likes_count)
             .options(joinedload(Product.category))
         )
+
+        if category_id is not None:
+            query = query.filter(Product.category_id == category_id)
+
+        if search:
+            pattern = f"%{search.strip()}%"
+            query = query.filter(
+                or_(
+                    Product.name.ilike(pattern),
+                    Product.description.ilike(pattern),
+                )
+            )
 
         if liked_by_user_id is not None:
             query = query.filter(
@@ -55,9 +73,22 @@ class ProductService:
             )
             query = query.order_by(latest_like.desc(), Product.id.desc())
         elif sort == "likes":
-            query = query.order_by(likes_count.desc(), Product.id)
+            likes_order = likes_count.desc() if order == "desc" else likes_count.asc()
+            id_order = Product.id.desc() if order == "desc" else Product.id.asc()
+            query = query.order_by(likes_order, id_order)
+        elif sort == "price":
+            price_order = Product.price.desc() if order == "desc" else Product.price.asc()
+            query = query.order_by(price_order, Product.id)
+        elif sort == "new":
+            date_order = (
+                Product.created_at.desc() if order == "desc" else Product.created_at.asc()
+            )
+            query = query.order_by(date_order, Product.id.desc())
         else:
             query = query.order_by(Product.id)
+
+        if limit is not None:
+            query = query.limit(limit)
 
         products = []
         for product, count in query.all():
@@ -88,6 +119,7 @@ class ProductService:
             category_id=payload.category_id,
             name=payload.name,
             description=payload.description,
+            url=payload.url,
             stock=payload.stock,
             price=payload.price,
         )
@@ -111,6 +143,9 @@ class ProductService:
 
         if "description" in data:
             product.description = data["description"]
+
+        if "url" in data:
+            product.url = data["url"]
 
         if "stock" in data:
             product.stock = data["stock"]

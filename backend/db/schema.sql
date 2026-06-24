@@ -39,6 +39,7 @@ CREATE TABLE "products" (
   "category_id" integer NOT NULL,
   "name" varchar NOT NULL,
   "description" text,
+  "url" varchar(2048),
   "stock" integer NOT NULL DEFAULT 0,
   "price" decimal NOT NULL,
   "previous_price" decimal,

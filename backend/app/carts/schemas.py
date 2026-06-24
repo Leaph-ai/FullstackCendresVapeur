@@ -32,3 +32,7 @@ class CartResponse(BaseModel):
 class CartItemCreate(BaseModel):
     product_id: int
     quantity: int = Field(ge=1, default=1)
+
+
+class CartItemUpdate(BaseModel):
+    quantity: int = Field(ge=1)

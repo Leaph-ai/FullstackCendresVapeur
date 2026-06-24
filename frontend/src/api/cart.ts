@@ -1,4 +1,4 @@
-import { apiDelete, apiGet, apiPost } from './client';
+import { apiDelete, apiGet, apiPatch, apiPost } from './client';
 
 // ── Types miroirs des schemas Pydantic backend ──────────────────────────────
 
@@ -36,6 +36,15 @@ export function addCartItem(
   quantity = 1,
 ): Promise<CartResponse> {
   return apiPost<CartResponse>(`/carts/${userId}/items`, { product_id: productId, quantity });
+}
+
+/** PATCH /carts/{userId}/items/{itemId} — met à jour la quantité */
+export function updateCartItemQuantity(
+  userId: number,
+  itemId: number,
+  quantity: number,
+): Promise<CartResponse> {
+  return apiPatch<CartResponse>(`/carts/${userId}/items/${itemId}`, { quantity });
 }
 
 /** DELETE /carts/{userId}/items/{itemId} puis re-fetch */

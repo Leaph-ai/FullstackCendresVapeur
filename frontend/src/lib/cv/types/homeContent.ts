@@ -1,10 +1,12 @@
 export interface Product {
   id: number;
+
   name: string;
   category: string;
   price: number;
   trend: 'up' | 'down';
   votes: number;
+  url?: string | null;
 }
 
 export interface JournalLog {
@@ -22,11 +24,6 @@ export interface ToxGaugeConfig {
   initialWarn?: boolean;
 }
 
-export const PRODUCTS: Product[] = [
-  { id: 1, name: 'Engrenage en laiton', category: 'Cuivre brut', price: 12.50, trend: 'down', votes: 71 },
-  { id: 2, name: 'Alambic de poche', category: 'Mécanique lourde', price: 89.90, trend: 'up', votes: 188 },
-  { id: 3, name: 'Montre à gousset fêlée', category: 'Optique', price: 250.00, trend: 'up', votes: 156 },
-];
 
 export const JOURNAL_LOGS: JournalLog[] = [
   { type: 'troc', text: 'Troc validé — Régulateur de pression Mk.III (Cobalt-114)' },

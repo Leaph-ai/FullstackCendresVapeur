@@ -1,21 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { likeProduct } from '../../api/products';
 import type { Product } from '../../types';
 
 interface ProductCardProps {
   product: Product;
   onAddToCart: (product: Product) => void;
+  onOpenDetail?: (product: Product) => void;
 }
 
-export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+export function ProductCard({ product, onAddToCart, onOpenDetail }: ProductCardProps) {
   const [liked, setLiked] = useState(false);
   const [votes, setVotes] = useState(product.votes);
   const [added, setAdded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const hasImage = Boolean(product.url && !imageFailed);
 
-  const handleLike = () => {
-    setLiked((prev) => {
-      setVotes((v) => v + (prev ? -1 : 1));
-      return !prev;
-    });
+  useEffect(() => {
+    setVotes(product.votes);
+    setLiked(false);
+    setImageFailed(false);
+    setIsVoting(false);
+  }, [product.id, product.url, product.votes]);
+
+  const handleLike = async () => {
+    if (liked || isVoting) return;
+
+    setIsVoting(true);
+    try {
+      const voteStatus = await likeProduct(product.id);
+      setVotes(voteStatus.likes_count);
+      setLiked(voteStatus.liked);
+    } catch (error) {
+      console.error('Impossible de liker ce produit.', error);
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   const handleAdd = () => {
@@ -24,11 +44,41 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     window.setTimeout(() => setAdded(false), 1300);
   };
 
+  const openDetail = () => onOpenDetail?.(product);
+  const detailable = Boolean(onOpenDetail);
+
   return (
     <article className="cv-pcard">
-      <div className="cv-ph">objet · photo</div>
+      <div
+        className={`cv-ph${hasImage ? ' has-image' : ''}${detailable ? ' is-clickable' : ''}`}
+        onClick={detailable ? openDetail : undefined}
+        role={detailable ? 'button' : undefined}
+        tabIndex={detailable ? 0 : undefined}
+        onKeyDown={
+          detailable
+            ? (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  openDetail();
+                }
+              }
+            : undefined
+        }
+      >
+        {hasImage ? (
+          <img src={product.url ?? ''} alt={product.name} onError={() => setImageFailed(true)} />
+        ) : (
+          'objet · photo'
+        )}
+      </div>
       <div>
-        <div className="pname">{product.name}</div>
+        {detailable ? (
+          <button type="button" className="pname pname-link" onClick={openDetail}>
+            {product.name}
+          </button>
+        ) : (
+          <div className="pname">{product.name}</div>
+        )}
         <div className="pcat">{product.category}</div>
       </div>
       <div className="cv-row between center">
@@ -44,6 +94,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           type="button"
           className={`cv-like${liked ? ' is-liked' : ''}`}
           aria-pressed={liked}
+          disabled={isVoting}
           onClick={handleLike}
         >
           <span className="heart">{liked ? '♥' : '♡'}</span>{' '}
