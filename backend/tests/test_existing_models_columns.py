@@ -5,7 +5,7 @@ from models import (
 
 EXPECTED = {
     Category: {"id", "name"},
-    Product: {"id", "category_id", "name", "description", "stock",
+    Product: {"id", "category_id", "name", "description", "url", "stock",
               "price", "previous_price", "created_at"},
     Cart: {"id", "user_id"},
     CartItem: {"id", "cart_id", "product_id", "quantity"},
