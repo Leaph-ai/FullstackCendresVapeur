@@ -5,9 +5,10 @@ import type { Product } from '../../types';
 interface ProductCardProps {
   product: Product;
   onAddToCart: (product: Product) => void;
+  onOpenDetail?: (product: Product) => void;
 }
 
-export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+export function ProductCard({ product, onAddToCart, onOpenDetail }: ProductCardProps) {
   const [liked, setLiked] = useState(false);
   const [votes, setVotes] = useState(product.votes);
   const [added, setAdded] = useState(false);
@@ -43,9 +44,27 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     window.setTimeout(() => setAdded(false), 1300);
   };
 
+  const openDetail = () => onOpenDetail?.(product);
+  const detailable = Boolean(onOpenDetail);
+
   return (
     <article className="cv-pcard">
-      <div className={`cv-ph${hasImage ? ' has-image' : ''}`}>
+      <div
+        className={`cv-ph${hasImage ? ' has-image' : ''}${detailable ? ' is-clickable' : ''}`}
+        onClick={detailable ? openDetail : undefined}
+        role={detailable ? 'button' : undefined}
+        tabIndex={detailable ? 0 : undefined}
+        onKeyDown={
+          detailable
+            ? (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  openDetail();
+                }
+              }
+            : undefined
+        }
+      >
         {hasImage ? (
           <img src={product.url ?? ''} alt={product.name} onError={() => setImageFailed(true)} />
         ) : (
@@ -53,7 +72,13 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         )}
       </div>
       <div>
-        <div className="pname">{product.name}</div>
+        {detailable ? (
+          <button type="button" className="pname pname-link" onClick={openDetail}>
+            {product.name}
+          </button>
+        ) : (
+          <div className="pname">{product.name}</div>
+        )}
         <div className="pcat">{product.category}</div>
       </div>
       <div className="cv-row between center">

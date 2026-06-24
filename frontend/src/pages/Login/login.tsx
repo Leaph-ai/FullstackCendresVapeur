@@ -1,12 +1,18 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import './login.css';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
 import { apiPost } from '../../api/client';
+import { AUTH_CHANGED_EVENT } from '../../context/authEvents';
 import ErrorBanner from '../../components/feedback/ErrorBanner';
+
+/** N'autorise que des redirections internes (évite les redirections ouvertes). */
+function safeRedirect(target: string | null): string {
+  return target && target.startsWith('/') && !target.startsWith('//') ? target : '/';
+}
 
 interface LoginResponse {
   requires_2fa: boolean;
@@ -17,6 +23,8 @@ interface LoginResponse {
 function Login() {
   const railRef = useScrollRail();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = safeRedirect(searchParams.get('redirect'));
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,10 +42,11 @@ function Login() {
 
       if (data.requires_2fa) {
         localStorage.setItem('challenge_token', data.challenge_token ?? '');
-        navigate('/verify-2fa');
+        navigate(`/verify-2fa?redirect=${encodeURIComponent(redirectTo)}`);
       } else {
         localStorage.setItem('access_token', data.access_token ?? '');
-        navigate('/');
+        window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+        navigate(redirectTo);
       }
     } catch (e) {
       setError(e);

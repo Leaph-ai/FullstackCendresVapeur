@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { fetchProducts } from '../../api/products';
-import type { ProductDto } from '../../api/products';
+import { Link } from 'react-router-dom';
+import { fetchProducts, toCardProduct } from '../../api/products';
 import type { Product } from '../../types';
 import { PanelBody, PanelHead, ScrollPanel } from '../primitives/ScrollPanel';
 import { SparkChart } from '../primitives/SparkChart';
 import { ProductCard } from './ProductCard';
+
+/** Nombre de pièces mises en avant sur la page d'accueil. */
+const FEATURED_COUNT = 6;
 
 interface VitrineSectionProps {
   locked: boolean;
@@ -30,7 +33,7 @@ export function VitrineSection({
     const controller = new AbortController();
     setLoadError(false);
 
-    fetchProducts(controller.signal)
+    fetchProducts({ sort: 'likes', limit: FEATURED_COUNT, signal: controller.signal })
       .then((apiProducts) => {
         setProducts(apiProducts.map(toCardProduct));
         setLoadError(false);
@@ -51,9 +54,9 @@ export function VitrineSection({
         sector="SECTEUR 01"
         title="Vitrine — pièces en vedette"
         right={
-          <a className="cv-btn is-ghost is-sm" href="#">
+          <Link className="cv-btn is-ghost is-sm" to="/catalogue">
             Tout le catalogue →
-          </a>
+          </Link>
         }
       />
       <PanelBody>
@@ -81,19 +84,4 @@ export function VitrineSection({
       </PanelBody>
     </ScrollPanel>
   );
-}
-
-function toCardProduct(product: ProductDto): Product {
-  const price = Number(product.price);
-  const previousPrice = product.previous_price === null ? null : Number(product.previous_price);
-
-  return {
-    id: product.id,
-    name: product.name,
-    category: product.category?.name ?? 'Sans catégorie',
-    price: Number.isFinite(price) ? price : 0,
-    trend: previousPrice !== null && price < previousPrice ? 'down' : 'up',
-    votes: product.likes_count,
-    url: product.url,
-  };
 }
