@@ -90,7 +90,7 @@
 
 button {
   padding: 15px;
-  background: #b87333;
+  background: #9b5a27;
   border: none;
 
   color: white;
@@ -102,7 +102,7 @@ button {
 }
 
 button:hover {
-  background: #d8975b;
+  background: #845020;
 }
 
 .auth-links {

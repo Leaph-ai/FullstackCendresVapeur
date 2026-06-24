@@ -83,7 +83,7 @@
 
 .verify-container button {
   padding: 15px;
-  background: #b87333;
+  background: #9b5a27;
   border: none;
 
   color: white;
@@ -96,7 +96,7 @@
 }
 
 .verify-container button:hover:not(:disabled) {
-  background: #d8975b;
+  background: #845020;
 }
 
 .verify-container button:disabled {
