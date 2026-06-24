@@ -15,7 +15,7 @@ from app.auth.router import router as auth_router
 from app.config import get_settings
 from app.copper.ticker import run_copper_ticker
 from app.errors.handlers import register_error_handlers
-from app.routes import carts, categories, chat, contact, copper, discounts, dev_mail, orders, products, users, votes, files
+from app.routes import carts, categories, chat, contact, copper, discounts, dev_mail, journal, orders, products, users, votes, files
 
 settings = get_settings()
 
@@ -76,3 +76,4 @@ app.include_router(copper.router)
 app.include_router(files.router)
 app.include_router(categories.router)
 app.include_router(contact.router)
+app.include_router(journal.router)
