@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   ChiffresSection,
+  ContactSection,
   HeroSection,
   JournalSection,
   SteampunkPageShell,
@@ -15,7 +16,7 @@ import { ChatModal } from '../../components/chatModal/chatModal';
 import { useCart } from '../../context/CartContext';
 
 
-const PANEL_IDS = ['vitrine', 'toxicite', 'journal', 'chiffres'];
+const PANEL_IDS = ['vitrine', 'toxicite', 'journal', 'chiffres', 'contact'];
 
 export function HomePage() {
   const location = useLocation();
@@ -71,6 +72,10 @@ export function HomePage() {
         locked={isLocked('chiffres')}
         clanking={isClanking('chiffres')}
         nixieValues={live.nixieValues}
+      />
+      <ContactSection
+        locked={isLocked('contact')}
+        clanking={isClanking('contact')}
       />
       <ChatModal />
     </SteampunkPageShell>

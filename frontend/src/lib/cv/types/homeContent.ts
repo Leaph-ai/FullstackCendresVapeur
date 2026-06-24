@@ -24,6 +24,7 @@ export interface ToxGaugeConfig {
   initialWarn?: boolean;
 }
 
+
 export const JOURNAL_LOGS: JournalLog[] = [
   { type: 'troc', text: 'Troc validé — Régulateur de pression Mk.III (Cobalt-114)' },
   { type: 'acces', text: 'Nouvel accès accrédité — secteur Pourpre' },
@@ -56,5 +57,6 @@ export const NAV_LINKS = [
   { href: '#toxicite', label: 'Toxicité', id: 'toxicite' },
   { href: '#journal', label: 'Journal', id: 'journal' },
   { href: '#chiffres', label: 'Colonie', id: 'chiffres' },
+  { href: '#contact', label: 'Contact', id: 'contact' },
   { href: '#footer', label: 'Guilde', id: 'footer' },
 ];
