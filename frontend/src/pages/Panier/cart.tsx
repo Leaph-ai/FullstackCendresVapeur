@@ -110,13 +110,13 @@ function Cart() {
                       <span className="label">Sous-total</span>
                       <span className="value">ⵟ {getTotal().toFixed(2)}</span>
                     </div>
-                    <div className="summary-row">
-                      <span className="label">TVA (20%)</span>
-                      <span className="value">ⵟ {(getTotal() * 0.20).toFixed(2)}</span>
-                    </div>
                     <div className="summary-row is-total">
                       <span className="label">Total TTC</span>
-                      <span className="value">ⵟ {(getTotal() * 1.20).toFixed(2)}</span>
+                      <span className="value">ⵟ {getTotal().toFixed(2)}</span>
+                    </div>
+                    <div className="summary-row">
+                      <span className="label">dont TVA (20%)</span>
+                      <span className="value">ⵟ {(getTotal() - getTotal() / 1.2).toFixed(2)}</span>
                     </div>
                   </div>
 
