@@ -11,11 +11,12 @@ interface InvoiceProps {
   discountAmount: number;
   tax: number;
   total: number;
+  orderId?: number | null;
 }
 
 export const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
-  ({ items, formData, subtotal, discount, discountAmount, tax, total }, ref) => {
-    const invoiceNumber = `ORD-${Date.now().toString().slice(-8)}`;
+  ({ items, formData, subtotal, discount, discountAmount, tax, total, orderId }, ref) => {
+    const invoiceNumber = orderId != null ? `ORD-${orderId}` : 'ORD-—';
     const invoiceDate = new Date().toLocaleDateString('fr-FR');
 
     return (
@@ -105,13 +106,13 @@ export const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
               <span className="value">-ⵟ {discountAmount.toFixed(2)}</span>
             </div>
           )}
-          <div className="calc-row">
-            <span className="label">TVA (20%)</span>
-            <span className="value">ⵟ {tax.toFixed(2)}</span>
-          </div>
           <div className="calc-row total">
             <span className="label">Total TTC</span>
             <span className="value">ⵟ {total.toFixed(2)}</span>
+          </div>
+          <div className="calc-row">
+            <span className="label">dont TVA (20%)</span>
+            <span className="value">ⵟ {tax.toFixed(2)}</span>
           </div>
         </div>
 
