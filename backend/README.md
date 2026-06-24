@@ -70,3 +70,4 @@ Une fois démarré, l'API est disponible sur :
 |---------|------------|------------------------------|
 | GET     | `/`        | Vérification que l'API tourne |
 | POST    | `/getdata` | Enregistre du contenu dans un fichier |
+| POST    | `/upload` | Uploade un fichier (pdf, png, jpg, webp) |

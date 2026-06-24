@@ -21,6 +21,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+  
+  api:
+    build: .
+    container_name: cendresvapeur-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+  uploads:
