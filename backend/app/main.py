@@ -18,6 +18,8 @@ from app.copper.ticker import run_copper_ticker
 from app.errors.handlers import register_error_handlers
 from app.routes import air, carts, categories, chat, contact, copper, discounts, dev_mail, orders, products, users, votes, files
 
+from app.logs.router import router as logs_router
+
 settings = get_settings()
 
 Path("uploads").mkdir(exist_ok=True)
@@ -39,6 +41,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Cendres et Vapeur API", lifespan=lifespan)
 
 register_error_handlers(app)
+
+app.include_router(logs_router)
 
 app.add_middleware(
     CORSMiddleware,
