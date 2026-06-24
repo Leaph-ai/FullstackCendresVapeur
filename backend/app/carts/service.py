@@ -2,6 +2,8 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
 from app.carts.schemas import CartItemCreate, CartResponse
+from app.errors.codes import ErrorCode
+from app.errors.exceptions import AppError
 from models.cart import Cart
 from models.cart_item import CartItem
 from models.product import Product
@@ -62,9 +64,9 @@ class CartService:
             new_quantity = existing_item.quantity + payload.quantity
 
         if new_quantity > product.stock:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=(
+            raise AppError.bad_request(
+                ErrorCode.INSUFFICIENT_STOCK,
+                (
                     f"Stock insuffisant pour « {product.name} » "
                     f"(demandé : {new_quantity}, disponible : {product.stock})."
                 ),

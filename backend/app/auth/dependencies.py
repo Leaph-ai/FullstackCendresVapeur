@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 from app.auth.service import AuthService
 from app.config import Settings, get_settings
 from app.core.database import get_db
+from app.errors.codes import ErrorCode
+from app.errors.exceptions import AppError
 from app.security.jwt import decode_token
 
 security_scheme = HTTPBearer(auto_error=False)
@@ -42,10 +44,8 @@ def get_current_user(
     try:
         payload = decode_token(credentials.credentials, settings, expected_type="access")
     except jwt.PyJWTError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token invalide ou expiré.",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AppError.unauthorized(
+            ErrorCode.TOKEN_EXPIRED, "Token invalide ou expiré."
         ) from exc
 
     return {
