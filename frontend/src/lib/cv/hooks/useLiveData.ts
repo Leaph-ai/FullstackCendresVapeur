@@ -1,18 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { JOURNAL_LOGS, type JournalLog } from '../types';
 import type { JournalEntry } from '../types/live';
+import {
+  fallbackEntries,
+  fetchJournalFeed,
+  mapFeedToEntries,
+} from '../api/journalFeed';
 
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-let minute = 2;
-function nextStamp() {
-  minute = (minute + Math.floor(Math.random() * 3) + 1) % 60;
-  return `14:${String(minute).padStart(2, '0')} · cycle 14`;
-}
-
-function makeEntry(log: JournalLog): JournalEntry {
-  return { ...log, key: `${Date.now()}-${Math.random()}`, stamp: nextStamp() };
-}
+const FEED_POLL_MS = 5000;
 
 export function useLiveData() {
   const [bourseIdx, setBourseIdx] = useState(248);
@@ -20,9 +15,7 @@ export function useLiveData() {
   const [bourseSpark, setBourseSpark] = useState<number[]>(() =>
     Array.from({ length: 14 }, () => 40 + Math.random() * 50),
   );
-  const [journal, setJournal] = useState<JournalEntry[]>(() =>
-    JOURNAL_LOGS.slice(0, 6).map(makeEntry),
-  );
+  const [journal, setJournal] = useState<JournalEntry[]>(() => fallbackEntries());
   const [nixieValues, setNixieValues] = useState<Record<string, string>>({
     citizens: '1 284',
     orders: '96',
@@ -34,6 +27,31 @@ export function useLiveData() {
     return next;
   }, []);
 
+  // Journal des survivants : feed public réel, fallback mock si vide/erreur.
+  useEffect(() => {
+    let cancelled = false;
+
+    const refresh = async () => {
+      try {
+        const raw = await fetchJournalFeed();
+        if (cancelled) return;
+        setJournal(raw.length > 0 ? mapFeedToEntries(raw).slice(0, 6) : fallbackEntries());
+      } catch {
+        if (!cancelled) setJournal(fallbackEntries());
+      }
+    };
+
+    void refresh();
+    if (REDUCED_MOTION) return () => { cancelled = true; };
+
+    const feedTimer = window.setInterval(refresh, FEED_POLL_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(feedTimer);
+    };
+  }, []);
+
+  // Bourse & nixies : simulation visuelle (hors périmètre de la liaison logs).
   useEffect(() => {
     if (REDUCED_MOTION) return;
 
@@ -43,11 +61,6 @@ export function useLiveData() {
       setBourseTrend({ up: d >= 0, delta: d });
       setBourseSpark((prev) => shiftSpark(prev, 30, 92));
     }, 3200);
-
-    const journalTimer = window.setInterval(() => {
-      const log = JOURNAL_LOGS[Math.floor(Math.random() * JOURNAL_LOGS.length)];
-      setJournal((prev) => [makeEntry(log), ...prev].slice(0, 6));
-    }, 3800);
 
     const nixieTimer = window.setInterval(() => {
       setNixieValues((prev) => {
@@ -65,16 +78,9 @@ export function useLiveData() {
 
     return () => {
       window.clearInterval(bourseTimer);
-      window.clearInterval(journalTimer);
       window.clearInterval(nixieTimer);
     };
   }, [shiftSpark]);
 
-  return {
-    bourseIdx,
-    bourseTrend,
-    bourseSpark,
-    journal,
-    nixieValues,
-  };
+  return { bourseIdx, bourseTrend, bourseSpark, journal, nixieValues };
 }
