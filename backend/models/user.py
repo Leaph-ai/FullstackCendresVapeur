@@ -10,7 +10,7 @@ class User(Base):
     id = Column(Integer, Identity(always=True), primary_key=True)
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
+    password_hash = Column(String, nullable=True)
     role_id = Column(Integer, ForeignKey("roles.id", ondelete="RESTRICT"), nullable=False)
     oauth_provider = Column(String, nullable=True)
     oauth_provider_id = Column(String, nullable=True)
