@@ -85,6 +85,8 @@
     right: 15px;
     width: 380px;
     height: 600px;
+    /* Ne jamais dépasser le bas de l'écran : la liste des messages scrolle à la place. */
+    max-height: calc(100dvh - 150px);
     background: var(--paper-hi);
     border: 1.5px solid var(--line);
     border-radius: var(--r);
