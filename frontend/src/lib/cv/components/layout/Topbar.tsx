@@ -44,7 +44,23 @@ export function Topbar({ cartCount, activeSection = 'vitrine' }: TopbarProps) {
           className="cv-iconbtn"
           aria-label={`Panier, ${cartCount} articles`}
         >
-          ▤<span className="cnt">{cartCount}</span>
+          <svg
+            className="cart-glyph"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M2.5 3h2.2l1.2 12.2a1.8 1.8 0 0 0 1.8 1.6h8.9a1.8 1.8 0 0 0 1.8-1.5l1.3-7.3H6" />
+            <circle cx="9" cy="20" r="1.4" />
+            <circle cx="17" cy="20" r="1.4" />
+          </svg>
+          <span className="cnt">{cartCount}</span>
         </Link>
       </span>
     </header>
