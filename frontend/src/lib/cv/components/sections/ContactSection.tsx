@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { submitContactMessage } from '../../../../api/contact';
+import { ApiError } from '../../../../api/client';
+import ErrorBanner from '../../../../components/feedback/ErrorBanner';
 import { PanelBody, PanelHead, ScrollPanel } from '../primitives/ScrollPanel';
 
 interface ContactSectionProps {
@@ -21,6 +24,13 @@ const SUJETS = [
     'Autre missive',
 ];
 
+const API_FIELD_MAP: Record<string, keyof FormState> = {
+    name: 'nom',
+    email: 'email',
+    subject: 'sujet',
+    message: 'message',
+};
+
 export function ContactSection({ locked = false, clanking = false }: ContactSectionProps) {
     const [form, setForm] = useState<FormState>({
         nom: '',
@@ -29,6 +39,8 @@ export function ContactSection({ locked = false, clanking = false }: ContactSect
         message: '',
     });
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<unknown>(null);
     const [errors, setErrors] = useState<Partial<FormState>>({});
 
     function validate(): boolean {
@@ -55,16 +67,43 @@ export function ContactSection({ locked = false, clanking = false }: ContactSect
         }
     }
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!validate()) return;
-        // TODO: connecter à POST /contact une fois le backend Pourpre prêt
-        setSubmitted(true);
+
+        try {
+            setLoading(true);
+            setError(null);
+
+            await submitContactMessage({
+                name: form.nom.trim(),
+                email: form.email.trim(),
+                subject: form.sujet,
+                message: form.message.trim(),
+            });
+
+            setSubmitted(true);
+        } catch (err) {
+            if (err instanceof ApiError && err.fields?.length) {
+                const next: Partial<FormState> = {};
+                for (const field of err.fields) {
+                    const key = API_FIELD_MAP[field.field];
+                    if (key) next[key] = field.msg;
+                }
+                if (Object.keys(next).length > 0) {
+                    setErrors(next);
+                }
+            }
+            setError(err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     function handleReset() {
         setForm({ nom: '', email: '', sujet: '', message: '' });
         setErrors({});
+        setError(null);
         setSubmitted(false);
     }
 
@@ -103,6 +142,8 @@ export function ContactSection({ locked = false, clanking = false }: ContactSect
                             noValidate
                             aria-label="Formulaire de contact"
                         >
+                            <ErrorBanner error={error} />
+
                             <div className="contact-row">
                                 {/* Identifiant */}
                                 <div className={`cv-field${errors.nom ? ' is-error' : ''}`}>
@@ -205,8 +246,13 @@ export function ContactSection({ locked = false, clanking = false }: ContactSect
                             </div>
 
                             <div className="contact-actions">
-                                <button type="submit" className="cv-btn" aria-label="Envoyer la missive">
-                                    ► Envoyer la transmission
+                                <button
+                                    type="submit"
+                                    className="cv-btn"
+                                    disabled={loading}
+                                    aria-label="Envoyer la missive"
+                                >
+                                    {loading ? 'Transmission en cours…' : '► Envoyer la transmission'}
                                 </button>
                             </div>
                         </form>

@@ -29,6 +29,14 @@ CREATE TABLE "two_factor_codes" (
   "used" boolean DEFAULT false
 );
 
+CREATE TABLE "password_reset_codes" (
+  "id" integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "user_id" integer NOT NULL,
+  "code_hash" varchar NOT NULL,
+  "expires_at" timestamp NOT NULL,
+  "used" boolean DEFAULT false
+);
+
 CREATE TABLE "categories" (
   "id" integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "name" varchar UNIQUE NOT NULL
@@ -146,12 +154,14 @@ CREATE TABLE "air_quality" (
 );
 
 CREATE INDEX ON "two_factor_codes" ("user_id", "expires_at");
+CREATE INDEX ON "password_reset_codes" ("user_id", "expires_at");
 CREATE UNIQUE INDEX ON "product_votes" ("user_id", "product_id");
 CREATE UNIQUE INDEX ON "cart_items" ("cart_id", "product_id");
 CREATE UNIQUE INDEX ON "shift_notes" ("user_id", "note_date", "shift");
 
 ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE RESTRICT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "two_factor_codes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "password_reset_codes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "products" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON DELETE RESTRICT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "price_history" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "product_votes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;

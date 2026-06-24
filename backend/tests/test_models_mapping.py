@@ -11,7 +11,7 @@ def test_all_mappers_configure():
 
 def test_metadata_registers_all_tables():
     expected = {
-        "roles", "users", "two_factor_codes", "categories", "products",
+        "roles", "users", "two_factor_codes", "password_reset_codes", "categories", "products",
         "price_history", "product_votes", "carts", "cart_items",
         "discount_codes", "orders", "order_items", "colony_events",
         "shift_notes", "chat_messages", "contact_messages", "colony_logs",

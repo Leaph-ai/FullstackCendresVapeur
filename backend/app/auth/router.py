@@ -5,10 +5,12 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.auth.dependencies import get_auth_service, get_current_user
 from app.auth.schemas import (
+    ForgotPasswordRequest,
     LoginRequest,
     LoginResponse,
     MessageResponse,
     RegisterRequest,
+    ResetPasswordRequest,
     TokenResponse,
     Verify2FARequest,
 )
@@ -55,6 +57,24 @@ async def logout(
     """Déconnexion : invalide le token d'accès courant."""
     _ = current_user
     return auth_service.logout(credentials.credentials)
+
+
+@router.post("/forgot-password", response_model=MessageResponse)
+async def forgot_password(
+    payload: ForgotPasswordRequest,
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+) -> MessageResponse:
+    """Envoie un code de récupération par email si le compte existe."""
+    return auth_service.forgot_password(payload.email)
+
+
+@router.post("/reset-password", response_model=MessageResponse)
+async def reset_password(
+    payload: ResetPasswordRequest,
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+) -> MessageResponse:
+    """Valide le code reçu par email et définit un nouveau mot de passe."""
+    return auth_service.reset_password(payload.email, payload.code, payload.new_password)
 
 
 @router.get("/me")

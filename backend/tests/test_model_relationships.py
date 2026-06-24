@@ -3,7 +3,7 @@ from sqlalchemy.orm import configure_mappers
 
 from models import (
     Cart, CartItem, Category, ChatMessage, DiscountCode, Order, OrderItem,
-    PriceHistory, Product, ProductVote, Role, ShiftNote, TwoFactorCode, User,
+    PriceHistory, Product, ProductVote, Role, ShiftNote, TwoFactorCode, PasswordResetCode, User,
 )
 
 
@@ -31,6 +31,8 @@ def test_relationship_targets():
     assert _target(User, "role") is Role
     assert _target(User, "two_factor_codes") is TwoFactorCode
     assert _target(TwoFactorCode, "user") is User
+    assert _target(User, "password_reset_codes") is PasswordResetCode
+    assert _target(PasswordResetCode, "user") is User
     assert _target(User, "shift_notes") is ShiftNote
     assert _target(ShiftNote, "user") is User
     assert _target(ChatMessage, "sender") is User
