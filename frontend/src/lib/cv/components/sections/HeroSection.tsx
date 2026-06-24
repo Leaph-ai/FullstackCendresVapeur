@@ -32,19 +32,6 @@ export function HeroSection() {
               </a>
             </div>
           </div>
-          <div className="hero-instr" aria-hidden="true">
-            <div className="tubes">
-              <span className="tube" />
-              <span className="tube" />
-              <span className="tube" />
-            </div>
-            <span className="valve spin bigvalve" />
-            <div style={{ display: 'flex', gap: 12 }}>
-              <span className="minigauge" style={{ ['--p' as string]: '64%' }} />
-              <span className="minigauge" style={{ ['--p' as string]: '42%' }} />
-              <span className="minigauge" style={{ ['--p' as string]: '81%' }} />
-            </div>
-          </div>
         </div>
         <div className="hero-marquee">
           <span>
