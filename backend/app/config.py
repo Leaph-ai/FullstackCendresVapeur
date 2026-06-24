@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     copper_spark_length: int = 14
     copper_volatility: float = 6.0
 
+    # OAuth – Google
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    oauth_redirect_base_url: str = "http://localhost:5173"
+
     @property
     def two_factor_enabled(self) -> bool:
         return self.app_env == "prod"
