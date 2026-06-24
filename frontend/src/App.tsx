@@ -7,6 +7,8 @@ import Checkout from './pages/Checkout/checkout';
 import { Admin } from './pages/Admin/Admin';
 import { CartProvider } from './context/CartContext';
 import { HomePage } from './pages/HomePage/HomePage';
+import ErrorPage from './components/feedback/ErrorPage';
+import Verify2FA from './pages/Verify2FA/verify2FA';
 
 function App() {
   return (
@@ -19,6 +21,17 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/admin" element={<Admin />} />
+        <Route
+          path="*"
+          element={
+            <ErrorPage
+              code="NOT_FOUND"
+              title="Secteur introuvable"
+              detail="Cette zone n'existe pas ou a été engloutie par les cendres."
+            />
+          }
+        />
+        <Route path="/verify-2fa" element={<Verify2FA />} />
       </Routes>
     </CartProvider>
   );

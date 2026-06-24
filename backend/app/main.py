@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from app.auth.router import router as auth_router
 from app.config import get_settings
 from app.copper.ticker import run_copper_ticker
+from app.errors.handlers import register_error_handlers
 from app.routes import carts, chat, copper, discounts, dev_mail, orders, products, users, votes, files
 
 settings = get_settings()
@@ -30,6 +31,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Cendres et Vapeur API", lifespan=lifespan)
+
+register_error_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,

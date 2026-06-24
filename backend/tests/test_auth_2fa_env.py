@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 from fastapi.testclient import TestClient
 
-from app.auth.dependencies import get_auth_service
 from app.config import Settings, get_settings
 from app.main import app
 
@@ -23,14 +22,9 @@ def auth_client():
 
 def _override_settings(app_env: str):
     settings = Settings(app_env=app_env)
-
-    def _get_auth_service():
-        from app.auth.service import AuthService
-
-        return AuthService(settings)
-
+    # get_auth_service already depends on get_settings, so overriding settings
+    # alone is enough — the real factory builds AuthService(settings, db).
     app.dependency_overrides[get_settings] = lambda: settings
-    app.dependency_overrides[get_auth_service] = _get_auth_service
 
 
 def test_login_dev_skips_2fa(auth_client):
@@ -94,4 +88,4 @@ def test_verify_2fa_rejected_in_dev(auth_client):
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "La double authentification est désactivée."
+    assert response.json()["error"]["message"] == "La double authentification est désactivée."
