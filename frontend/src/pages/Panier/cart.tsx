@@ -82,6 +82,7 @@ function Cart() {
                           value={item.quantity}
                           onChange={(e) => handleQuantityChange(item.productId, e)}
                           className="cv-control qty-input"
+                          aria-label={`Quantité pour ${item.name}`}
                         />
                       </div>
                       <div className="col-subtotal">
@@ -96,6 +97,7 @@ function Cart() {
                           onClick={() => handleRemove(item.productId)}
                           disabled={loading}
                           title="Retirer du panier"
+                          aria-label={`Retirer ${item.name} du panier`}
                         >
                           ✕
                         </button>
