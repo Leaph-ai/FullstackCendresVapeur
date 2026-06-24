@@ -14,6 +14,7 @@ from .product import Product
 from .role import Role
 from .product_vote import ProductVote
 from .shift_note import ShiftNote
+from .password_reset_code import PasswordResetCode
 from .two_factor_code import TwoFactorCode
 from .user import User
 
@@ -34,6 +35,7 @@ __all__ = [
     "Role",
     "ProductVote",
     "ShiftNote",
+    "PasswordResetCode",
     "TwoFactorCode",
     "User",
 ]

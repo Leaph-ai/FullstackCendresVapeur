@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login/login';
 import Register from './pages/Register/register';
 import ForgotPassword from './pages/ForgotPassword/forgotPassword';
+import ResetPassword from './pages/ResetPassword/resetPassword';
 import Cart from './pages/Panier/cart';
 import Checkout from './pages/Checkout/checkout';
 import { Admin } from './pages/Admin/Admin';
@@ -26,6 +27,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/admin" element={<RequireAdmin><Admin /></RequireAdmin>} />

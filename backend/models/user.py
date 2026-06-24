@@ -21,6 +21,7 @@ class User(Base):
     orders = relationship("Order", back_populates="user")
     votes = relationship("ProductVote", back_populates="user")
     two_factor_codes = relationship("TwoFactorCode", back_populates="user")
+    password_reset_codes = relationship("PasswordResetCode", back_populates="user")
     shift_notes = relationship("ShiftNote", back_populates="user")
     chat_messages = relationship("ChatMessage", back_populates="sender")
     colony_logs = relationship("ColonyLog", back_populates="user")
