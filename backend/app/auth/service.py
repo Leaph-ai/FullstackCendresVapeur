@@ -263,7 +263,7 @@ class AuthService:
         user = self.db.query(User).filter(User.email == email.lower()).first()
         if user is None:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Code invalide ou expiré.",
             )
 
@@ -280,7 +280,7 @@ class AuthService:
 
         if record is None or not verify_password(code, record.code_hash):
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Code invalide ou expiré.",
             )
 

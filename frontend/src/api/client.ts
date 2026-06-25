@@ -38,9 +38,11 @@ async function toApiError(response: Response): Promise<ApiError> {
   return new ApiError(message, code, response.status, fields);
 }
 
+const PUBLIC_AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
+
 function handleUnauthorized(): void {
   localStorage.removeItem('access_token');
-  if (window.location.pathname !== '/login') {
+  if (!PUBLIC_AUTH_PATHS.includes(window.location.pathname)) {
     window.location.href = '/login';
   }
 }
