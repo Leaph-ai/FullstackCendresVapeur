@@ -14,11 +14,15 @@ COPY pyproject.toml uv.lock ./
 # We install uvicorn separately to ensure it's available for the CMD.
 RUN uv sync --no-dev && uv pip install "uvicorn[standard]"
 
+# Put the project virtualenv on PATH so the venv's interpreter (with uvicorn
+# and all deps) is used instead of the global /usr/local/bin/python.
+ENV PATH="/app/.venv/bin:$PATH"
+
 # Copy the rest of the application code into the container
 COPY . .
 
 # The port the app will run on
 EXPOSE 8000
 
-# Command to run the application as a Python module, which is more robust.
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run uvicorn from the venv (now first on PATH).
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -26,6 +26,17 @@ services:
     build: .
     container_name: cendresvapeur-api
     restart: unless-stopped
+    # Service opt-in : ne démarre qu'avec `--profile full`.
+    # En dev backend on lance fastapi en local (hot reload) ; seul `db`
+    # démarre par défaut, donc le port 8000 reste libre.
+    profiles:
+      - full
+    env_file:
+      - .env
+    environment:
+      # Inside the container, reach Postgres via the compose service name,
+      # not the host's localhost:5432 (which is the .env default for host runs).
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-cendres}:${POSTGRES_PASSWORD:-cendres}@db:5432/${POSTGRES_DB:-cendres_vapeur}
     ports:
       - "8000:8000"
     volumes:
