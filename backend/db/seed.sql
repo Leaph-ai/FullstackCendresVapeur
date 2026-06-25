@@ -162,3 +162,30 @@ ON CONFLICT ("user_id", "product_id") DO NOTHING;
 INSERT INTO "discount_codes" ("code", "percentage", "active") VALUES
   ('VAPEUR10', 10, true)
 ON CONFLICT ("code") DO NOTHING;
+
+-- Journal des survivants : quelques événements de colonie pour amorcer le flux.
+-- Idempotent : chaque ligne n'est insérée que si l'action n'existe pas déjà.
+INSERT INTO "colony_logs" ("user_id", "action", "created_at")
+SELECT NULL, seed_log."action", now() - (seed_log."age" || ' minutes')::interval
+FROM (VALUES
+  ('Maintenance chaudière 3 — pression rétablie à 6.2 bar', 4),
+  ('Troc validé — bordereau CV-2026-00492 édité', 9),
+  ('Pression populaire — Lanterne d''éther grimpe au classement', 15),
+  ('Pic de soufre contenu — secteur 12 stabilisé', 23),
+  ('Ravitaillement reçu — quai des soupapes', 31),
+  ('Quart du soir relevé — équipe Rouille en poste', 44)
+) AS seed_log("action", "age")
+WHERE NOT EXISTS (
+  SELECT 1 FROM "colony_logs" WHERE "colony_logs"."action" = seed_log."action"
+);
+
+-- Qualité de l'air / pression chaudière : métriques affichées sur la Home.
+-- Compatibilité bases de dev créées avant l'ajout de ces colonnes.
+ALTER TABLE "air_quality" ADD COLUMN IF NOT EXISTS "monoxide_level" decimal;
+ALTER TABLE "air_quality" ADD COLUMN IF NOT EXISTS "particulate_level" decimal;
+ALTER TABLE "air_quality" ADD COLUMN IF NOT EXISTS "boiler_pressure" decimal;
+
+INSERT INTO "air_quality"
+  ("sulfur_level", "monoxide_level", "particulate_level", "boiler_pressure", "alert_red")
+SELECT 34, 22, 48, 62, false
+WHERE NOT EXISTS (SELECT 1 FROM "air_quality");

@@ -32,10 +32,6 @@ class TokenResponse(BaseModel):
 class MessageResponse(BaseModel):
     message: str
 
-
-# ── OAuth ──────────────────────────────────────────────────────────────────────
-
-
 class OAuthRedirectResponse(BaseModel):
     """URL vers laquelle le frontend doit rediriger l'utilisateur (consent screen Google)."""
 
@@ -50,3 +46,11 @@ class OAuthUserInfo(BaseModel):
     provider_id: str
     email: EmailStr
     username: str
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+    new_password: str = Field(min_length=8, max_length=128)

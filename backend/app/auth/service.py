@@ -14,6 +14,8 @@ from app.security.jwt import create_2fa_challenge_token, create_access_token, de
 from app.security.password import hash_password, verify_password
 from app.security.roles import RoleLevel
 from app.services.mail import send_email
+from models.colony_log import ColonyLog
+from models.password_reset_code import PasswordResetCode
 from models.two_factor_code import TwoFactorCode
 from models.user import User
 
@@ -64,6 +66,7 @@ class AuthService:
         )
         self.db.add(user)
         self.db.commit()
+        self._log(user.id, f"Nouvel arrivant accrédité — {user.username}")
         return MessageResponse(message="Inscription réussie. Vous pouvez vous connecter.")
 
     def login(self, email: str, password: str) -> LoginResponse:
@@ -73,6 +76,7 @@ class AuthService:
         extra = {"email": user.email, "role": role_name.lower(), "role_level": role_level}
 
         if not self.settings.two_factor_enabled:
+            self._log(user.id, f"Connexion accréditée — {user.username}")
             return LoginResponse(
                 message="Connexion réussie.",
                 requires_2fa=False,
@@ -135,6 +139,7 @@ class AuthService:
         role_name = user.role.name if user.role else "user"
         role_level = self._role_level(role_name)
         extra = {"email": user.email, "role": role_name.lower(), "role_level": role_level}
+        self._log(user.id, f"Double sceau validé — {user.username}")
         return TokenResponse(
             access_token=create_access_token(str(user.id), self.settings, extra),
         )
@@ -234,7 +239,58 @@ class AuthService:
 
     def logout(self, access_token: str) -> MessageResponse:
         _revoked_tokens.add(access_token)
+        try:
+            payload = decode_token(access_token, self.settings, expected_type="access")
+            user = self.db.query(User).filter(User.id == int(payload["sub"])).first()
+            if user is not None:
+                self._log(user.id, f"Sas de sortie franchi — {user.username}")
+        except Exception:
+            pass
         return MessageResponse(message="Déconnexion réussie.")
+
+    def forgot_password(self, email: str) -> MessageResponse:
+        user = self.db.query(User).filter(User.email == email.lower()).first()
+        if user is not None:
+            code = self._generate_2fa_code()
+            self._store_password_reset_code(user.id, code)
+            self._send_password_reset_email(user.email, code)
+
+        return MessageResponse(
+            message="Si un compte est associé à cet email, un code de récupération a été envoyé."
+        )
+
+    def reset_password(self, email: str, code: str, new_password: str) -> MessageResponse:
+        user = self.db.query(User).filter(User.email == email.lower()).first()
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Code invalide ou expiré.",
+            )
+
+        record = (
+            self.db.query(PasswordResetCode)
+            .filter(
+                PasswordResetCode.user_id == user.id,
+                PasswordResetCode.used.is_(False),
+                PasswordResetCode.expires_at > datetime.now(UTC).replace(tzinfo=None),
+            )
+            .order_by(PasswordResetCode.expires_at.desc())
+            .first()
+        )
+
+        if record is None or not verify_password(code, record.code_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Code invalide ou expiré.",
+            )
+
+        record.used = True
+        user.password_hash = hash_password(new_password)
+        self.db.commit()
+
+        return MessageResponse(
+            message="Mot de passe réinitialisé. Vous pouvez vous connecter."
+        )
 
     def is_token_revoked(self, access_token: str) -> bool:
         return access_token in _revoked_tokens
@@ -245,10 +301,20 @@ class AuthService:
         user = self.db.query(User).filter(User.email == email.lower()).first()
         # password_hash peut être None pour les comptes OAuth (pas de mot de passe)
         if user is None or user.password_hash is None or not verify_password(password, user.password_hash):
+        if user is None or not verify_password(password, user.password_hash):
+            self._log(user.id if user else None, "Tentative d'accès refusée")
             raise AppError.unauthorized(
                 ErrorCode.INVALID_CREDENTIALS, "Email ou mot de passe incorrect."
             )
         return user
+
+    def _log(self, user_id: int | None, action: str) -> None:
+        """Consigne un événement dans le journal des survivants (best-effort)."""
+        try:
+            self.db.add(ColonyLog(user_id=user_id, action=action))
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
 
     @staticmethod
     def _generate_2fa_code() -> str:
@@ -256,6 +322,16 @@ class AuthService:
 
     def _store_2fa_code(self, user_id: int, code: str) -> None:
         record = TwoFactorCode(
+            user_id=user_id,
+            code_hash=hash_password(code),
+            expires_at=datetime.now(UTC).replace(tzinfo=None)
+            + timedelta(minutes=self.settings.two_factor_code_expire_minutes),
+        )
+        self.db.add(record)
+        self.db.commit()
+
+    def _store_password_reset_code(self, user_id: int, code: str) -> None:
+        record = PasswordResetCode(
             user_id=user_id,
             code_hash=hash_password(code),
             expires_at=datetime.now(UTC).replace(tzinfo=None)
@@ -282,6 +358,24 @@ class AuthService:
                 detail="Impossible d'envoyer le code de vérification par email.",
             ) from exc
 
+    def _send_password_reset_email(self, email: str, code: str) -> None:
+        try:
+            send_email(
+                self.settings,
+                to=email,
+                subject="Réinitialisation du mot de passe — Cendres & Vapeur",
+                body=(
+                    "Votre code de récupération est : "
+                    f"{code}\n\n"
+                    f"Il expire dans {self.settings.two_factor_code_expire_minutes} minutes."
+                ),
+            )
+        except Exception as exc:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Impossible d'envoyer le code de récupération par email.",
+            ) from exc
+
     @staticmethod
     def _role_level(role_name: str) -> int:
         mapping = {
@@ -291,6 +385,3 @@ class AuthService:
             "admin": RoleLevel.ADMIN,
         }
         return mapping.get(role_name.lower(), RoleLevel.USER)
-
-
-

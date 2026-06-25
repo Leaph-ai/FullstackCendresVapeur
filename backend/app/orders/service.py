@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
 from app.config import Settings
+from app.logs.service import LogService
 from app.orders.schemas import OrderCreate
 from app.services.mail import send_email
 from models.cart import Cart
@@ -110,6 +111,13 @@ class OrderService:
 
         self.db.commit()
         order = self._fetch_order(order.id)
+        try:
+            LogService(self.db).add_log(
+                user_id,
+                f"commande: #{order.id} passée — {order.total_amount} ⚙",
+            )
+        except Exception:  # noqa: BLE001 — le logging ne doit jamais casser la commande
+            logger.exception("Échec d'écriture du log de la commande %s", order.id)
         self._send_confirmation_email(order)
         return order
 

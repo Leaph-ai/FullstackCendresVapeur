@@ -90,7 +90,7 @@
 
 button {
   padding: 15px;
-  background: #b87333;
+  background: #9b5a27;
   border: none;
 
   color: white;
@@ -102,7 +102,7 @@ button {
 }
 
 button:hover {
-  background: #d8975b;
+  background: #845020;
 }
 
 .auth-links {
@@ -131,7 +131,7 @@ button:hover {
   background: rgba(184,115,51,.1);
 }
 
-.security-box h3 {
+.security-box h2 {
   color: #d8975b;
   margin-bottom: 8px;
 }

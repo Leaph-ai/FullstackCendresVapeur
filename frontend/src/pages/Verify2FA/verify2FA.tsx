@@ -7,6 +7,7 @@ import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { MachineRail } from '@cv/components/layout/MachineRail';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { AUTH_CHANGED_EVENT } from '../../context/authEvents';
+import ErrorBanner from '../../components/feedback/ErrorBanner';
 
 function Verify2FA() {
   const railRef = useScrollRail();
@@ -21,6 +22,7 @@ function Verify2FA() {
 
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<unknown>(null);
 
 
   const handleSubmit = async (
@@ -28,11 +30,13 @@ function Verify2FA() {
   ) => {
     e.preventDefault();
 
+    setError(null);
+
     const challenge_token =
       localStorage.getItem('challenge_token');
 
     if (!challenge_token) {
-      alert('Session expirée');
+      setError(new Error('Session expirée. Veuillez vous reconnecter.'));
       return;
     }
 
@@ -72,12 +76,8 @@ function Verify2FA() {
 
       window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
       navigate(redirectTo);
-    } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : 'Erreur'
-      );
+    } catch (err) {
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -91,7 +91,7 @@ function Verify2FA() {
       <div className="auth-shell">
         <Topbar cartCount={0} activeSection="2fa" />
 
-        <div className="verify-page">
+        <main className="verify-page" id="contenu">
           <div className="verify-container">
             <h1>Vérification 2FA</h1>
 
@@ -101,8 +101,14 @@ function Verify2FA() {
         </p>
 
         <form onSubmit={handleSubmit}>
+          <ErrorBanner error={error} />
+
+          <label htmlFor="code-2fa">Code de vérification</label>
           <input
             type="text"
+            id="code-2fa"
+            inputMode="numeric"
+            autoComplete="one-time-code"
             placeholder="350285"
             value={code}
             onChange={(e) =>
@@ -121,7 +127,7 @@ function Verify2FA() {
           </button>
         </form>
           </div>
-        </div>
+        </main>
       </div>
     </>
   );

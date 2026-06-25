@@ -105,9 +105,14 @@ export function Catalogue() {
     <SteampunkPageShell cartCount={getItemCount()} activeSection="catalogue">
       <ScrollPanel id="catalogue" animated={false}>
         <PanelHead
+          headingLevel={1}
           sector="SECTEUR 01 · COMPTOIR"
           title="Catalogue — toutes les pièces"
-          right={<span className="cv-badge">{totalLabel}</span>}
+          right={
+            <span className="cv-badge" role="status" aria-live="polite">
+              {totalLabel}
+            </span>
+          }
         />
         <PanelBody>
           <div className="catalogue-filters" role="search">
@@ -145,11 +150,10 @@ export function Catalogue() {
             </div>
           </div>
 
-          <div className="catalogue-cats" role="tablist" aria-label="Catégories">
+          <div className="catalogue-cats" role="group" aria-label="Filtrer par catégorie">
             <button
               type="button"
-              role="tab"
-              aria-selected={activeCategory === null}
+              aria-pressed={activeCategory === null}
               className={`cv-chip${activeCategory === null ? ' is-active' : ''}`}
               onClick={() => setActiveCategory(null)}
             >
@@ -159,8 +163,7 @@ export function Catalogue() {
               <button
                 key={category.id}
                 type="button"
-                role="tab"
-                aria-selected={activeCategory === category.id}
+                aria-pressed={activeCategory === category.id}
                 className={`cv-chip${activeCategory === category.id ? ' is-active' : ''}`}
                 onClick={() => setActiveCategory(category.id)}
               >
@@ -175,7 +178,7 @@ export function Catalogue() {
               Impossible de charger le catalogue. Vérifie que l'API backend tourne sur le port 8000.
             </p>
           ) : !loading && products.length === 0 ? (
-            <p className="cv-note">Aucune pièce ne correspond à ta recherche.</p>
+            <p className="cv-note" role="status">Aucune pièce ne correspond à ta recherche.</p>
           ) : (
             <div className="home-pgrid catalogue-grid">
               {products.map((product) => (

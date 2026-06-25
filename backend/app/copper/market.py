@@ -27,6 +27,14 @@ class CopperMarket:
         self._delta = 0.0
         self._spark = self._initial_spark()
 
+    @property
+    def min_index(self) -> float:
+        return self._min_index
+
+    @property
+    def max_index(self) -> float:
+        return self._max_index
+
     def _initial_spark(self) -> list[float]:
         return [
             max(4.0, min(96.0, 40.0 + random.random() * 50.0))

@@ -21,17 +21,24 @@ export function JournalSection({ locked, clanking, entries }: JournalSectionProp
       />
       <PanelBody>
         <div className="journal">
-          <ul className="cv-feed" aria-live="polite">
-            {entries.map((entry) => (
-              <li
-                key={entry.key}
-                className={`cv-fitem${entry.type === 'alert' ? ' alert' : ''}`}
-              >
-                <div className="ts">{entry.stamp}</div>
-                <div className="act">{entry.text}</div>
-              </li>
-            ))}
-          </ul>
+          {entries.length === 0 ? (
+            <p className="cv-note">
+              Aucun événement consigné pour l'instant — le flux s'animera dès la première
+              transmission.
+            </p>
+          ) : (
+            <ul className="cv-feed" aria-live="polite">
+              {entries.map((entry) => (
+                <li
+                  key={entry.key}
+                  className={`cv-fitem${entry.type === 'alert' ? ' alert' : ''}`}
+                >
+                  <div className="ts">{entry.stamp}</div>
+                  <div className="act">{entry.text}</div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </PanelBody>
     </ScrollPanel>

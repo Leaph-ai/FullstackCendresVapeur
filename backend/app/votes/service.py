@@ -1,10 +1,15 @@
+import logging
+
 from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.logs.service import LogService
 from models.product import Product
 from models.product_vote import ProductVote
+
+logger = logging.getLogger(__name__)
 
 
 class VoteService:
@@ -12,7 +17,7 @@ class VoteService:
         self.db = db
 
     def add_vote(self, user_id: int, product_id: int) -> dict:
-        self._ensure_product_exists(product_id)
+        product = self._get_product(product_id)
         existing = (
             self.db.query(ProductVote)
             .filter_by(user_id=user_id, product_id=product_id)
@@ -24,6 +29,15 @@ class VoteService:
                 self.db.commit()
             except IntegrityError:
                 self.db.rollback()  # doublon concurrent → idempotent
+            else:
+                try:
+                    LogService(self.db).add_log(
+                        user_id, f"vote: +1 sur {product.name}"
+                    )
+                except Exception:  # noqa: BLE001 — le logging ne doit jamais casser le vote
+                    logger.exception(
+                        "Échec d'écriture du log de vote (produit %s)", product_id
+                    )
         return self._status(product_id, liked=True)
 
     def remove_vote(self, user_id: int, product_id: int) -> None:
@@ -50,10 +64,11 @@ class VoteService:
             "liked": liked,
         }
 
-    def _ensure_product_exists(self, product_id: int) -> None:
-        exists = self.db.query(Product.id).filter(Product.id == product_id).first()
-        if exists is None:
+    def _get_product(self, product_id: int) -> Product:
+        product = self.db.query(Product).filter(Product.id == product_id).first()
+        if product is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Produit introuvable.",
             )
+        return product

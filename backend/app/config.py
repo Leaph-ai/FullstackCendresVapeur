@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     copper_tick_seconds: float = 3.0
     copper_spark_length: int = 14
     copper_volatility: float = 6.0
+    air_tick_seconds: float = 2.6
+    air_sulfur_threshold: float = 70.0
+    air_sulfur_threshold_low: float = 60.0
+    air_spark_length: int = 16
+    air_volatility: float = 6.0
+    air_sulfur_spike_chance: float = 0.15
 
     # OAuth – Google
     google_client_id: str = ""

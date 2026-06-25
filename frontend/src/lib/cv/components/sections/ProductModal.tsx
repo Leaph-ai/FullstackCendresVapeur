@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchProduct, likeProduct } from '../../api/products';
 import type { ProductDto } from '../../api/products';
 import type { Product } from '../../types';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface ProductModalProps {
   product: Product;
@@ -16,6 +17,7 @@ export function ProductModal({ product, onClose, onAddToCart }: ProductModalProp
   const [isVoting, setIsVoting] = useState(false);
   const [added, setAdded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>(true);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -69,6 +71,7 @@ export function ProductModal({ product, onClose, onAddToCart }: ProductModalProp
 
   return (
     <div
+      ref={trapRef}
       className="cv-modal-overlay"
       role="dialog"
       aria-modal="true"

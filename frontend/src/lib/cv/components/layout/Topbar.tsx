@@ -38,6 +38,7 @@ export function Topbar({ cartCount, activeSection = 'vitrine' }: TopbarProps) {
 
   return (
     <header className="topbar">
+      <a className="cv-skiplink" href="#contenu">Aller au contenu principal</a>
       <span className="tb-logo">
         <b>CENDRES</b> &amp; VAPEUR
         <small>comptoir de la zone franche · secteur 12</small>
@@ -53,6 +54,7 @@ export function Topbar({ cartCount, activeSection = 'vitrine' }: TopbarProps) {
             key={link.id}
             to={`/#${link.id}`}
             className={activeSection === link.id ? 'cur' : undefined}
+            aria-current={activeSection === link.id ? 'page' : undefined}
           >
             {link.label}
           </Link>

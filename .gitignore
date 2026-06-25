@@ -11,6 +11,7 @@ CLAUDE.md
 AGENTS.md
 docs/
 !backend/docs/
+!frontend/docs/
 
 
 # Git worktrees (isolated workspaces)
