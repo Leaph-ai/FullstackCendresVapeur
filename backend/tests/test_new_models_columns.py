@@ -29,7 +29,7 @@ def test_new_models_columns():
 
 def test_new_models_constraints():
     assert User.__table__.c.email.unique is True
-    assert User.__table__.c.password_hash.nullable is False
+    assert User.__table__.c.password_hash.nullable is True  # nullable: OAuth users have no password
     assert User.__table__.c.oauth_provider.nullable is True
     assert ColonyLog.__table__.c.user_id.nullable is True  # ON DELETE SET NULL
     # Unicité composite product_votes(user_id, product_id)

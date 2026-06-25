@@ -119,3 +119,4 @@ case "${1:-}" in
   psql)  cmd_psql ;;
   *) usage; exit 1 ;;
 esac
+

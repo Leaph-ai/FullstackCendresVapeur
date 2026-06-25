@@ -140,3 +140,38 @@ button:hover {
   color: #ccc;
   font-size: 0.9rem;
 }
+
+.oauth-separator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.oauth-separator::before,
+.oauth-separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #444;
+}
+
+.btn-google {
+  padding: 13px;
+  background: transparent;
+  border: 1px solid #666;
+  color: #ccc;
+  font-size: 0.95rem;
+  font-weight: normal;
+  cursor: pointer;
+  transition: .3s;
+  border-radius: 4px;
+}
+
+.btn-google:hover {
+  border-color: #b87333;
+  color: #d8975b;
+  background: rgba(184,115,51,.08);
+}

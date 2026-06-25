@@ -5,7 +5,7 @@ import { MachineRail } from '@cv/components/layout/MachineRail';
 import { SteamChimney } from '@cv/components/layout/SteamChimney';
 import { Topbar } from '@cv/components/layout/Topbar';
 import { useScrollRail } from '@cv/hooks/useScrollRail';
-import { apiPost } from '../../api/client';
+import { apiGet, apiPost } from '../../api/client';
 import { AUTH_CHANGED_EVENT } from '../../context/authEvents';
 import ErrorBanner from '../../components/feedback/ErrorBanner';
 
@@ -30,6 +30,18 @@ function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await apiGet<{ authorization_url: string }>('/auth/google');
+      window.location.href = data.authorization_url;
+    } catch (e) {
+      setError(e);
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,6 +120,17 @@ function Login() {
                 <Link to="/forgot-password">Mot de passe oublié ?</Link>
                 <Link to="/register">Créer un compte</Link>
               </div>
+
+              <div className="oauth-separator"><span>ou</span></div>
+
+              <button
+                type="button"
+                className="btn-google"
+                onClick={handleGoogleLogin}
+                disabled={loading}
+              >
+                Continuer avec Google
+              </button>
 
             </form>
 

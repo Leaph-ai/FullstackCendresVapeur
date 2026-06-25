@@ -14,7 +14,7 @@ CREATE TABLE "users" (
   "id" integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "username" varchar UNIQUE NOT NULL,
   "email" varchar UNIQUE NOT NULL,
-  "password_hash" varchar NOT NULL,
+  "password_hash" varchar,
   "role_id" integer NOT NULL,
   "oauth_provider" varchar,
   "oauth_provider_id" varchar,

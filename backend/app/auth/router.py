@@ -1,6 +1,7 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
+from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.auth.dependencies import get_auth_service, get_current_user
@@ -9,12 +10,14 @@ from app.auth.schemas import (
     LoginRequest,
     LoginResponse,
     MessageResponse,
+    OAuthRedirectResponse,
     RegisterRequest,
     ResetPasswordRequest,
     TokenResponse,
     Verify2FARequest,
 )
 from app.auth.service import AuthService
+from app.config import Settings, get_settings
 from app.security.rbac import RoleLevel, require_role
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -97,3 +100,34 @@ async def admin_ping() -> MessageResponse:
     pour exiger Éditeur ou plus, etc.
     """
     return MessageResponse(message="pong (accès admin confirmé).")
+
+
+# ── OAuth ─────────────────────────────────────────────────────────────────────────────
+
+
+@router.get("/google", response_model=OAuthRedirectResponse)
+async def google_login(
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+) -> OAuthRedirectResponse:
+    """Retourne l’URL du consent screen Google.
+    Le frontend redirige l’utilisateur vers cette URL.
+    """
+    return OAuthRedirectResponse(authorization_url=auth_service.get_google_authorization_url())
+
+
+@router.get("/google/callback")
+async def google_callback(
+    code: Annotated[str, Query()],
+    state: Annotated[str, Query()],
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> RedirectResponse:
+    """Callback Google : échange le code, crée/retrouve l’user,
+    puis redirige vers le frontend avec le JWT en query param.
+    """
+    token_response = auth_service.handle_google_callback(code, state)
+    redirect_url = (
+        f"{settings.oauth_redirect_base_url}/auth/callback"
+        f"?token={token_response.access_token}"
+    )
+    return RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)

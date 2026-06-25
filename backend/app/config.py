@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     air_volatility: float = 6.0
     air_sulfur_spike_chance: float = 0.15
 
+    # OAuth – Google
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    backend_base_url: str = "http://localhost:8000"   # redirect_uri envoyé à Google
+    oauth_redirect_base_url: str = "http://localhost:5173"  # frontend, cible après callback
+
     @property
     def two_factor_enabled(self) -> bool:
         return self.app_env == "prod"
