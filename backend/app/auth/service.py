@@ -301,7 +301,6 @@ class AuthService:
         user = self.db.query(User).filter(User.email == email.lower()).first()
         # password_hash peut être None pour les comptes OAuth (pas de mot de passe)
         if user is None or user.password_hash is None or not verify_password(password, user.password_hash):
-        if user is None or not verify_password(password, user.password_hash):
             self._log(user.id if user else None, "Tentative d'accès refusée")
             raise AppError.unauthorized(
                 ErrorCode.INVALID_CREDENTIALS, "Email ou mot de passe incorrect."
