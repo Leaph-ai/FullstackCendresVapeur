@@ -12,6 +12,7 @@ AGENTS.md
 docs/
 !backend/docs/
 !frontend/docs/
+graphify-out/
 
 
 # Git worktrees (isolated workspaces)
