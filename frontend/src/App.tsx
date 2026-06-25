@@ -11,11 +11,13 @@ import { HomePage } from './pages/HomePage/HomePage';
 import { Catalogue } from './pages/Catalogue/Catalogue';
 import ErrorPage from './components/feedback/ErrorPage';
 import Verify2FA from './pages/Verify2FA/verify2FA';
+import { useAuthRole } from './lib/cv/hooks/useAuthRole';
 import OAuthCallback from './pages/OAuthCallback/OAuthCallback';
 import { getRoleLevelFromToken } from './api/chat';
 
 function App() {
-  const isAdmin = getRoleLevelFromToken() === 3;
+  const role = useAuthRole();
+  const isAdmin = role === 3;
 
   const RequireAdmin = ({ children }: { children: React.ReactNode }) =>
     isAdmin ? children : <Navigate to="/login" replace />;
