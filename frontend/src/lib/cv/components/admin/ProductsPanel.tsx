@@ -11,6 +11,11 @@ interface Product {
     status: 'active' | 'inactive';
 }
 
+interface Category {
+    id: number;
+    name: string;
+}
+
 const API_BASE = 'http://127.0.0.1:8000';
 
 const getAuthHeaders = () => ({
@@ -18,8 +23,21 @@ const getAuthHeaders = () => ({
     'Authorization': `Bearer ${localStorage.getItem('access_token') ?? ''}`,
 });
 
+/** Lit le `detail` renvoyé par FastAPI pour afficher un message utile au lieu d'un code brut. */
+const extractErrorDetail = async (res: Response): Promise<string> => {
+    try {
+        const data = await res.json();
+        if (typeof data?.detail === 'string') return data.detail;
+        if (Array.isArray(data?.detail) && data.detail[0]?.msg) return data.detail[0].msg;
+    } catch {
+        // réponse sans corps JSON exploitable
+    }
+    return `Erreur ${res.status}`;
+};
+
 export function ProductsPanel() {
     const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -50,8 +68,20 @@ export function ProductsPanel() {
         }
     };
 
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/categories`);
+            if (!res.ok) throw new Error(`Erreur ${res.status}`);
+            const data = await res.json();
+            setCategories(data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     useEffect(() => {
         fetchProducts();
+        fetchCategories();
     }, []);
 
     const filteredProducts = products.filter(
@@ -60,13 +90,16 @@ export function ProductsPanel() {
             String(p.category_id).includes(searchQuery)
     );
 
-    const resetForm = () => {
-        setFormData({ name: '', description: '', category_id: 0, price: 0, stock: 0, status: 'active' });
-    };
-
     const handleAddProduct = () => {
         setEditingProduct(null);
-        resetForm();
+        setFormData({
+            name: '',
+            description: '',
+            category_id: categories[0]?.id ?? 0,
+            price: 0,
+            stock: 0,
+            status: 'active',
+        });
         setShowModal(true);
     };
 
@@ -90,10 +123,10 @@ export function ProductsPanel() {
                 method: 'DELETE',
                 headers: getAuthHeaders(),
             });
-            if (!res.ok) throw new Error(`Erreur ${res.status}`);
+            if (!res.ok) throw new Error(await extractErrorDetail(res));
             setProducts((prev) => prev.filter((p) => p.id !== id));
         } catch (err) {
-            alert('Erreur lors de la suppression.');
+            alert(`Erreur lors de la suppression : ${err instanceof Error ? err.message : err}`);
             console.error(err);
         }
     };
@@ -101,6 +134,11 @@ export function ProductsPanel() {
     const handleSaveProduct = async () => {
         if (!formData.name || formData.price <= 0 || formData.stock < 0) {
             alert('Veuillez remplir tous les champs correctement');
+            return;
+        }
+
+        if (!formData.category_id) {
+            alert('Veuillez sélectionner une catégorie');
             return;
         }
 
@@ -119,7 +157,7 @@ export function ProductsPanel() {
                     headers: getAuthHeaders(),
                     body: JSON.stringify(body),
                 });
-                if (!res.ok) throw new Error(`Erreur ${res.status}`);
+                if (!res.ok) throw new Error(await extractErrorDetail(res));
                 const updated = await res.json();
                 setProducts((prev) =>
                     prev.map((p) => (p.id === editingProduct.id ? { ...p, ...updated } : p))
@@ -130,13 +168,13 @@ export function ProductsPanel() {
                     headers: getAuthHeaders(),
                     body: JSON.stringify(body),
                 });
-                if (!res.ok) throw new Error(`Erreur ${res.status}`);
+                if (!res.ok) throw new Error(await extractErrorDetail(res));
                 const created = await res.json();
                 setProducts((prev) => [...prev, created]);
             }
             setShowModal(false);
         } catch (err) {
-            alert('Erreur lors de la sauvegarde.');
+            alert(`Erreur lors de la sauvegarde : ${err instanceof Error ? err.message : err}`);
             console.error(err);
         }
     };
@@ -229,14 +267,21 @@ export function ProductsPanel() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Category ID</label>
-                                <input
-                                    type="number"
+                                <label htmlFor="product-category">Catégorie</label>
+                                <select
+                                    id="product-category"
                                     value={formData.category_id}
                                     onChange={(e) => setFormData({ ...formData, category_id: parseInt(e.target.value) || 0 })}
                                     className="form-input"
-                                    min="0"
-                                />
+                                    aria-label="Catégorie du produit"
+                                >
+                                    <option value={0} disabled>— Choisir une catégorie —</option>
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="form-row">
                                 <div className="form-group">

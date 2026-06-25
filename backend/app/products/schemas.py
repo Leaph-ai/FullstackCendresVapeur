@@ -12,7 +12,7 @@ class CategoryBrief(BaseModel):
 
 
 class ProductCreate(BaseModel):
-    category_id: int
+    category_id: int = Field(ge=1)
     name: str = Field(min_length=1, max_length=255)
     description: str | None = None
     url: str | None = Field(default=None, max_length=2048)
@@ -21,7 +21,7 @@ class ProductCreate(BaseModel):
 
 
 class ProductUpdate(BaseModel):
-    category_id: int | None = None
+    category_id: int | None = Field(default=None, ge=1)
     name: str | None = Field(default=None, min_length=1, max_length=255)
     description: str | None = None
     url: str | None = Field(default=None, max_length=2048)
