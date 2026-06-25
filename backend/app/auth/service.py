@@ -2,10 +2,11 @@ import secrets
 from datetime import UTC, datetime, timedelta
 
 import jwt
+from authlib.integrations.httpx_client import OAuth2Client
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.auth.schemas import LoginResponse, MessageResponse, TokenResponse
+from app.auth.schemas import LoginResponse, MessageResponse, OAuthUserInfo, TokenResponse
 from app.config import Settings
 from app.errors.codes import ErrorCode
 from app.errors.exceptions import AppError
@@ -18,6 +19,14 @@ from models.user import User
 
 # Révocation de tokens (en mémoire — pas de table dédiée en DB)
 _revoked_tokens: set[str] = set()
+
+# Anti-CSRF state store pour OAuth (en mémoire, comme _revoked_tokens)
+_oauth_states: set[str] = set()
+
+# Google OAuth endpoints
+_GOOGLE_AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+_GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+_GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
 
 # Role IDs (correspondent au seed DB : 1=Guest, 2=User, 3=Editor, 4=Admin)
 _ROLE_ID_USER = 2
@@ -130,6 +139,99 @@ class AuthService:
             access_token=create_access_token(str(user.id), self.settings, extra),
         )
 
+    # ── OAuth ──────────────────────────────────────────────────────────────────────────────
+
+    def get_google_authorization_url(self) -> str:
+        """Génère l’URL du consent screen Google avec un state anti-CSRF."""
+        state = secrets.token_urlsafe(32)
+        _oauth_states.add(state)
+        client = OAuth2Client(
+            client_id=self.settings.google_client_id,
+            client_secret=self.settings.google_client_secret,
+            redirect_uri=f"{self.settings.backend_base_url}/auth/google/callback",
+            scope="openid email profile",
+        )
+        url, _ = client.create_authorization_url(_GOOGLE_AUTHORIZE_URL, state=state)
+        return url
+
+    def handle_google_callback(self, code: str, state: str) -> TokenResponse:
+        """Valide le state, échange le code Google, retourne un JWT applicatif."""
+        if state not in _oauth_states:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="State OAuth invalide ou expiré.",
+            )
+        _oauth_states.discard(state)
+
+        redirect_uri = f"{self.settings.backend_base_url}/auth/google/callback"
+        client = OAuth2Client(
+            client_id=self.settings.google_client_id,
+            client_secret=self.settings.google_client_secret,
+            redirect_uri=redirect_uri,
+        )
+        client.fetch_token(_GOOGLE_TOKEN_URL, code=code)
+
+        resp = client.get(_GOOGLE_USERINFO_URL)
+        resp.raise_for_status()
+        data = resp.json()
+
+        email = (data.get("email") or "").lower()
+        provider_id = data.get("sub") or ""
+        username = (data.get("name") or email.split("@")[0]).replace(" ", "_").lower()
+
+        if not email or not provider_id:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Informations Google incomplètes.",
+            )
+
+        user = self._get_or_create_oauth_user(
+            OAuthUserInfo(provider="google", provider_id=provider_id, email=email, username=username)
+        )
+        role_name = user.role.name if user.role else "user"
+        role_level = self._role_level(role_name)
+        extra = {"email": user.email, "role": role_name.lower(), "role_level": role_level}
+        return TokenResponse(access_token=create_access_token(str(user.id), self.settings, extra))
+
+    def _get_or_create_oauth_user(self, info: OAuthUserInfo) -> User:
+        """Trouve ou crée un User à partir des infos OAuth."""
+        # 1. Existe déjà via ce provider ?
+        user = (
+            self.db.query(User)
+            .filter(User.oauth_provider == info.provider, User.oauth_provider_id == info.provider_id)
+            .first()
+        )
+        if user is not None:
+            return user
+
+        # 2. Email connu (compte classique) → lier le provider OAuth
+        user = self.db.query(User).filter(User.email == info.email).first()
+        if user is not None:
+            user.oauth_provider = info.provider
+            user.oauth_provider_id = info.provider_id
+            self.db.commit()
+            return user
+
+        # 3. Nouveau compte OAuth (sans mot de passe)
+        username = info.username
+        base = username
+        suffix = 1
+        while self.db.query(User).filter(User.username == username).first() is not None:
+            username = f"{base}{suffix}"
+            suffix += 1
+
+        user = User(
+            username=username,
+            email=info.email,
+            password_hash=None,
+            role_id=_ROLE_ID_USER,
+            oauth_provider=info.provider,
+            oauth_provider_id=info.provider_id,
+        )
+        self.db.add(user)
+        self.db.commit()
+        return user
+
     def logout(self, access_token: str) -> MessageResponse:
         _revoked_tokens.add(access_token)
         return MessageResponse(message="Déconnexion réussie.")
@@ -141,7 +243,8 @@ class AuthService:
 
     def _authenticate_user(self, email: str, password: str) -> User:
         user = self.db.query(User).filter(User.email == email.lower()).first()
-        if user is None or not verify_password(password, user.password_hash):
+        # password_hash peut être None pour les comptes OAuth (pas de mot de passe)
+        if user is None or user.password_hash is None or not verify_password(password, user.password_hash):
             raise AppError.unauthorized(
                 ErrorCode.INVALID_CREDENTIALS, "Email ou mot de passe incorrect."
             )
