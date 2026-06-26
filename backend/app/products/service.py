@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
 from app.products.schemas import ProductCreate, ProductUpdate
+from models.cart_item import CartItem
 from models.category import Category
 from models.price_history import PriceHistory
 from models.product import Product
@@ -162,14 +163,22 @@ class ProductService:
 
     def delete_product(self, product_id: int) -> None:
         product = self.get_product(product_id)
+        # Les lignes de panier sont transitoires : on les purge automatiquement
+        # (la FK cart_items est en ON DELETE RESTRICT, donc suppression manuelle requise).
+        # price_history et product_votes sont en CASCADE, donc supprimés par la DB.
+        self.db.query(CartItem).filter(CartItem.product_id == product.id).delete(
+            synchronize_session=False
+        )
         try:
             self.db.delete(product)
             self.db.commit()
         except IntegrityError as exc:
+            # Reste bloquant : le produit figure dans une commande (order_items, RESTRICT).
+            # On préserve l'historique des ventes plutôt que de le supprimer.
             self.db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Impossible de supprimer ce produit : il est référencé par un panier ou une commande.",
+                detail="Impossible de supprimer ce produit : il figure dans une commande passée.",
             ) from exc
 
     def _ensure_category_exists(self, category_id: int) -> None:
