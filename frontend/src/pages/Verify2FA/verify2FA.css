@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@300;400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-shell {
+  margin-left: var(--rail-w);
+  margin-right: var(--chimney-w);
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.verify-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: transparent;
+}
+
+.verify-container {
+  width: 100%;
+  max-width: 420px;
+
+  background: rgba(20, 20, 20, .95);
+
+  border: 2px solid #b87333;
+  border-radius: 12px;
+
+  padding: 40px;
+
+  box-shadow:
+    0 0 25px rgba(184, 115, 51, .3);
+
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.verify-container h1 {
+  font-family: 'Special Elite', cursive;
+  color: #d8975b;
+  font-size: 2.4rem;
+}
+
+.verify-container p {
+  color: #bdbdbd;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.verify-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.verify-container input[type="text"] {
+  padding: 14px;
+  text-align: center;
+
+  background: #1b1b1b;
+  border: 1px solid #444;
+
+  color: white;
+  font-size: 1.6rem;
+  letter-spacing: 0.4em;
+
+  outline: none;
+  border-radius: 4px;
+}
+
+.verify-container input[type="text"]:focus {
+  border-color: #b87333;
+  box-shadow: 0 0 10px rgba(184, 115, 51, .4);
+}
+
+.verify-container button {
+  padding: 15px;
+  background: #9b5a27;
+  border: none;
+
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+
+  cursor: pointer;
+  transition: .3s;
+  border-radius: 4px;
+}
+
+.verify-container button:hover:not(:disabled) {
+  background: #845020;
+}
+
+.verify-container button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

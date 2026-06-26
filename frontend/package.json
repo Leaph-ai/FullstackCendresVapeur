@@ -7,14 +7,21 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "react-router-dom": "^7.18.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.61.1",
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

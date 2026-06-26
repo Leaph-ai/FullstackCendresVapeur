@@ -1,4 +1,4 @@
-docs/
+
 .obsidian/*.json
 .vscode/
 
@@ -8,3 +8,16 @@ docs/
 *pycache*
 CLAUDE.md
 .claude/
+AGENTS.md
+docs/
+!backend/docs/
+!frontend/docs/
+graphify-out/
+
+
+# Git worktrees (isolated workspaces)
+.worktrees/
+
+node/
+dev.cmd
+package.json

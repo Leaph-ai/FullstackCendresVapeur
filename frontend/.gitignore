@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Rapports d'audit accessibilité générés
+/a11y-report/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

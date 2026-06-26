@@ -1,0 +1,295 @@
+/* ============================================================
+   INVOICE · Facture automatisée
+   ============================================================ */
+
+.invoice-document {
+  font-family:"Special Elite","Courier New",monospace;
+  color:#241f18;
+  background:#f3ecdc;
+  padding:40px;
+  max-width:900px;
+  margin:0 auto;
+}
+
+/* === En-tête === */
+.invoice-header {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:40px; margin-bottom:40px; padding-bottom:30px;
+  border-bottom:3px solid #b3703f;
+}
+
+.header-brand h1 {
+  color:#241f18; font-size:32px; margin:0 0 4px 0;
+  letter-spacing:2px; font-weight:bold;
+}
+
+.header-brand .tagline {
+  color:#897c64; font-size:13px; margin:0;
+  font-style:italic; font-family:"Architects Daughter",cursive;
+}
+
+.company-info {
+  font-size:12px; line-height:1.6;
+}
+
+.company-info p {
+  margin:4px 0; color:#564b3a;
+}
+
+.company-info strong {
+  color:#b3703f;
+}
+
+/* === Métadonnées === */
+.invoice-meta {
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:30px; margin-bottom:40px; padding:20px;
+  background:rgba(179,112,63,.08);
+  border-radius:6px;
+  border-left:4px solid #b3703f;
+}
+
+.meta-item {
+  display:flex; flex-direction:column;
+}
+
+.meta-item .label {
+  font-size:11px; text-transform:uppercase;
+  letter-spacing:1px; color:#897c64; margin-bottom:6px;
+  font-weight:bold;
+}
+
+.meta-item .value {
+  font-size:16px; font-weight:bold; color:#241f18;
+}
+
+.meta-item .status {
+  color:#4f7a6d;
+}
+
+/* === Parties === */
+.invoice-parties {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:40px; margin-bottom:40px;
+  padding:20px; background:rgba(179,112,63,.04);
+  border-radius:6px;
+}
+
+.party h4 {
+  font-size:12px; text-transform:uppercase;
+  letter-spacing:1.2px; color:#b3703f;
+  margin:0 0 12px 0; border-bottom:2px solid #b3703f;
+  padding-bottom:8px;
+}
+
+.party p {
+  margin:4px 0; color:#564b3a; font-size:13px;
+  line-height:1.5;
+}
+
+.party .name {
+  font-weight:bold; color:#241f18; margin-bottom:8px;
+}
+
+.party .contact {
+  font-size:12px; color:#897c64; margin-top:8px;
+}
+
+/* === Tableau d'articles === */
+.invoice-items {
+  width:100%; margin-bottom:30px; border-collapse:collapse;
+  border:1.5px solid #b3703f;
+}
+
+.invoice-items thead {
+  background:rgba(179,112,63,.1); border-bottom:2px solid #b3703f;
+}
+
+.invoice-items th {
+  padding:12px; text-align:left;
+  font-size:11px; text-transform:uppercase;
+  letter-spacing:1px; color:#b3703f;
+  font-weight:bold;
+}
+
+.invoice-items td {
+  padding:14px 12px; border-bottom:1px solid #ddd;
+  font-size:13px; color:#564b3a;
+}
+
+.invoice-items tbody tr:last-child td {
+  border-bottom:none;
+}
+
+.col-desc {
+  width:50%;
+}
+
+.col-qty, .col-unit, .col-total {
+  text-align:right; width:16.67%;
+}
+
+.item-name {
+  font-weight:bold;  margin-bottom:4px;
+}
+
+.item-cat {
+  font-size:11px; color:#897c64;
+}
+
+/* === Calculs === */
+.invoice-calculations {
+  display:flex; justify-content:flex-end;
+  margin-bottom:30px;
+}
+
+.invoice-calculations {
+  min-width:300px; border:1.5px solid #b3703f;
+  border-radius:6px; padding:20px;
+  background:rgba(179,112,63,.05);
+}
+
+.calc-row {
+  display:flex; justify-content:space-between;
+  padding:8px 0; font-size:13px;
+  border-bottom:1px solid rgba(179,112,63,.3);
+  color:#564b3a;
+}
+
+.calc-row .label {
+  color:#897c64;
+}
+
+.calc-row .value {
+  font-weight:500; text-align:right; min-width:100px;
+  color:#564b3a;
+}
+
+.calc-row.discount {
+  color:#4f7a6d;
+}
+
+.calc-row.discount .value {
+  color:#4f7a6d;
+}
+
+.calc-row.total {
+  font-size:15px; font-weight:bold;
+  border-top:2px solid #b3703f;
+  padding-top:12px; color:#241f18;
+}
+
+.calc-row.total .label {
+  color:#b3703f;
+}
+
+.calc-row.total .value {
+  color:#b3703f;
+}
+
+.calc-row:last-child {
+  border-bottom:none;
+}
+
+/* === Notes === */
+.invoice-notes {
+  background:rgba(127,224,160,.08);
+  border-left:4px solid #4f7a6d;
+  padding:20px; margin-bottom:30px;
+  border-radius:4px;
+}
+
+.invoice-notes h5 {
+  margin:0 0 12px 0; font-size:12px;
+  text-transform:uppercase; letter-spacing:1px;
+  color:#4f7a6d;
+}
+
+.invoice-notes ul {
+  margin:0; padding-left:20px;
+}
+
+.invoice-notes li {
+  margin:6px 0; color:#564b3a; font-size:12px;
+  line-height:1.4;
+}
+
+/* === Pied de page === */
+.invoice-footer {
+  border-top:2px solid #b3703f; padding-top:20px;
+  text-align:center;
+}
+
+.footer-text {
+  font-size:14px; font-weight:bold;
+  color:#241f18; margin:0 0 8px 0;
+  font-family:"Architects Daughter",cursive;
+}
+
+.footer-legal {
+  font-size:11px; color:#897c64;
+  margin:8px 0; font-style:italic;
+}
+
+.footer-timestamp {
+  font-size:10px; color:#b3703f;
+  margin:8px 0; letter-spacing:.5px;
+}
+
+/* === Impression === */
+@media print {
+  .invoice-document {
+    background:#fff;
+    padding:0;
+    max-width:100%;
+  }
+
+  body {
+    background:#fff;
+  }
+
+  .modal-overlay,
+  .modal-close,
+  .modal-actions {
+    display:none !important;
+  }
+
+  .invoice-header {
+    break-after:avoid;
+  }
+
+  .invoice-items {
+    break-inside:avoid;
+  }
+
+  @page {
+    margin:10mm;
+  }
+}
+
+/* === Responsive === */
+@media (max-width:768px) {
+  .invoice-document {
+    padding:20px;
+  }
+
+  .invoice-header,
+  .invoice-parties {
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+
+  .invoice-items th,
+  .invoice-items td {
+    padding:8px;
+    font-size:11px;
+  }
+
+  .col-qty, .col-unit, .col-total {
+    font-size:11px;
+  }
+
+  .invoice-meta {
+    grid-template-columns:1fr;
+  }
+}

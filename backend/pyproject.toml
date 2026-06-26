@@ -1,9 +1,31 @@
 [project]
 name = "backend"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "fastapi[standard]>=0.137.1",
+    "psycopg[binary]>=3.2.0",
+    "pyjwt>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "sqlalchemy>=2.0.45",
+    "bcrypt>=5.0.0",
+    "authlib>=1.7.2",
+    "httpx>=0.28.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.0",
+]
+
+[project.scripts]
+cendres-api-tester = "api_tester.runner:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+markers = [
+    "integration: tests nécessitant Postgres et/ou mocks email",
 ]

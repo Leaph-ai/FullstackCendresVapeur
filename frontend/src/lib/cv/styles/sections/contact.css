@@ -1,0 +1,47 @@
+/* ============================================================
+   SECTION · Bureau de poste (formulaire de contact)
+   ============================================================ */
+
+.contact-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* Ligne à deux colonnes (nom + email) */
+.contact-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+@media (max-width: 640px) {
+    .contact-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+/* Espacement entre les champs */
+.contact-form .cv-field {
+    margin-bottom: 18px;
+}
+
+/* Bouton d'envoi */
+.contact-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Écran de confirmation */
+.contact-confirm {
+    text-align: center;
+    padding: 32px 0;
+}
+
+.contact-confirm-msg {
+    color: var(--ink-2);
+    font-size: 15px;
+    margin: 18px 0 28px;
+    line-height: 1.6;
+}

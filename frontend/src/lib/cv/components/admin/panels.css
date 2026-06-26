@@ -1,0 +1,525 @@
+/* ============================================================
+   ADMIN PANELS — Styles cohérents avec le panier
+   ============================================================ */
+
+.panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-family: "Special Elite", "Courier New", monospace;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.panel-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.panel-header h2 {
+    color: #f3ecdc;
+    font-size: 20px;
+    margin: 0;
+    font-family: "Special Elite", "Courier New", monospace;
+    font-weight: bold;
+}
+
+.panel-subtitle {
+    color: #897c64;
+    font-size: 14px;
+    margin: 0;
+    font-style: italic;
+}
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+
+.panel-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #8b5a2b 0%, #a0826d 100%);
+    border: 1.5px solid #6b5a43;
+    border-radius: 4px;
+    color: #f3ecdc;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Special Elite", "Courier New", monospace;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #a0826d 0%, #b0926d 100%);
+    border-color: #897c64;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: #000000;
+    border: 1.5px solid #6b5a43;
+    border-radius: 4px;
+    color: #e8dcc4;
+    font-family: "Special Elite", "Courier New", monospace;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input::placeholder {
+    color: #897c64;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #d6a06d;
+    box-shadow: 0 0 8px rgba(214, 160, 109, 0.3);
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+
+.panel-table-wrapper {
+    overflow-x: auto;
+    border: 1.5px solid #6b5a43;
+    border-radius: 4px;
+}
+
+.panel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-family: "Special Elite", "Courier New", monospace;
+    background: #000000;
+}
+
+.panel-table thead {
+    background: rgba(52, 47, 40, .25);
+    border-bottom: 1px solid #6b5a43;
+}
+
+.panel-table th {
+    padding: 12px 16px;
+    color: #d6a06d;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-size: 12px;
+}
+
+.panel-table tbody tr {
+    border-bottom: 1px solid rgba(107, 90, 67, .3);
+    transition: background-color 0.2s ease;
+}
+
+.panel-table tbody tr:hover {
+    background: rgba(107, 90, 67, .15);
+}
+
+.panel-table td {
+    padding: 12px 16px;
+    color: #e8dcc4;
+}
+
+.panel-table td.user-name,
+.panel-table td.product-name,
+.panel-table td.order-number {
+    font-weight: 600;
+    color: #f3ecdc;
+}
+
+.panel-table td.price-cell {
+    text-align: right;
+    font-weight: 600;
+    color: #d6a06d;
+}
+
+/* ============================================================
+   BADGES & INDICATORS
+   ============================================================ */
+
+.role-badge,
+.status-badge,
+.order-status,
+.stock-indicator {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+}
+
+.role-badge {
+    background: rgba(214, 160, 109, .2);
+    color: #d6a06d;
+    border-color: #897c64;
+}
+
+.role-admin {
+    background: rgba(214, 160, 109, .3);
+    color: #f3ecdc;
+    border-color: #d6a06d;
+}
+
+.status-active {
+    background: rgba(107, 90, 67, .2);
+    color: #d6a06d;
+    border-color: #897c64;
+}
+
+.status-inactive {
+    background: rgba(173, 54, 32, .2);
+    color: #ad3620;
+    border-color: #ad3620;
+}
+
+.order-status {
+    padding: 6px 12px;
+}
+
+.order-status.status-pending {
+    background: rgba(214, 160, 109, .2);
+    color: #d6a06d;
+    border-color: #897c64;
+}
+
+.order-status.status-processing {
+    background: rgba(214, 160, 109, .3);
+    color: #f3ecdc;
+    border-color: #d6a06d;
+}
+
+.order-status.status-shipped {
+    background: rgba(107, 90, 67, .2);
+    color: #d6a06d;
+    border-color: #897c64;
+}
+
+.order-status.status-delivered {
+    background: rgba(107, 90, 67, .3);
+    color: #e8dcc4;
+    border-color: #d6a06d;
+}
+
+.stock-indicator {
+    padding: 6px 10px;
+}
+
+.stock-indicator.in-stock {
+    background: rgba(107, 90, 67, .2);
+    color: #d6a06d;
+    border-color: #897c64;
+}
+
+.stock-indicator.out-of-stock {
+    background: rgba(173, 54, 32, .2);
+    color: #ad3620;
+    border-color: #ad3620;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.btn-small {
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: #d6a06d;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: "Special Elite", "Courier New", monospace;
+    transition: all 0.2s ease;
+}
+
+.btn-small:hover {
+    border-color: #d6a06d;
+    background: rgba(214, 160, 109, .15);
+}
+
+.btn-small.btn-edit {
+    color: #d6a06d;
+}
+
+.btn-small.btn-edit:hover {
+    color: #f3ecdc;
+    border-color: #f3ecdc;
+    background: rgba(214, 160, 109, .2);
+}
+
+.btn-small.btn-delete {
+    color: #ad3620;
+}
+
+.btn-small.btn-delete:hover {
+    border-color: #ad3620;
+    background: rgba(173, 54, 32, .15);
+}
+
+.btn-small.btn-view {
+    color: #d6a06d;
+}
+
+.btn-small.btn-view:hover {
+    border-color: #d6a06d;
+    background: rgba(214, 160, 109, .15);
+}
+
+/* ============================================================
+   MODALES
+   ============================================================ */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: #000000;
+    border: 1.5px solid #6b5a43;
+    border-radius: 4px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+    font-family: "Special Elite", "Courier New", monospace;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1.5px solid #6b5a43;
+    background: rgba(52, 47, 40, .25);
+}
+
+.modal-header h3 {
+    color: #f3ecdc;
+    margin: 0;
+    font-size: 18px;
+    font-family: "Special Elite", "Courier New", monospace;
+    font-weight: bold;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #d6a06d;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #f3ecdc;
+}
+
+.modal-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 20px;
+    border-top: 1.5px solid #6b5a43;
+    background: rgba(52, 47, 40, .25);
+}
+
+/* ============================================================
+   FORMULAIRES
+   ============================================================ */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    color: #e8dcc4;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-input {
+    padding: 10px 12px;
+    background: #1a1410;
+    border: 1.5px solid #6b5a43;
+    border-radius: 4px;
+    color: #e8dcc4;
+    font-family: "Special Elite", "Courier New", monospace;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #d6a06d;
+    box-shadow: 0 0 8px rgba(214, 160, 109, 0.3);
+}
+
+.form-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(26, 20, 16, 0.8);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ============================================================
+   BOUTONS MODAL
+   ============================================================ */
+
+.btn-cancel {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #3a3024 0%, #2d2419 100%);
+    border: 1.5px solid #6b5a43;
+    border-radius: 4px;
+    color: #e8dcc4;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Special Elite", "Courier New", monospace;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    background: linear-gradient(135deg, #403020 0%, #322818 100%);
+    border-color: #897c64;
+    color: #f3ecdc;
+}
+
+.btn-save {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #8b5a2b 0%, #a0826d 100%);
+    border: 1.5px solid #6b5a43;
+    border-radius: 4px;
+    color: #f3ecdc;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Special Elite", "Courier New", monospace;
+    transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #a0826d 0%, #b0926d 100%);
+    border-color: #897c64;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .panel-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        min-width: auto;
+    }
+
+    .panel-table {
+        font-size: 12px;
+    }
+
+    .panel-table th,
+    .panel-table td {
+        padding: 8px 12px;
+    }
+
+    .btn-small {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+}
